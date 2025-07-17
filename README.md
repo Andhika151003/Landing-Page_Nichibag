@@ -2,9 +2,6 @@
 
 *Transform Visions into Stunning Digital Experiences*
 
-![Last Commit](https://img.shields.io/github/last-commit/nichikatsu889/Landing-Page_Nichibag)
-![Language](https://img.shields.io/github/languages/top/nichikatsu889/Landing-Page_Nichibag)
-
 > Built with the tools and technologies:
 
 ![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white&style=flat)
@@ -63,16 +60,16 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    ```bash
    [git clone https://github.com/nichikatsu889/Landing-Page_Nichibag](https://github.com/Andhika151003/Landing-Page_Nichibag.git)
 2. Navigate to the project directory:
-   cd Landing-Page_Nichibag
+   <img width="441" height="84" alt="image" src="https://github.com/user-attachments/assets/d6c09e70-39d3-435b-83b1-feb2c1d71c13" />
 3. Install the dependencies using npm:
-   npm install
+   <img width="282" height="90" alt="image" src="https://github.com/user-attachments/assets/0bc21828-cbb4-4a9b-aa62-db70bb691390" />
 
-Usage
+### Usage
 Run the project with:
-npm start
+<img width="288" height="93" alt="image" src="https://github.com/user-attachments/assets/e39b4430-9973-4582-878d-4cd0ec9103bf" />
 
-Testing
+### Testing
 Landing-page_nichibag uses the test framework. Run the test suite with:
-npm test
+<img width="242" height="95" alt="image" src="https://github.com/user-attachments/assets/c507005c-5037-4c85-968d-657d0f7be751" />
 
-   
+🔙 Return
