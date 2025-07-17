@@ -1,80 +1,78 @@
-LANDING-PAGE_NICHIBAG
-Transform Visions into Stunning Digital Experiences
+# LANDING-PAGE_NICHIBAG
 
-![Last commit badge] ![Language badge]
-Built with the tools and technologies:
-![React] ![Tailwind] ![JavaScript] ![Vite] ![ESLint]
+*Transform Visions into Stunning Digital Experiences*
 
-Table of Contents
-Overview
+![Last Commit](https://img.shields.io/github/last-commit/nichikatsu889/Landing-Page_Nichibag)
+![Language](https://img.shields.io/github/languages/top/nichikatsu889/Landing-Page_Nichibag)
 
-Getting Started
+> Built with the tools and technologies:
 
-Prerequisites
+![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white&style=flat)
+![Markdown](https://img.shields.io/badge/-Markdown-000000?logo=markdown&logoColor=white)
+![NPM](https://img.shields.io/badge/-npm-CB3837?logo=npm&logoColor=white)
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
+![Tailwind](https://img.shields.io/badge/-TailwindCSS-38B2AC?logo=tailwind-css&logoColor=white)
+![ESLint](https://img.shields.io/badge/-ESLint-4B32C3?logo=eslint&logoColor=white)
 
-Installation
+---
 
-Usage
+## Table of Contents
 
-Testing
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Testing](#testing)
 
-Overview
-Landing-Page_Nichibag is a modern React starter project optimized for rapid development of responsive landing pages. Built with Vite and Tailwind CSS, it provides a streamlined setup that accelerates your workflow from development to deployment.
+---
 
-Why Landing-Page_Nichibag?
+## Overview
+
+**Landing-Page_Nichibag** is a modern React starter project optimized for rapid development of responsive landing pages. Built with Vite and Tailwind CSS, it provides a streamlined setup that accelerates your workflow from development to deployment.
+
+### Why Landing-Page_Nichibag?
+
 This project simplifies building sleek, high-performance web interfaces with a focus on developer experience. The core features include:
 
-✨ Fast Development: Hot Module Replacement (HMR) ensures instant updates during coding sessions.
-🧼 Code Quality: ESLint integration enforces best practices and maintains a clean codebase.
-📱 Responsive UI: Tailwind CSS enables quick styling of modern, mobile-friendly layouts.
-🧩 Modular Architecture: Clear separation of components like Navbar and App for scalable development.
-🚀 Efficient Builds: Vite optimizes build times and simplifies deployment workflows.
+- ⚡ **Fast Development**: Hot Module Replacement (HMR) ensures instant updates during coding sessions.
+- 🧼 **Code Quality**: ESLint integration enforces best practices and maintains a clean codebase.
+- 📱 **Responsive UI**: Tailwind CSS enables quick styling of modern, mobile-friendly layouts.
+- 🧩 **Modular Architecture**: Clear separation of components like Navbar and App for scalable development.
+- 🚀 **Efficient Builds**: Vite optimizes build times and simplifies deployment workflows.
 
-Getting Started
-Prerequisites
+---
+
+## Getting Started
+
+### Prerequisites
+
 This project requires the following dependencies:
 
-Programming Language: JavaScript
+- **Programming Language**: JavaScript  
+- **Package Manager**: npm
 
-Package Manager: Npm
+---
 
-Installation
+### Installation
+
 Build Landing-Page_Nichibag from the source and install dependencies:
 
-Clone the repository:
+1. Clone the repository:
+   ```bash
+   [git clone https://github.com/nichikatsu889/Landing-Page_Nichibag](https://github.com/Andhika151003/Landing-Page_Nichibag.git)
+2. Navigate to the project directory:
+   cd Landing-Page_Nichibag
+3. Install the dependencies using npm:
+   npm install
 
-bash
-Copy
-Edit
-git clone https://github.com/nichikatsu889/Landing-Page_Nichibag
-Navigate to the project directory:
-
-bash
-Copy
-Edit
-cd Landing-Page_Nichibag
-Install the dependencies:
-Using npm:
-
-bash
-Copy
-Edit
-npm install
 Usage
 Run the project with:
-Using npm:
-
-bash
-Copy
-Edit
 npm start
+
 Testing
-Landing-page_nichibag uses the test framework test framework. Run the test suite with:
-Using npm:
-
-bash
-Copy
-Edit
+Landing-page_nichibag uses the test framework. Run the test suite with:
 npm test
-🔙 Return
 
+   
