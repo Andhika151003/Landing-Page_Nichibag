@@ -1,7 +1,7 @@
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
-import Navbar from "./frontend/navbar.jsx"; // Adjust the import path as necessary
+import Navbar from "./frontend/navbar.jsx"; 
 
 function App() {
   return (
