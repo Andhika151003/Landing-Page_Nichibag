@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { Search, Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom"; // tambahkan ini
 import Logo from "../assets/Logo.svg";
 
 const Navbar = () => {
-  const [activeItem, setActiveItem] = useState("Collection");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation(); // dapatkan path aktif
 
-  const menuItems = ["Collection", "About", "Service", "Contact Us"];
+  const menuItems = [
+    { name: "Collection", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Service", path: "/service" },
+    { name: "Contact Us", path: "/contact" },
+  ];
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -23,17 +29,17 @@ const Navbar = () => {
         {/* Desktop Menu */}
         <ul className="hidden md:flex space-x-6 items-center text-sm font-medium">
           {menuItems.map((item) => (
-            <li key={item}>
-              <button
-                onClick={() => setActiveItem(item)}
+            <li key={item.name}>
+              <Link
+                to={item.path}
                 className={`px-3 py-1 rounded ${
-                  activeItem === item
+                  location.pathname === item.path
                     ? "bg-red-700 text-white"
                     : "text-black hover:text-red-700"
                 } transition`}
               >
-                {item}
-              </button>
+                {item.name}
+              </Link>
             </li>
           ))}
         </ul>
@@ -54,20 +60,18 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-white shadow-md border-t border-gray-200 px-6 py-4 space-y-3">
           {menuItems.map((item) => (
-            <button
-              key={item}
-              onClick={() => {
-                setActiveItem(item);
-                setIsMobileMenuOpen(false);
-              }}
+            <Link
+              key={item.name}
+              to={item.path}
+              onClick={() => setIsMobileMenuOpen(false)}
               className={`block w-full text-left px-3 py-2 rounded ${
-                activeItem === item
+                location.pathname === item.path
                   ? "bg-red-700 text-white"
                   : "text-black hover:text-red-700"
               } transition`}
             >
-              {item}
-            </button>
+              {item.name}
+            </Link>
           ))}
         </div>
       )}
@@ -75,4 +79,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar
+export default Navbar;

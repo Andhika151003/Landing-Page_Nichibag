@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useState } from "react";
 import Hero1 from "../assets/hero1.png";
 import Hero2 from "../assets/hero2.png";
@@ -7,15 +6,15 @@ import Hero3 from "../assets/hero3.png";
 const ImageList = [
   {
     ImgSrc: Hero1,
-    Title: "Product 1",
   },
+  
   {
     ImgSrc: Hero2,
-    Title: "Product 2",
   },
+
+
   {
     ImgSrc: Hero3,
-    Title: "Product 3",
   },
 ];
 
