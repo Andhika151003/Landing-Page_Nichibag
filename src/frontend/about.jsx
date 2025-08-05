@@ -71,7 +71,7 @@ const About = () => {
           >
             <h3 className="text-lg font-semibold text-red-700 mb-2">Visi</h3>
             <p className="text-gray-700 leading-relaxed">
-              Menjadi brand kemasan terdepan di Indonesia...
+              Menjadi brand kemasan terdepan di Indonesia
             </p>
           </Motion.div>
           <Motion.div
@@ -101,10 +101,10 @@ const About = () => {
         <h2 className="text-3xl font-bold text-center mb-12 text-[#800000]">Nilai-Nilai Kami</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { title: "Berkualitas", desc: "Kemasan Berkualitas...", icon: "🎯" },
-            { title: "Inovasi", desc: "Selalu berusaha menciptakan...", icon: "💡" },
-            { title: "Ramah Lingkungan", desc: "Ramah Lingkungan...", icon: "🌱" },
-            { title: "Terpercaya", desc: "Memberikan layanan...", icon: "🤝" },
+            { title: "Berkualitas", desc: "Bahan Dan Produk Berkualitas", icon: "🎯" },
+            { title: "Inovasi", desc: "Selalu berusaha menciptakan Inovasi Terbaru", icon: "💡" },
+            { title: "Ramah Lingkungan", desc: "Bahan Dan Mendukung Untuk Ramah Lingkungan", icon: "🌱" },
+            { title: "Terpercaya", desc: "Memberikan layanan yang Terbaik Dan Memuaskan Dijamin Amanah Dan Terpercaya", icon: "🤝" },
           ].map((item, i) => (
             <Motion.div
               key={i}
