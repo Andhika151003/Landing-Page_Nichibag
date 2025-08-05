@@ -63,6 +63,9 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    [cd Landing-Page_Nichibag]
 3. Install the dependencies using npm:
    [npm install]
+   [npm install react-router-dom lucide-react]
+   [npm install gsap]
+   [npm i styled-components]
 
 ### Usage
 Run the project with:

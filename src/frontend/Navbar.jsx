@@ -19,7 +19,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full bg-white shadow-sm fixed top-0 z-50">
+    <nav className="w-full bg-[#F9F6EE] shadow-sm fixed top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* Logo */}
         <div className="flex items-center space-x-2">
@@ -58,7 +58,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-md border-t border-gray-200 px-6 py-4 space-y-3">
+        <div className="md:hidden bg-[#F9F6EE] shadow-md border-t border-gray-200 px-6 py-4 space-y-3">
           {menuItems.map((item) => (
             <Link
               key={item.name}
