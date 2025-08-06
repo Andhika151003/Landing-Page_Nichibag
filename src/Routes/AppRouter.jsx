@@ -5,6 +5,7 @@ import Gambar from "../frontend/gambar.jsx";
 import About from "../frontend/about.jsx";
 import Services from "../frontend/Services.jsx";
 import Contact from "../frontend/contact.jsx";
+import LoginPage from "../frontend/Login.jsx";
 
 
 
@@ -13,6 +14,7 @@ const AppRouter = () => {
     <Router>
       <Navbar />
       <Routes>
+        <Route path="/Admin" element={<LoginPage />} />
         <Route path="/" element={<Gambar />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />

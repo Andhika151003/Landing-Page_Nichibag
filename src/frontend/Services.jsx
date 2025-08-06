@@ -3,6 +3,7 @@ import produk from "../assets/produk.png";
 import hero1 from "../assets/hero1.png";
 import hero2 from "../assets/hero2.png";
 import ShopeeIcon from "../assets/shoope.svg";
+import HeroTitle from "../components/HeroTitle.jsx";
 import { Instagram, Phone } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 
