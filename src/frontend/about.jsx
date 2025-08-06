@@ -2,6 +2,7 @@ import React from "react";
 import Gambar from "../assets/produk.png";
 import { motion as Motion } from "framer-motion";
 import SplitText from "../components/SplitText";
+import Button from "../components/ModernButton";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -13,26 +14,30 @@ const About = () => {
     <div className="pt-6">
       {/* Header atas */}
       <Motion.section
-        style={{ backgroundColor: "#800000" }}
-        className="text-white text-center py-20"
+        className="text-white text-center pt-28 pb-20 bg-red-800"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
         <SplitText
           text="Nichibag.id"
-          className="text-4xl font-bold mb-4 leading-[normal] align-bottom tracking-tight"
+          className="text-4xl font-semibold text-center leading-[normal] align-bottom tracking-tight"
+          delay={100}
+          duration={0.6}
+          ease="power3.out"
           splitType="chars"
-          delay={80}
           from={{ opacity: 0, y: 40 }}
           to={{ opacity: 1, y: 0 }}
+          threshold={0.1}
+          rootMargin="-100px"
+          textAlign="center"
         />
         <p className="text-lg">Bukan Sekadar Tas, Ini Identitas</p>
       </Motion.section>
 
       {/* Siapa Kami */}
       <Motion.section
-        className="bg-white flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-20 py-16"
+        className="bg-[#F9F6EE] flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-20 py-16"
         variants={fadeInUp}
         initial="hidden"
         whileInView="visible"
@@ -87,7 +92,8 @@ const About = () => {
           >
             <h3 className="text-lg font-semibold text-red-700 mb-2">Visi</h3>
             <p className="text-gray-700 leading-relaxed">
-              Menjadi brand kemasan terdepan di Indonesia...
+              Mengubah cara bisnis melihat kemasan dari sekadar pembungkus
+              menjadi media cerita, identitas, dan keberlanjutan.
             </p>
           </Motion.div>
           <Motion.div
@@ -97,9 +103,21 @@ const About = () => {
           >
             <h3 className="text-lg font-semibold text-red-700 mb-2">Misi</h3>
             <ul className="list-disc list-inside text-gray-700 space-y-2">
-              <li>Inovatif, Responsif, dan Siap Tumbuh</li>
-              <li>Dukung Gerakan Ramah Lingkungan</li>
-              <li>Menjadi Partner Branding</li>
+              <li>
+                Membuat kemasan yang tidak hanya indah, tapi juga berdampak baik
+                untuk lingkungan dan masyarakat.
+              </li>
+              <li>
+                Menyediakan solusi packaging yang fleksibel dan personal bagi
+                brand lokal maupun global.
+              </li>
+              <li>
+                Menjadi pelopor dalam penggunaan bahan daur ulang dan proses
+                produksi beretika.
+              </li>
+              <li>
+                Berkolaborasi dengan klien sebagai partner, bukan hanya vendor.
+              </li>
             </ul>
           </Motion.div>
         </div>
@@ -107,7 +125,7 @@ const About = () => {
 
       {/* Nilai-Nilai Kami */}
       <Motion.section
-        className="py-20 px-6 md:px-20 bg-gray-50"
+        className="py-20 px-6 md:px-20 bg-[#F9F6EE]"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -121,20 +139,24 @@ const About = () => {
           {[
             {
               title: "Berkualitas",
-              desc: "Kemasan Berkualitas...",
+              desc: "Kemasan Berkualitas Dan Berbahan Premium",
               icon: "🎯",
             },
             {
               title: "Inovasi",
-              desc: "Selalu berusaha menciptakan...",
+              desc: "Selalu Menciptakan Produk Unggul",
               icon: "💡",
             },
             {
               title: "Ramah Lingkungan",
-              desc: "Ramah Lingkungan...",
+              desc: "Pilihan Terbaik Mengurangi Limbah Plastik",
               icon: "🌱",
             },
-            { title: "Terpercaya", desc: "Memberikan layanan...", icon: "🤝" },
+            {
+              title: "Terpercaya",
+              desc: "Memberikan Layanan Yang Terbaik",
+              icon: "🤝",
+            },
           ].map((item, i) => (
             <Motion.div
               key={i}
@@ -170,12 +192,12 @@ const About = () => {
             {
               year: "2022",
               title: "Didirikan",
-              desc: "Nichi Bag resmi berdiri pada tahun 2022",
+              desc: "Nichibag resmi berdiri pada tahun 2022 yang berada di kota Surabaya",
             },
             {
               year: "2023",
               title: "Berkembang",
-              desc: "Memperluas jangkauan dan Pasar Produk",
+              desc: "Memperluas jangkauan dan Pasar Produk dengan mengembangkan produk - produk yang inovatif",
             },
             {
               year: "2024",
@@ -213,8 +235,7 @@ const About = () => {
 
       {/* Call to Action */}
       <Motion.section
-        style={{ backgroundColor: "white" }}
-        className="text-black text-center py-12 px-6"
+        className="text-black text-center py-12 px-6 bg-[#F9F6EE]"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -226,14 +247,14 @@ const About = () => {
         <p className="mb-6">
           Hubungi kami untuk berdiskusi lebih lanjut tentang kemasan Anda.
         </p>
-        <div className="space-x-4">
+        <div className="flex justify-center mt-6">
           <a
             href="https://wa.me/628973809698"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-red-300 text-white font-semibold px-6 py-2 rounded hover:bg-black transition"
+            className=" text-white font-semibold px-6 py-2 rounded"
           >
-            Kontak Kami
+            <Button text="Kontak Kami" />
           </a>
         </div>
       </Motion.section>
