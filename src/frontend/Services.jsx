@@ -3,6 +3,7 @@ import produk from "../assets/produk.png";
 import hero1 from "../assets/hero1.png";
 import hero2 from "../assets/hero2.png";
 import ShopeeIcon from "../assets/shoope.svg";
+import HeroTitle from "../components/HeroTitle.jsx";
 import { Instagram, Phone } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 
@@ -77,16 +78,15 @@ const LandingPage = () => {
       
       {/* HERO */}
       <section className="text-center py-20 px-4 bg-gradient-to-r from-blue-300 to-red-800">
-        <Motion.h1
-          className="text-4xl md:text-5xl font-bold mb-4"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeInUp}
-          custom={0}
-        >
-          Packagingmu Identitas Brand kamu
-        </Motion.h1>
+        <Motion.div
+  initial="hidden"
+  whileInView="visible"
+  viewport={{ once: true }}
+  variants={fadeInUp}
+  custom={0}
+>
+  <HeroTitle />
+</Motion.div>
         <Motion.p
           className="max-w-2xl mx-auto mb-6 text-white"
           initial="hidden"
