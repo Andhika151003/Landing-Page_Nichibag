@@ -47,13 +47,13 @@ function Home() {
           {/* Tombol navigasi */}
           <button
             onClick={prevSlide}
-            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-amber-600 text-white px-3 py-1 rounded-full shadow"
+            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-amber-600 text-red-800 px-3 py-1 rounded-full shadow"
           >
             ❮
           </button>
           <button
             onClick={nextSlide}
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-amber-700 text-white px-3 py-1 rounded-full shadow"
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-amber-700 text-red-800 px-3 py-1 rounded-full shadow"
           >
             ❯
           </button>
@@ -71,7 +71,7 @@ function Home() {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
-                index === currentIndex ? "bg-green-500 scale-110" : "bg-gray-400"
+                index === currentIndex ? "bg-red-800 scale-110" : "bg-gray-400"
               }`}
             ></div>
           ))}
