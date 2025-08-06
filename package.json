@@ -20,11 +20,8 @@
     "react-icons": "^5.5.0",
     "react-parallax-tilt": "^1.7.304",
     "react-router-dom": "^7.7.1",
-<<<<<<< HEAD
     "styled-components": "^6.1.19",
-=======
     "react-use": "^17.6.0",
->>>>>>> origin/main
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {

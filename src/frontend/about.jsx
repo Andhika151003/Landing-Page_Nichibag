@@ -1,6 +1,5 @@
 import React from "react";
 import Gambar from "../assets/produk.png";
-import { motion as Motion } from "framer-motion";
 import SplitText from "../components/SplitText";
 import Button from "../components/ModernButton";
 import { motion as Motion, useScroll, useTransform, useSpring } from "framer-motion";
@@ -57,7 +56,7 @@ const About = () => {
         <div className="md:w-1/2">
           <h2 className="text-2xl text-black font-semibold mb-4">Siapa Kami</h2>
           <p className="text-black mb-4">
-            Didirikan sejak tahun 2022, Nichi Bag hadir sebagai solusi kemasan modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap lingkungan.
+            Didirikan sejak tahun 2022, Nichibag.id hadir sebagai solusi kemasan modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap lingkungan.
           </p>
           <p className="text-blue-600 font-semibold text-lg">500+ Klien yang puas</p>
         </div>
@@ -121,30 +120,6 @@ const About = () => {
               </li>
             </ul>
           </Motion.div>
-          {[
-            { title: "Visi", content: "Menjadi brand kemasan terdepan di Indonesia" },
-            {
-              title: "Misi",
-              content: (
-                <ul className="list-disc list-inside text-gray-700 space-y-2">
-                  <li>Inovatif, Responsif, dan Siap Tumbuh</li>
-                  <li>Dukung Gerakan Ramah Lingkungan</li>
-                  <li>Menjadi Partner Branding</li>
-                </ul>
-              ),
-            },
-          ].map((item, i) => (
-            <Motion.div
-              key={i}
-              className="bg-white p-6 rounded-lg shadow-md w-full"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-              style={{ opacity: opacityOnScroll }}
-            >
-              <h3 className="text-lg font-semibold text-red-700 mb-2">{item.title}</h3>
-              <div className="text-gray-700 leading-relaxed">{item.content}</div>
-            </Motion.div>
-          ))}
         </div>
       </Motion.section>
 
