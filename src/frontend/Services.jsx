@@ -58,7 +58,7 @@ const steps = [
   {
     img: produk,
     title: "Produk Paling Laku",
-    desc: "Produk ini adalah produk yang paling laku dari Nichi ID",
+    desc: "Produk ini adalah produk yang paling laku dari Nichibag.id",
   },
   {
     img: hero1,
@@ -77,16 +77,17 @@ const LandingPage = () => {
     <div className="bg-red-800 text-white">
       
       {/* HERO */}
-      <section className="text-center py-20 px-4 bg-gradient-to-r from-blue-300 to-red-800">
-        <Motion.div
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true }}
-  variants={fadeInUp}
-  custom={0}
->
-  <HeroTitle />
-</Motion.div>
+      <section className="text-center py-20 px-4 bg-gradient-to-r from-[#5C1717] to-[#99666E]">
+        <Motion.h1
+          className="text-4xl md:text-5xl font-bold mb-4 py-10"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          custom={0}
+        >
+          Packagingmu Identitas Brand kamu
+        </Motion.h1>
         <Motion.p
           className="max-w-2xl mx-auto mb-6 text-white"
           initial="hidden"
@@ -96,7 +97,7 @@ const LandingPage = () => {
           custom={1}
         >
           Kemasan bukan sekadar pembungkus — ia adalah pesan pertama dari sebuah brand.
-          Di Nichi ID, kami hadir untuk membantu Anda membungkus cerita dengan cara yang elegan dan bermakna.
+          Di Nichibag.id, kami hadir untuk membantu Anda membungkus cerita dengan cara yang elegan dan bermakna.
         </Motion.p>
         <Motion.a
           href="#layanan"
@@ -114,12 +115,12 @@ const LandingPage = () => {
       {/* SERVICES */}
       <section className="py-20 px-4 md:px-16 bg-white text-black">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold mb-4">NICHI ID</h2>
+          <h2 className="text-3xl font-bold mb-4">Nichibag.id</h2>
           <p className="max-w-xl mx-auto">
             Beragam Pilihan Layanan Kemasan untuk Bisnis Anda
             <br />
             Kami menawarkan berbagai jenis kemasan premium yang dikemas secara profesional. 
-            Dengan desain menarik, kualitas terbaik, dan fleksibilitas produksi, Nichi ID siap mendukung bisnis Anda tampil menonjol di setiap kesempatan. 
+            Dengan desain menarik, kualitas terbaik, dan fleksibilitas produksi, Nichibag.id siap mendukung bisnis Anda tampil menonjol di setiap kesempatan. 
           </p>
         </div>
 
@@ -201,7 +202,7 @@ const LandingPage = () => {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Lokasi Nichi ID"
+              title="Lokasi Nichibag.id"
             ></iframe>
           </div>
         </div>
