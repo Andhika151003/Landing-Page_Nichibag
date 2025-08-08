@@ -17,7 +17,7 @@ const LoginPage = () => {
 
     // Simulasi login berhasil (bisa diganti validasi real ke server)
     if (form.email === "admin@example.com" && form.password === "admin123") {
-      navigate("/Admin"); // <-- Redirect ke halaman admin
+      navigate("/Dashboard"); // <-- Redirect ke halaman admin
     } else {
       alert("Email atau password salah");
     }
@@ -67,9 +67,7 @@ const LoginPage = () => {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Belum punya akun? <a href="#" className="text-rose-500 hover:underline">Daftar</a>
-        </p>
+      
       </Motion.div>
     </div>
   );

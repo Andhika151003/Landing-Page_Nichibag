@@ -1,9 +1,10 @@
 import React from "react";
 import Gambar from "../assets/produk.png";
-import { motion as Motion } from "framer-motion";
+
 import SplitText from "../components/SplitText";
 import Button from "../components/ModernButton";
 import { motion as Motion, useScroll, useTransform, useSpring } from "framer-motion";
+
 import CustomCursor from "../components/CustomCursor";
 import Tilt from "react-parallax-tilt"; // Tambahan animasi 3D
 
