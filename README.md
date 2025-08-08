@@ -67,6 +67,7 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    [npm install gsap]
    [npm i styled-components]
    [npm install react-parallax-tilt]
+   [npm i @material-tailwind/react]
 
 ### Usage
 Run the project with:
