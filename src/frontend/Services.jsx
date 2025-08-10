@@ -6,6 +6,7 @@ import ShopeeIcon from "../assets/shoope.svg";
 import HeroTitle from "../components/HeroTitle.jsx";
 import { Instagram, Phone } from "lucide-react";
 import { motion as Motion } from "framer-motion";
+import Button from "../components/ButtonServices.jsx";
 
 // Animasi Variants
 const fadeInUp = {
@@ -15,7 +16,7 @@ const fadeInUp = {
     y: 0,
     transition: {
       delay: i * 0.3,
-      duration: 0.8,
+      duration: 0.4,
       ease: "easeOut",
     },
   }),
@@ -28,7 +29,7 @@ const zoomIn = {
     scale: 1,
     transition: {
       delay: i * 0.3,
-      duration: 0.6,
+      duration: 0.4,
       ease: "easeOut",
     },
   }),
@@ -79,14 +80,14 @@ const LandingPage = () => {
       {/* HERO */}
       <section className="text-center py-20 px-4 bg-gradient-to-r from-[#5C1717] to-[#99666E]">
         <Motion.h1
-          className="text-4xl md:text-5xl font-bold mb-4 py-10"
+          className="text-2xl md:text-xl font-bold mb-4 py-10"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
           custom={0}
         >
-          Packagingmu Identitas Brand kamu
+          <HeroTitle />
         </Motion.h1>
         <Motion.p
           className="max-w-2xl mx-auto mb-6 text-white"
@@ -101,14 +102,14 @@ const LandingPage = () => {
         </Motion.p>
         <Motion.a
           href="#layanan"
-          className="bg-red-800 text-white font-bold py-2 px-6 rounded-full inline-block"
+          className="py-2 px-6 inline-block"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
           custom={2}
         >
-          Layanan Kami
+          <Button text ="Layanan Kami" />
         </Motion.a>
       </section>
 

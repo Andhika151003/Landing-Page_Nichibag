@@ -3,7 +3,7 @@ import Gambar from "../assets/produk.png";
 import SplitText from "../components/SplitText";
 import Button from "../components/ModernButton";
 import { motion as Motion, useScroll, useTransform, useSpring } from "framer-motion";
-import CustomCursor from "../components/CustomCursor";
+// import CustomCursor from "../components/CustomCursor";
 import Tilt from "react-parallax-tilt"; // Tambahan animasi 3D
 
 const fadeInUp = {
@@ -19,7 +19,7 @@ const About = () => {
 
   return (
     <div className="pt-6 overflow-x-hidden">
-      <CustomCursor />
+      {/* <CustomCursor /> */}
 
       {/* Header */}
       <Motion.section
