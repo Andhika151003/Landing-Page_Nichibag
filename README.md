@@ -66,6 +66,9 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    [npm install react-router-dom lucide-react]
    [npm install gsap]
    [npm i styled-components]
+   [npm install react-parallax-tilt]
+   [npm i @material-tailwind/react]
+   [npm install flowbite]
 
 ### Usage
 Run the project with:
