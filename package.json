@@ -16,13 +16,14 @@
     "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",
     "lucide-react": "^0.535.0",
+    "mongoose": "^8.17.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-parallax-tilt": "^1.7.304",
     "react-router-dom": "^7.7.1",
-    "styled-components": "^6.1.19",
     "react-use": "^17.6.0",
+    "styled-components": "^6.1.19",
     "tailwindcss": "^4.1.11"
   },
   "devDependencies": {
