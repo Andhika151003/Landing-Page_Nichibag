@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Mail, Lock } from "lucide-react";
+import { User, Lock } from "lucide-react";
 import { motion as Motion } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // <-- Tambahkan ini
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const navigate = useNavigate(); // <-- Hook untuk navigasi
+  const [form, setForm] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -13,52 +13,59 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login with:", form);
 
-    // Simulasi login berhasil (bisa diganti validasi real ke server)
-    if (form.email === "admin@example.com" && form.password === "admin123") {
-      navigate("/Dashboard"); // <-- Redirect ke halaman admin
+    // Simulasi login berhasil
+    if (form.username === "admin" && form.password === "admin123") {
+      navigate("/Dashboard");
     } else {
-      alert("Email atau password salah");
+      alert("Username atau password salah");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-rose-100 to-teal-100 px-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-r from-rose-100 to-teal-100">
       <Motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md bg-red-600 rounded-2xl shadow-xl p-8"
+        className="w-full max-w-md bg-amber-400 rounded-2xl shadow-xl p-8 mx-4"
       >
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
+        <h2 className="text-3xl font-bold text-center text-black mb-6">
+          Login
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Username */}
           <div className="relative">
-            <Mail className="absolute left-3 top-3.5 text-gray-400" size={20} />
+            <User className="absolute left-3 top-3.5 text-black" size={20} />
             <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={form.email}
+              type="text"
+              name="username"
+              placeholder="Username"
+              value={form.username}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
+                         focus:outline-none focus:ring-2 focus:ring-rose-400"
               required
             />
           </div>
 
+          {/* Password */}
           <div className="relative">
-            <Lock className="absolute left-3 top-3.5 text-gray-400" size={20} />
+            <Lock className="absolute left-3 top-3.5 text-black" size={20} />
             <input
               type="password"
               name="password"
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
+                         focus:outline-none focus:ring-2 focus:ring-rose-400"
               required
             />
           </div>
 
+          {/* Tombol */}
           <button
             type="submit"
             className="w-full bg-rose-500 hover:bg-rose-600 text-black font-semibold py-2 rounded-lg transition duration-300"
@@ -66,8 +73,6 @@ const LoginPage = () => {
             Masuk
           </button>
         </form>
-
-      
       </Motion.div>
     </div>
   );

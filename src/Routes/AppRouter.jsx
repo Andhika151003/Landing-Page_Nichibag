@@ -17,6 +17,7 @@ const AppContent = () => {
 
   // Semua path admin yang tidak butuh navbar
   const adminPaths = [
+    "/Admin",
     "/Dashboard",
     "/kelola-koleksi",
     "/kelola-produk",
