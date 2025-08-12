@@ -29,7 +29,7 @@ const About = () => {
         transition={{ duration: 1 }}
       >
         <SplitText
-          text="Nichibag.id"
+          text="NICHIBAG.ID"
           className="text-4xl font-semibold text-center leading-[normal] align-bottom tracking-tight"
           delay={100}
           duration={0.6}
