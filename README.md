@@ -68,7 +68,7 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    [npm i styled-components]
    [npm install react-parallax-tilt]
    [npm i @material-tailwind/react]
-   [npm install flowbite]
+   [npm install swiper]
 
 ### Usage
 Run the project with:
