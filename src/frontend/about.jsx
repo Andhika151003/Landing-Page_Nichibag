@@ -3,8 +3,7 @@ import Gambar from "../assets/produk.png";
 import SplitText from "../components/SplitText";
 import Button from "../components/ModernButton";
 import { motion as Motion, useScroll, useTransform, useSpring } from "framer-motion";
-
-import CustomCursor from "../components/CustomCursor";
+// import CustomCursor from "../components/CustomCursor";
 import Tilt from "react-parallax-tilt"; // Tambahan animasi 3D
 
 const fadeInUp = {
@@ -20,7 +19,7 @@ const About = () => {
 
   return (
     <div className="pt-6 overflow-x-hidden">
-      <CustomCursor />
+      {/* <CustomCursor /> */}
 
       {/* Header */}
       <Motion.section
@@ -30,7 +29,7 @@ const About = () => {
         transition={{ duration: 1 }}
       >
         <SplitText
-          text="Nichibag.id"
+          text="NICHIBAG.ID"
           className="text-4xl font-semibold text-center leading-[normal] align-bottom tracking-tight"
           delay={100}
           duration={0.6}
