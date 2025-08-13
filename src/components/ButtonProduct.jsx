@@ -1,18 +1,36 @@
+// Button.jsx
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // 🔹 Import dari react-router-dom
 
 const Button = () => {
+  const navigate = useNavigate(); // 🔹 Hook untuk navigasi
+
   return (
     <StyledWrapper>
-      <button className="cta">
+      <button
+        className="cta"
+        onClick={() => navigate('/katalog')} // 🔹 Direct ke halaman Katalog
+      >
         <span className="hover-underline-animation"> Shop now </span>
-        <svg id="arrow-horizontal" xmlns="http://www.w3.org/2000/svg" width={30} height={10} viewBox="0 0 46 16">
-          <path id="Path_10" data-name="Path 10" d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z" transform="translate(30)" />
+        <svg
+          id="arrow-horizontal"
+          xmlns="http://www.w3.org/2000/svg"
+          width={30}
+          height={10}
+          viewBox="0 0 46 16"
+        >
+          <path
+            id="Path_10"
+            data-name="Path 10"
+            d="M8,0,6.545,1.455l5.506,5.506H-30V9.039H12.052L6.545,14.545,8,16l8-8Z"
+            transform="translate(30)"
+          />
         </svg>
       </button>
     </StyledWrapper>
   );
-}
+};
 
 const StyledWrapper = styled.div`
   .cta {
@@ -67,5 +85,6 @@ const StyledWrapper = styled.div`
     transform: scaleX(1);
     transform-origin: bottom left;
   }`;
+
 
 export default Button;

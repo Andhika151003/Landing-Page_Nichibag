@@ -5,6 +5,8 @@ import Home from "../frontend/home.jsx";
 import About from "../frontend/about.jsx";
 import Services from "../frontend/Services.jsx";
 import Contact from "../frontend/contact.jsx";
+import Katalog from "../frontend/Katalog.jsx";
+import ProductDetail from "../frontend/ProdukDetail.jsx";
 import LoginPage from "../Admin-frontend/Login.jsx";
 import Dashboard from "../Admin-frontend/Dashboad.jsx";
 import KelolaKoleksi from "../Admin-frontend/KelolaKoleksi.jsx";
@@ -45,6 +47,10 @@ const AppContent = () => {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/katalog" element={<Katalog />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+
+        {/* Halaman Not Found */}
       </Routes>
     </>
   );

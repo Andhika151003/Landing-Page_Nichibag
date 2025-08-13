@@ -28,7 +28,7 @@ const LoginPage = () => {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md bg-amber-400 rounded-2xl shadow-xl p-8 mx-4"
+        className="w-full max-w-md bg-red-500 rounded-2xl shadow-xl p-8 mx-4"
       >
         <h2 className="text-3xl font-bold text-center text-black mb-6">
           Login

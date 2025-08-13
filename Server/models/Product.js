@@ -1,22 +1,29 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const Product = new mongoose.Schema({
-  carouselImages: [
-    {
-      url: { type: String, required: true },
-    },
-  ],
-  produkTerbaik: [
-    {
-      nama: { type: String, required: true },
-      url: { type: String, required: true },
-    },
-  ],
-  kategori: [
-    {
-      nama: { type: String, required: true },
-    },
-  ],
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
+  images: [{
+    type: String, 
+  }],
+}, {
+  timestamps: true,
 });
-
-export default mongoose.model("Koleksi",Product);
+// Export sebagai default
+export default mongoose.model('Product', productSchema);

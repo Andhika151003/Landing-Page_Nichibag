@@ -242,9 +242,9 @@ const Category = () => {
           </li>
         </ul>
       </div>
-      <div className="mt-6 flex justify-center">
+      {/* <div className="mt-6 flex justify-center">
         <Button />
-      </div>
+      </div> */}
     </section>
   );
 };
