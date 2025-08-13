@@ -3,38 +3,41 @@ import axios from "axios";
 
 const ManageServices = () => {
   const [serviceDescription, setServiceDescription] = useState("");
-  const [locations, setLocations] = useState([]);
-  const [newLocation, setNewLocation] = useState("");
+  const [contacts, setContacts] = useState([]);
+  const [form, setForm] = useState({ phone: "", email: "" });
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    fetchLocations();
+    fetchContacts();
   }, []);
 
-  const fetchLocations = async () => {
-    const res = await axios.get("http://localhost:5000/locations");
-    setLocations(res.data);
+  const fetchContacts = async () => {
+    const res = await axios.get("http://localhost:5000/contacts");
+    setContacts(res.data);
   };
 
   const handleAddOrUpdate = async () => {
+    if (!form.phone || !form.email) return alert("Isi semua field!");
+
     if (editId) {
-      await axios.put(`http://localhost:5000/locations/${editId}`, { name: newLocation });
+      await axios.put(`http://localhost:5000/contacts/${editId}`, form);
       setEditId(null);
     } else {
-      await axios.post("http://localhost:5000/locations", { name: newLocation });
+      await axios.post("http://localhost:5000/contacts", form);
     }
-    setNewLocation("");
-    fetchLocations();
+
+    setForm({ phone: "", email: "" });
+    fetchContacts();
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/locations/${id}`);
-    fetchLocations();
+    await axios.delete(`http://localhost:5000/contacts/${id}`);
+    fetchContacts();
   };
 
-  const handleEdit = (id, name) => {
-    setEditId(id);
-    setNewLocation(name);
+  const handleEdit = (contact) => {
+    setEditId(contact._id);
+    setForm({ phone: contact.phone, email: contact.email });
   };
 
   return (
@@ -52,42 +55,61 @@ const ManageServices = () => {
         />
       </div>
 
-      {/* Map Integration */}
-      <h3 className="font-semibold mb-4">Map Integration</h3>
+      {/* Contact Management */}
+      <h3 className="font-semibold mb-4">Contact Information</h3>
       <table className="w-full border rounded-md mb-4">
         <thead>
           <tr className="border-b">
-            <th className="text-left p-2">Location</th>
+            <th className="text-left p-2">Phone</th>
+            <th className="text-left p-2">Email</th>
             <th className="text-left p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {locations.map((loc) => (
-            <tr key={loc._id} className="border-b">
-              <td className="p-2">{loc.name}</td>
+          {contacts.map((contact) => (
+            <tr key={contact._id} className="border-b">
+              <td className="p-2">{contact.phone}</td>
+              <td className="p-2">{contact.email}</td>
               <td className="p-2 space-x-2">
-                <button onClick={() => handleEdit(loc._id, loc.name)} className="text-blue-500">Edit</button>
-                <button onClick={() => handleDelete(loc._id)} className="text-red-500">Delete</button>
+                <button
+                  onClick={() => handleEdit(contact)}
+                  className="text-blue-500"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(contact._id)}
+                  className="text-red-500"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Add Location Form */}
-      <div className="flex items-center gap-2 mb-4">
+      {/* Add / Update Contact Form */}
+      <div className="flex flex-col gap-2 mb-4 max-w-md">
         <input
           type="text"
-          placeholder="Enter location"
+          placeholder="Enter phone number"
           className="border rounded-md p-2"
-          value={newLocation}
-          onChange={(e) => setNewLocation(e.target.value)}
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Enter email address"
+          className="border rounded-md p-2"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <button
           onClick={handleAddOrUpdate}
           className="bg-red-500 text-white px-4 py-2 rounded-md"
         >
-          {editId ? "Update Location" : "Add Location"}
+          {editId ? "Update Contact" : "Add Contact"}
         </button>
       </div>
     </div>
