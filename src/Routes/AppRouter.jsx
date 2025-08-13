@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Navbar from "../frontend/navbar.jsx";
+import Navbar from "../frontend/Navbar.jsx";
 import Home from "../frontend/home.jsx";
 import About from "../frontend/about.jsx";
 import Services from "../frontend/Services.jsx";
@@ -13,6 +13,7 @@ import KelolaKoleksi from "../Admin-frontend/KelolaKoleksi.jsx";
 import KelolaProduk from "../Admin-frontend/Product.jsx";
 import AboutAdmin from "../Admin-frontend/AboutAdmin.jsx";
 import ManageServices from "../Admin-frontend/ManageServices.jsx";
+import Footer from "../frontend/Footer.jsx";
 
 const AppContent = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const AppContent = () => {
 
   // Cek apakah path sekarang ada di daftar adminPaths
   const hideNavbar = adminPaths.includes(location.pathname);
+  const hideFooter = adminPaths.includes(location.pathname);
 
   return (
     <>
@@ -52,6 +54,8 @@ const AppContent = () => {
 
         {/* Halaman Not Found */}
       </Routes>
+        {/*Footer*/}
+      {!hideFooter && <Footer />}
     </>
   );
 };

@@ -66,18 +66,6 @@ const Katalog = () => {
           </Link>
         ))}
       </div>
-
-      {/* Footer */}
-      <div className="bg-red-500 text-white p-6 text-center mt-10">
-        <p className="mb-4 font-semibold text-sm sm:text-base">Follow Kami di Social Media</p>
-        <div className="flex justify-center gap-3 flex-wrap">
-          <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Facebook_Logo.png" alt="Facebook" className="w-6 h-6" /></a>
-          <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" className="w-6 h-6" /></a>
-          <a href="#"><img src="https://www.logo.wine/a/logo/TikTok/TikTok-Logomark%26Wordmark-Vertical-Logo.wine.svg" alt="Tiktok" className="w-6 h-6" /></a>
-          <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" className="w-6 h-6" /></a>
-        </div>
-        <p className="mt-4 text-xs sm:text-sm">© 2025 Nichi.id. All Rights Reserved</p>
-      </div>
     </div>
   );
 };

@@ -86,7 +86,7 @@ const About = () => {
         <h2 className="text-2xl font-semibold mb-8 text-center text-white">Visi & Misi</h2>
         <div className="flex flex-col md:flex-row gap-8">
           <Motion.div
-            className="bg-white p-6 rounded-lg shadow-md w-full"
+            className="bg-[#F9F6EE] p-6 rounded-lg shadow-md w-full"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
           >
@@ -97,7 +97,7 @@ const About = () => {
             </p>
           </Motion.div>
           <Motion.div
-            className="bg-white p-6 rounded-lg shadow-md w-full"
+            className="bg-[#F9F6EE] p-6 rounded-lg shadow-md w-full"
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.3 }}
           >
@@ -158,7 +158,7 @@ const About = () => {
           ].map((item, i) => (
             <Motion.div
               key={i}
-              className="p-6 bg-white rounded-2xl shadow-md flex flex-col items-center"
+              className="p-6 bg-[#F9F6EE] rounded-2xl shadow-md flex flex-col items-center"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
               style={{ scale: scaleOnScroll }}
@@ -182,7 +182,7 @@ const About = () => {
       >
         <h2 className="text-2xl font-semibold mb-12 text-center text-white">Perjalanan Kami</h2>
         <div className="relative flex flex-col items-center">
-          <div className="absolute w-1 bg-white h-full left-1/2 transform -translate-x-1/2 z-0" />
+          <div className="absolute w-1 bg-[#F9F6EE] h-full left-1/2 transform -translate-x-1/2 z-0" />
           {[
             {
               year: "2022",
@@ -216,13 +216,13 @@ const About = () => {
               transition={{ duration: 0.6, delay: i * 0.2 }}
             >
               <Tilt glareEnable={true} glareMaxOpacity={0.2} scale={1.02} transitionSpeed={1500}>
-                <div className="bg-white p-6 rounded-lg shadow-lg">
+                <div className="bg-[#F9F6EE] p-6 rounded-lg shadow-lg">
                   <p className="text-red-800 font-bold text-lg mb-1">{item.year}</p>
                   <h4 className="font-semibold mb-2">{item.title}</h4>
                   <p className="text-gray-700">{item.desc}</p>
                 </div>
               </Tilt>
-              <span className="absolute top-6 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-white border-4 border-red-800 rounded-full z-20" />
+              <span className="absolute top-6 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[#F9F6EE] border-4 border-red-800 rounded-full z-20" />
             </Motion.div>
           ))}
         </div>

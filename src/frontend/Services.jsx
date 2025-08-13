@@ -114,7 +114,7 @@ const LandingPage = () => {
       </section>
 
       {/* SERVICES */}
-      <section className="py-20 px-4 md:px-16 bg-white text-black">
+      <section className="py-20 px-4 md:px-16 bg-[#F9F6EE] text-black">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-4">Nichibag.id</h2>
           <p className="max-w-xl mx-auto">
@@ -196,7 +196,7 @@ const LandingPage = () => {
             </a>
           </div>
 
-          <div className="w-full h-64 md:h-80">
+          <div className="w-full h-64 md:h-80 bg-[#F9F6EE]">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.7603001896737!2d112.6744988!3d-7.2680958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7fe82331a6083%3A0x5822c119bea5851e!2sJl.%20Gadel%20Sari%20Madya%20II%20No.45%2C%20Gadel%2C%20Kec.%20Tandes%2C%20Surabaya%2C%20Jawa%20Timur%2060216!5e0!3m2!1sid!2sid!4v1754388155722!5m2!1sid!2sid" 
               className="w-full h-full rounded-lg shadow-md"
@@ -207,45 +207,6 @@ const LandingPage = () => {
             ></iframe>
           </div>
         </div>
-
-        {/* FOOTER */}
-        <Motion.footer
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="w-full bg-[#800000] text-white text-center py-8 px-4 text-sm mt-20"
-        >
-          <div className="max-w-6xl mx-auto space-y-6">
-
-            {/* Navigasi Footer */}
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-              <a href="#layanan" className="hover:text-gray-300 transition">Layanan</a>
-            </div>
-
-            {/* Sosial Media & Marketplace */}
-            <div className="flex flex-wrap justify-center gap-6">
-              <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition">
-                <Instagram className="w-5 h-5" /> Instagram
-              </a>
-
-              <a href="https://wa.me/628973809698" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition">
-                <Phone className="w-5 h-5" /> WhatsApp
-              </a>
-
-              <a href="https://shopee.co.id/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition">
-                <img src={ShopeeIcon} alt="Shopee" className="w-5 h-5" />
-                Shopee
-              </a>
-
-             
-            </div>
-
-            <div>
-              <p>© {new Date().getFullYear()} Nichi ID. All rights reserved.</p>
-            </div>
-          </div>
-        </Motion.footer>
       </section>
     </div>
   );

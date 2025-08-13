@@ -260,14 +260,13 @@ const Home = () => {
         <Product />
       </div>
 
-      <div>
+      <div className="bg-[#F9F6EE]">
         <HeroSection /> 
       </div>
 
-      <div>
+      <div className="bg-[#F9F6EE]">
         <Category />
       </div>
-
     </div>
   );
 };
