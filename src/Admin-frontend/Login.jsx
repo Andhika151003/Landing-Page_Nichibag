@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { User, Lock } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ username: "", password: "" });

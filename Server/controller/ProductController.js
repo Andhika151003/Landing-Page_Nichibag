@@ -62,7 +62,7 @@ export const updateProduct = async (req, res) => {
 
     if (!updatedProduct) {
       return res.status(404).json({ error: 'produk tidak tersedia' });
-    }
+    } 
 
     res.json(updatedProduct);
   } catch (err) {
