@@ -12,14 +12,16 @@ const LoginPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulasi login berhasil
-    if (form.username === "admin" && form.password === "admin123") {
-      navigate("/Dashboard");
-    } else {
-      alert("Username atau password salah");
+    try {
+      const res = await axios.post("http://localhost:5000/login", form);
+
+      alert(res.data.message);
+      navigate("/Dashboard"); 
+    } catch (err) {
+      alert(err.response?.data?.message || "Login gagal");
     }
   };
 

@@ -1,15 +1,30 @@
-import express from 'express';
-import { 
-    getUsers,
-    getUserById,
-    saveUser,
-    loginUser
-} from '../controller/LoginController.js';
+import express from "express";
+import bcrypt from "bcrypt";
+import User from "../models/UserModel.js";
+
 const router = express.Router();
 
-router.get('/Users', getUsers);
-router.get('/Users/:id', getUserById);
-router.post('/Users', saveUser);
-router.post('/login', loginUser); // ini mau tak push
+router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // sesuaikan dengan monngoDB
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ message: "Username atau password salah" });
+    }
+
+    // Cocokkan password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Username atau password salah" });
+    }
+
+    // Pesan berhasil
+    res.json({ message: "Login berhasil" });
+  } catch (err) {
+    res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+});
 
 export default router;
