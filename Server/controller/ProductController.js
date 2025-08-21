@@ -1,4 +1,4 @@
-import Product from '../models/Product.js';
+import Product from "../models/Product.js";
 
 // Get all products
 export const getAllProducts = async (req, res) => {
@@ -15,7 +15,7 @@ export const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({ error: 'Product tidak tersedia' });
+      return res.status(404).json({ error: "Product tidak tersedia" });
     }
     res.json(product);
   } catch (err) {
@@ -27,13 +27,17 @@ export const getProductById = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, images } = req.body;
-    
+
+    // hitung jumlah produk untuk genrate ID produk
+    const count = await Product.countDocuments();
+    const productId = `PRD${String(count + 1).padStart(3, "0")}`;
+
     const product = new Product({
       name,
       description,
       price,
       category,
-      images: images || [], 
+      images: images || [],
     });
 
     await product.save();
@@ -47,22 +51,22 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { name, description, price, category, images } = req.body;
-    
+
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { 
-        name, 
-        description, 
-        price, 
+      {
+        name,
+        description,
+        price,
         category,
-        images: images || undefined 
+        images: images || undefined,
       },
       { new: true, runValidators: true }
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ error: 'produk tidak tersedia' });
-    } 
+      return res.status(404).json({ error: "produk tidak tersedia" });
+    }
 
     res.json(updatedProduct);
   } catch (err) {
@@ -74,12 +78,12 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    
+
     if (!product) {
-      return res.status(404).json({ error: 'produk tidak tersedia' });
+      return res.status(404).json({ error: "produk tidak tersedia" });
     }
 
-    res.json({ message: 'Produk berhasil dihapus' });
+    res.json({ message: "Produk berhasil dihapus" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
