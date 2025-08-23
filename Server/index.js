@@ -20,8 +20,8 @@ db.once("open", () => console.log(" Connected to database"));
 app.use(cors());
 app.use(express.json());
 
-app.use(UserRoute);
-app.use(ProductRoute);
-app.use(KelolaRoute);
+app.use("/auth",UserRoute);
+app.use("/products", ProductRoute);
+app.use("/kelola", KelolaRoute);
 
 app.listen(PORT, () => console.log(` Server running on port ${PORT}`));

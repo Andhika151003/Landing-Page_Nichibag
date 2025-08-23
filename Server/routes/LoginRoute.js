@@ -4,7 +4,6 @@ import User from "../models/UserModel.js";
 
 const router = express.Router();
 
-// Endpoint register user baru
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
   try {
