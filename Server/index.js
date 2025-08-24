@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import users from "./routes/LoginRoute.js";
+import login from "./routes/LoginRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,6 +19,6 @@ app.use(cors());
 app.use(express.json());
 
 // Gunakan route login
-app.use(users);
+app.use(login);
 
 app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
