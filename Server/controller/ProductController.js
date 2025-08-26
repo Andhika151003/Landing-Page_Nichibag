@@ -1,4 +1,5 @@
-import Product from '../models/Product.js';
+import mongoose from "mongoose";
+import Product from "../models/Product.js";
 
 // Get all products
 export const getAllProducts = async (req, res) => {
@@ -10,12 +11,15 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
-// Get single product
+// Get single product by MongoDB _id
 export const getProductById = async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ error: "ID produk tidak valid" });
+  }
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({ error: 'Product tidak tersedia' });
+      return res.status(404).json({ error: "Product tidak tersedia" });
     }
     res.json(product);
   } catch (err) {
@@ -23,17 +27,36 @@ export const getProductById = async (req, res) => {
   }
 };
 
+
+// menambahkan hal baru buat ga bingung di product ngurutin by id nya
+export const getProductByProductID = async (req, res) => {
+  try {
+    const product = await Product.findOne({ productID: req.params.productID });
+    if (!product) {
+      return res.status(404).json({ error: "Product tidak tersedia" });
+    }
+    res.json(product);
+  } catch (error) {
+    
+  }
+}
+
 // Create new product
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, images } = req.body;
-    
+
+    // hitung jumlah produk untuk generate ID produk
+    const count = await Product.countDocuments();
+    const productID = `PRD${String(count + 1).padStart(3, "0")}`;
+
     const product = new Product({
+      productID, // simpan productID custom
       name,
       description,
       price,
       category,
-      images: images || [], 
+      images: images || [],
     });
 
     await product.save();
@@ -45,24 +68,27 @@ export const createProduct = async (req, res) => {
 
 // Update product
 export const updateProduct = async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ error: "ID produk tidak valid" });
+  }
   try {
     const { name, description, price, category, images } = req.body;
-    
+
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { 
-        name, 
-        description, 
-        price, 
+      {
+        name,
+        description,
+        price,
         category,
-        images: images || undefined 
+        images: images || undefined,
       },
       { new: true, runValidators: true }
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ error: 'produk tidak tersedia' });
-    } 
+      return res.status(404).json({ error: "produk tidak tersedia" });
+    }
 
     res.json(updatedProduct);
   } catch (err) {
@@ -72,14 +98,17 @@ export const updateProduct = async (req, res) => {
 
 // Delete product
 export const deleteProduct = async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ error: "ID produk tidak valid" });
+  }
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    
+
     if (!product) {
-      return res.status(404).json({ error: 'produk tidak tersedia' });
+      return res.status(404).json({ error: "produk tidak tersedia" });
     }
 
-    res.json({ message: 'Produk berhasil dihapus' });
+    res.json({ message: "Produk berhasil dihapus" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
