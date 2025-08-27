@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import UserRoute from "./routes/LoginRoute.js";
 import ProductRoute from "./routes/ProductRoute.js";
-import KelolaRoute from "./routes/kelolaRoute.js"; // Tambahkan import untuk route kelola
+import KelolaRoute from "./routes/kelolaRoute.js"; 
+import ImageRoute from "./routes/Image.js"; 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,5 +24,6 @@ app.use(express.json());
 app.use("/auth",UserRoute);
 app.use("/products", ProductRoute);
 app.use("/kelola", KelolaRoute);
+app.use("/images", ImageRoute);
 
 app.listen(PORT, () => console.log(` Server running on port ${PORT}`));

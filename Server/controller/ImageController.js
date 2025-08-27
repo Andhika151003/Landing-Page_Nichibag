@@ -1,50 +1,55 @@
 import Image from "../models/Image.js";
 
-//buat create IMage 
+// Create Image
 export const createImage = async (req, res) => {
     try {
-        const { url, description, product } = req.body;
-        const image = new Image({ url, description, product});
-        await image.save();
-        res.status(201).json(image);
+        const { name, type, status, image, isFeatured } = req.body;
+        const newImage = new Image({
+            name,
+            type,
+            status,      // opsional, default "Draft"
+            image,       // URL gambar
+            isFeatured   // opsional, default false
+        });
+        await newImage.save();
+        res.status(201).json(newImage);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
 
-//get all image
+// Get all images
 export const getAllImages = async (req, res) => {
     try {
-        const images = await Image.find().populate("product");
+        const images = await Image.find();
         res.json(images);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-
-// ini buat gett image by ID 
-export const getImageByIDd = async (req, res) => {
+// Get image by ID
+export const getImageById = async (req, res) => {
     try {
-        const image = await image.findById(req.params.id).populate("product");
+        const image = await Image.findById(req.params.id);
         if (!image) {
-            return res.status(404).json({ error: "Image tidak di temukan" });
+            return res.status(404).json({ error: "Image tidak ditemukan" });
         }
         res.json(image);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
 
-//ini buat delete image
+// Delete image
 export const deleteImage = async (req, res) => {
     try {
         const image = await Image.findByIdAndDelete(req.params.id);
         if (!image) {
-            return res.status(404).json({ error: "Image tidak di temukan" });
+            return res.status(404).json({ error: "Image tidak ditemukan" });
         }
-        res.json({ message: "Image Berhasil di hapus" });
+        res.json({ message: "Image berhasil dihapus" });
     } catch (error) {
-        res.status(500).json({ error: error.message });       
+        res.status(500).json({ error: error.message });
     }
-}
+};
