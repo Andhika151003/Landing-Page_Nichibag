@@ -30,7 +30,7 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // sesuaikan dengan monngoDB
+    // sesuaikan dengan mon
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(401).json({ message: "Username atau password salah" });

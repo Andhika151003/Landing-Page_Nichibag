@@ -35,17 +35,6 @@ const Dashboard = () => {
     },
   ];
 
-  const featured = [
-    {
-      name: "Paper Bag",
-      image: "https://source.unsplash.com/300x300/?paperbag",
-    },
-    {
-      name: "Packaging Box",
-      image: "https://source.unsplash.com/300x300/?packaging",
-    },
-    { name: "Gift Box", image: "https://source.unsplash.com/300x300/?giftbox" },
-  ];
 
   return (
     <div className="flex min-h-screen bg-[#fefcfc] text-[#3a2d2d]">
@@ -93,24 +82,8 @@ const Dashboard = () => {
       <main className="flex p-10">
         <div className="flex-col">
           <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-          {/* Featured Collection */}
-          <section className="mb-10 flex">
-            <h2 className="text-lg font-semibold mb-4">Featured Collection</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {featured.map((item, idx) => (
-                <div key={idx} className="rounded-xl overflow-hidden shadow-sm">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-48 object-cover"
-                  />
-                  <div className="p-3 text-center text-sm font-medium">
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+       
+       
 
           {/* All Collection Table */}
           <section className="">
