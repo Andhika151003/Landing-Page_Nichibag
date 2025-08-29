@@ -1,52 +1,47 @@
+// routes/LoginRoute.js
 import express from "express";
 import bcrypt from "bcrypt";
-import User from "../models/UserModel.js";
 
 const router = express.Router();
 
-router.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    // Cek username sudah ada atau belum
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username sudah terdaftar" });
-    }
+// 🔐 Hardcoded admin credentials
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "admin123";
 
-    // Hash password sebelum simpan
-    const hashedPassword = await bcrypt.hash(password, 10);
+// Kita hash password "admin123" sekali saat server start
+let ADMIN_PASSWORD_HASH;
 
-    // Simpan user baru
-    const newUser = new User({ username, password: hashedPassword });
-    await newUser.save();
+// Hash password saat server start
+(async () => {
+  ADMIN_PASSWORD_HASH = await bcrypt.hash(ADMIN_PASSWORD, 10);
+  console.log("✅ Admin password hashed");
+})();
 
-    res.status(201).json({ message: "User berhasil didaftarkan" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
+// 🔐 Login Route
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  try {
-    // sesuaikan dengan mon
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ message: "Username atau password salah" });
-    }
-
-    // Cocokkan password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Username atau password salah" });
-    }
-
-    // Pesan berhasil
-    res.json({ message: "Login berhasil" });
-  } catch (err) {
-    res.status(500).json({ message: "Terjadi kesalahan server" });
+  // Validasi input
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username dan password wajib diisi" });
   }
+
+  // Cek username
+  if (username !== ADMIN_USERNAME) {
+    return res.status(401).json({ message: "Username atau password salah" });
+  }
+
+  // Cek password (dibandingkan dengan hash)
+  const isMatch = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+  if (!isMatch) {
+    return res.status(401).json({ message: "Username atau password salah" });
+  }
+
+  // 🔐 Login berhasil
+  res.status(200).json({
+    message: "Login berhasil",
+    user: { username: ADMIN_USERNAME }
+  });
 });
 
 export default router;

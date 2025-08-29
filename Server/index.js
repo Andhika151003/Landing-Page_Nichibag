@@ -26,7 +26,7 @@ app.use("/auth", UserRoute);
 app.use("/products", ProductRoute);
 app.use("/kelola", KelolaRoute);
 app.use("/images", ImageRoute); 
-app.use("/api", ServiceRoute);
+app.use("/service", ServiceRoute);
 
-app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+app.listen( PORT, () => console.log(` Server running on port ${PORT}`));
 
