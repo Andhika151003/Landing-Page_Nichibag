@@ -1,47 +1,48 @@
 // routes/LoginRoute.js
-import express from "express";
-import bcrypt from "bcrypt";
+import express from 'express';
+import User from '../models/User.js'; // ✅ Import model untuk cek ke DB
 
 const router = express.Router();
 
-// 🔐 Hardcoded admin credentials
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "admin123";
-
-// Kita hash password "admin123" sekali saat server start
-let ADMIN_PASSWORD_HASH;
-
-// Hash password saat server start
-(async () => {
-  ADMIN_PASSWORD_HASH = await bcrypt.hash(ADMIN_PASSWORD, 10);
-  console.log("✅ Admin password hashed");
-})();
-
 // 🔐 Login Route
-router.post("/login", async (req, res) => {
+router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // Validasi input
+  // 1. Validasi input
   if (!username || !password) {
     return res.status(400).json({ message: "Username dan password wajib diisi" });
   }
 
-  // Cek username
-  if (username !== ADMIN_USERNAME) {
-    return res.status(401).json({ message: "Username atau password salah" });
-  }
+  try {
+    // 2. Cek ke database: apakah user 'admin' ada?
+    const user = await User.findOne({ username: 'admin' }); // 🔍 Cari user admin
 
-  // Cek password (dibandingkan dengan hash)
-  const isMatch = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
-  if (!isMatch) {
-    return res.status(401).json({ message: "Username atau password salah" });
-  }
+    // 3. Jika tidak ada user 'admin' di database → ditolak
+    if (!user) {
+      return res.status(401).json({ message: "Login gagal: admin belum terdaftar di sistem" });
+    }
 
-  // 🔐 Login berhasil
-  res.status(200).json({
-    message: "Login berhasil",
-    user: { username: ADMIN_USERNAME }
-  });
+    // 4. Cek apakah yang login benar-benar 'admin'
+    if (username !== 'admin') {
+      return res.status(401).json({ message: "Username atau password salah" });
+    }
+
+    // 5. Cek password (dibandingkan dengan hash di database)
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Username atau password salah" });
+    }
+
+    // 6. ✅ Login berhasil
+    res.status(200).json({
+      message: "Login berhasil",
+      user: { id: user._id, username: user.username }
+    });
+
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
 });
 
 export default router;
