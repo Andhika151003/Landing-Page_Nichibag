@@ -1,138 +1,236 @@
-import React from "react";
-import { Link } from "react-router-dom"; // ganti ke react-router-dom
+// src/pages/Dashboard.jsx
+import React, { useState, useRef, useEffect } from "react";
+import {
+  LayoutDashboard,
+  Package,
+  FileText,
+  CircleUser,
+  Phone,
+  PlusCircle,
+  FilePenLine,
+  Trash2,
+  PanelLeft,
+  Box,
+} from "lucide-react";
+
+// Ganti dengan Link dari react-router-dom kalau sudah pakai routing
+const Link = ({ to, children, className }) => (
+  <a href={to} className={className}>
+    {children}
+  </a>
+);
 
 const Dashboard = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const sidebarRef = useRef(null);
+  const toggleButtonRef = useRef(null);
+
+  // Klik luar untuk tutup sidebar
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isSidebarOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target)
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isSidebarOpen]);
+
   const collections = [
-    {
-      name: "Paper Bag",
-      type: "Paper Bag",
-      status: "Published",
-      date: "2023-08-15",
-    },
-    {
-      name: "Packaging Box",
-      type: "Packaging Box",
-      status: "Published",
-      date: "2023-08-15",
-    },
-    {
-      name: "Gift Box",
-      type: "Gift Box",
-      status: "Published",
-      date: "2023-08-15",
-    },
-    {
-      name: "Custom Box",
-      type: "Packaging Box",
-      status: "Draft",
-      date: "2023-08-15",
-    },
-    {
-      name: "Custom Bag",
-      type: "Paper Bag",
-      status: "Draft",
-      date: "2023-08-15",
-    },
+    { id: 1, name: "Paper Bag", type: "Paper Bag", status: "Published", date: "2023-08-15" },
+    { id: 2, name: "Packaging Box", type: "Packaging Box", status: "Published", date: "2023-08-15" },
+    { id: 3, name: "Gift Box", type: "Gift Box", status: "Published", date: "2023-08-15" },
+    { id: 4, name: "Custom Box", type: "Packaging Box", status: "Draft", date: "2023-08-15" },
+    { id: 5, name: "Custom Bag", type: "Paper Bag", status: "Draft", date: "2023-08-15" },
   ];
 
+  const totalCollections = collections.length;
+  const publishedCount = collections.filter((c) => c.status === "Published").length;
+  const draftCount = collections.filter((c) => c.status === "Draft").length;
+
+  const navItems = [
+    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/kelola-koleksi", icon: Package, label: "Kelola Koleksi" },
+    { href: "/kelola-produk", icon: FileText, label: "Kelola Product Detail" },
+    { href: "/kelola-about", icon: CircleUser, label: "Kelola About" },
+    { href: "/kelola-contact", icon: Phone, label: "Kelola Contact Us" },
+  ];
+
+  const currentPage = "/dashboard";
 
   return (
-    <div className="flex min-h-screen bg-[#fefcfc] text-[#3a2d2d]">
+    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
       {/* Sidebar */}
-      <aside className="w-64 bg-[#fff9f9] shadow-md p-6 border-r">
-        <h2 className="text-xl font-semibold mb-1">Admin</h2>
-        <p className="text-sm text-gray-500 mb-6">
-          Selamat Datang Di Panel Admin
-        </p>
-        <nav className="flex flex-col gap-3">
-          <Link
-            to="/Dashboard"
-            className="bg-[#f3e7e7] px-3 py-2 rounded-md font-medium hover:bg-[#ecdcdc] transition"
+      <aside
+        ref={sidebarRef}
+        className={`bg-white border-r flex flex-col transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "w-64" : "w-20"
+        }`}
+      >
+        {/* Header Sidebar */}
+        <div
+          className={`h-[68px] flex items-center border-b px-4 ${
+            isSidebarOpen ? "justify-between" : "justify-center"
+          }`}
+        >
+          <div
+            className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ${
+              isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+            }`}
           >
-            Dashboard
-          </Link>
-          <Link
-            to="/kelola-koleksi" // perbaiki path
-            className="px-3 py-2 rounded-md hover:bg-[#ecdcdc] hover:text-[#800000] transition"
+            <div className="w-8 h-8 flex items-center justify-center bg-rose-100 text-rose-700 rounded-lg">
+              <Box className="w-5 h-5" />
+            </div>
+            <h2 className="text-xl font-bold text-rose-700 whitespace-nowrap">AdminPanel</h2>
+          </div>
+
+          <button
+            ref={toggleButtonRef}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            title="Toggle Sidebar"
           >
-            Kelola Koleksi
-          </Link>
-          <Link
-            to="/kelola-produk"
-            className="px-3 py-2 rounded-md hover:bg-[#ecdcdc] hover:text-[#800000] transition"
-          >
-            Kelola Product Detail
-          </Link>
-          <Link
-            to="/kelola-about"
-            className="px-3 py-2 rounded-md hover:bg-[#ecdcdc] hover:text-[#800000] transition"
-          >
-            Kelola About
-          </Link>
-          <Link
-            to="/kelola-contact"
-            className="px-3 py-2 rounded-md hover:bg-[#ecdcdc] hover:text-[#800000] transition"
-          >
-            Kelola Contact Us
-          </Link>
+            <PanelLeft
+              className={`w-6 h-6 text-gray-700 transition-transform duration-300 ${
+                !isSidebarOpen && "rotate-180"
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Navigasi */}
+        <nav className="flex-1 flex flex-col gap-2 p-4 w-full">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              to={item.href}
+              className={`flex items-center py-2.5 rounded-lg transition-colors text-sm font-medium ${
+                currentPage === item.href
+                  ? "bg-rose-100 text-rose-800"
+                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              } ${isSidebarOpen ? "px-4" : "justify-center"}`}
+            >
+              <item.icon className="w-5 h-5 flex-shrink-0" />
+              <span
+                className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
+                  isSidebarOpen ? "w-full ml-3" : "w-0"
+                }`}
+              >
+                {item.label}
+              </span>
+            </Link>
+          ))}
         </nav>
+
+        <div className="p-4 text-center">
+          <p
+            className={`text-xs text-gray-400 transition-opacity duration-200 ${
+              isSidebarOpen ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            © 2025 Your Company
+          </p>
+        </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex p-10">
-        <div className="flex-col">
-          <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
-       
-       
+      <main className="flex-1 p-8 overflow-auto transition-all duration-300 ease-in-out">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+              <p className="text-gray-500 mt-1">Selamat datang kembali, Rizky!</p>
+            </div>
+            <button className="flex items-center gap-2 bg-rose-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-rose-800 transition-all">
+              <PlusCircle className="w-5 h-5" />
+              Tambah Koleksi
+            </button>
+          </div>
 
-          {/* All Collection Table */}
-          <section className="">
-            <h2 className="text-lg font-semibold mb-4">All Collection</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full border rounded-lg text-sm">
-                <thead className="bg-[#f9f0f0] text-left">
-                  <tr>
-                    <th className="px-4 py-3">Name</th>
-                    <th className="px-4 py-3">Type</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Last Updated</th>
-                    <th className="px-4 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {collections.map((item, idx) => (
-                    <tr key={idx} className="border-t">
-                      <td className="px-4 py-3">{item.name}</td>
-                      <td className="px-4 py-3 text-[#c66] font-medium">
-                        {item.type}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            item.status === "Published"
-                              ? "bg-[#fde2e2] text-[#800000]"
-                              : "bg-gray-200 text-gray-600"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">{item.date}</td>
-                      <td className="px-4 py-3">
-                        <button className="text-[#800000] font-semibold hover:underline">
-                          Edit
-                        </button>
-                      </td>
+          {/* Statistik */}
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <StatCard title="Total Koleksi" value={totalCollections} color="bg-rose-500" />
+            <StatCard title="Dipublikasikan" value={publishedCount} color="bg-green-500" />
+            <StatCard title="Draf" value={draftCount} color="bg-amber-500" />
+          </section>
+
+          {/* Tabel Koleksi */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Semua Koleksi</h2>
+            <div className="bg-white rounded-xl shadow-md overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-100 text-left text-gray-600 font-medium">
+                    <tr>
+                      <th className="px-6 py-4">Name</th>
+                      <th className="px-6 py-4">Type</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Last Updated</th>
+                      <th className="px-6 py-4 text-center">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {collections.map((item) => (
+                      <tr key={item.id} className="hover:bg-gray-50 transition">
+                        <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                          {item.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">{item.type}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <StatusBadge status={item.status} />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">{item.date}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex justify-center items-center gap-4">
+                            <button className="text-blue-600 hover:text-blue-800 transition-colors">
+                              <FilePenLine className="w-5 h-5" />
+                            </button>
+                            <button className="text-red-600 hover:text-red-800 transition-colors">
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </section>
         </div>
       </main>
     </div>
   );
+};
+
+// Komponen kartu statistik
+const StatCard = ({ title, value, color }) => (
+  <div className="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
+    <div>
+      <p className="text-sm font-medium text-gray-500">{title}</p>
+      <p className="text-3xl font-bold text-gray-900">{value}</p>
+    </div>
+    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${color}`}>
+      <Package className="w-6 h-6 text-white" />
+    </div>
+  </div>
+);
+
+// Badge status publikasi
+const StatusBadge = ({ status }) => {
+  const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold inline-block";
+  if (status === "Published") {
+    return <span className={`${baseClasses} bg-green-100 text-green-800`}>Published</span>;
+  }
+  return <span className={`${baseClasses} bg-amber-100 text-amber-800`}>Draft</span>;
 };
 
 export default Dashboard;
