@@ -1,50 +1,46 @@
-import express from "express";
-import bcrypt from "bcrypt";
-import User from "../models/UserModel.js";
+// routes/LoginRoute.js
+import express from 'express';
+import User from '../models/User.js'; // ✅ Import model untuk cek ke DB
 
 const router = express.Router();
 
-router.post("/register", async (req, res) => {
+// 🔐 Login Route
+router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+
+  // 1. Validasi input
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username dan password wajib diisi" });
+  }
+
   try {
-    // Cek username sudah ada atau belum
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username sudah terdaftar" });
+    // 2. Cek ke database: apakah user 'admin' ada?
+    const user = await User.findOne({ username: 'admin' }); // 🔍 Cari user admin
+
+    // 3. Jika tidak ada user 'admin' di database → ditolak
+    if (!user) {
+      return res.status(401).json({ message: "Login gagal: admin belum terdaftar di sistem" });
     }
 
-    // Hash password sebelum simpan
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Simpan user baru
-    const newUser = new User({ username, password: hashedPassword });
-    await newUser.save();
-
-    res.status(201).json({ message: "User berhasil didaftarkan" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    // sesuaikan dengan monngoDB
-    const user = await User.findOne({ username });
-    if (!user) {
+    // 4. Cek apakah yang login benar-benar 'admin'
+    if (username !== 'admin') {
       return res.status(401).json({ message: "Username atau password salah" });
     }
 
-    // Cocokkan password
-    const isMatch = await bcrypt.compare(password, user.password);
+    // 5. Cek password (dibandingkan dengan hash di database)
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Username atau password salah" });
     }
 
-    // Pesan berhasil
-    res.json({ message: "Login berhasil" });
+    // 6. ✅ Login berhasil
+    res.status(200).json({
+      message: "Login berhasil",
+      user: { id: user._id, username: user.username }
+    });
+
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 });

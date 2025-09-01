@@ -9,7 +9,7 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  status: {
+  status: { 
     type: String,
     enum: ["Published", "Draft"],
     default: "Draft"

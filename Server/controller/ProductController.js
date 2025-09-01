@@ -46,12 +46,21 @@ export const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, images } = req.body;
 
-    // hitung jumlah produk untuk generate ID produk
-    const count = await Product.countDocuments();
-    const productID = `PRD${String(count + 1).padStart(3, "0")}`;
+    // Cari productID terbesar
+    const lastProduct = await Product.findOne({})
+      .sort({ productID: -1 })
+      .collation({ locale: "en_US", numericOrdering: true });
+
+    let nextNumber = 1;
+    if (lastProduct && lastProduct.productID) {
+      // Ambil angka dari productID terakhir
+      const lastNumber = parseInt(lastProduct.productID.replace("PRD", ""));
+      nextNumber = lastNumber + 1;
+    }
+    const productID = `PRD${String(nextNumber).padStart(3, "0")}`;
 
     const product = new Product({
-      productID, // simpan productID custom
+      productID,
       name,
       description,
       price,

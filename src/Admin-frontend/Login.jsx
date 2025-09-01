@@ -3,6 +3,10 @@ import { User, Lock } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const MySwal = withReactContent(Swal);
 
 const LoginPage = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -12,16 +16,29 @@ const LoginPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/login", form);
+      const res = await axios.post("http://localhost:5000/auth/login", form);
 
-      alert(res.data.message);
-      navigate("/Dashboard"); 
+      // Pop-up SweetAlert kalau login berhasil
+      await MySwal.fire({
+        title: "Login Berhasil 🎉",
+        text: res.data.message,
+        icon: "success",
+        confirmButtonText: "Lanjut ke Dashboard",
+      });
+
+      navigate("/Dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Login gagal");
+      // Pop-up kalau login gagal
+      MySwal.fire({
+        title: "Login Gagal ❌",
+        text: err.response?.data?.message || "Terjadi kesalahan",
+        icon: "error",
+        confirmButtonText: "Coba Lagi",
+      });
     }
   };
 
