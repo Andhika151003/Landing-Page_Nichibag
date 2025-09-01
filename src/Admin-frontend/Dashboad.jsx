@@ -1,5 +1,7 @@
-// src/pages/Dashboard.jsx
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // 👈 Import Swal
+import withReactContent from "sweetalert2-react-content"; // 👈 Import withReactContent
 import {
   LayoutDashboard,
   Package,
@@ -11,7 +13,10 @@ import {
   Trash2,
   PanelLeft,
   Box,
+  LogOut,
 } from "lucide-react";
+
+const MySwal = withReactContent(Swal); // 👈 Buat instance MySwal
 
 // Ganti dengan Link dari react-router-dom kalau sudah pakai routing
 const Link = ({ to, children, className }) => (
@@ -24,8 +29,8 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const sidebarRef = useRef(null);
   const toggleButtonRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Klik luar untuk tutup sidebar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -42,6 +47,26 @@ const Dashboard = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isSidebarOpen]);
+  
+  // 👇 FUNGSI LOGOUT DENGAN SWEETALERT2
+  const handleLogout = () => {
+    MySwal.fire({
+      title: "Anda Yakin?",
+      text: "Anda akan keluar dari sesi admin.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ya, logout!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Jika user mengklik "Ya, logout!"
+        console.log("Logout berhasil");
+        navigate("/"); // Redirect ke halaman login
+      }
+    });
+  };
 
   const collections = [
     { id: 1, name: "Paper Bag", type: "Paper Bag", status: "Published", date: "2023-08-15" },
@@ -74,7 +99,6 @@ const Dashboard = () => {
           isSidebarOpen ? "w-64" : "w-20"
         }`}
       >
-        {/* Header Sidebar */}
         <div
           className={`h-[68px] flex items-center border-b px-4 ${
             isSidebarOpen ? "justify-between" : "justify-center"
@@ -105,39 +129,48 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Navigasi */}
-        <nav className="flex-1 flex flex-col gap-2 p-4 w-full">
-          {navItems.map((item) => (
-            <Link
-              key={item.label}
-              to={item.href}
-              className={`flex items-center py-2.5 rounded-lg transition-colors text-sm font-medium ${
-                currentPage === item.href
-                  ? "bg-rose-100 text-rose-800"
-                  : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              } ${isSidebarOpen ? "px-4" : "justify-center"}`}
+        <nav className="flex-1 flex flex-col justify-between p-4 w-full">
+          <div>
+            {navItems.map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                className={`flex items-center py-2.5 rounded-lg transition-colors text-sm font-medium mb-2 ${
+                  currentPage === item.href
+                    ? "bg-rose-100 text-rose-800"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                } ${isSidebarOpen ? "px-4" : "justify-center"}`}
+              >
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                <span
+                  className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
+                    isSidebarOpen ? "w-full ml-3" : "w-0"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div>
+            <button
+              onClick={handleLogout}
+              className={`flex items-center w-full py-2.5 rounded-lg transition-colors text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-800 ${
+                isSidebarOpen ? "px-4" : "justify-center"
+              }`}
             >
-              <item.icon className="w-5 h-5 flex-shrink-0" />
+              <LogOut className="w-5 h-5 flex-shrink-0" />
               <span
                 className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
                   isSidebarOpen ? "w-full ml-3" : "w-0"
                 }`}
               >
-                {item.label}
+                Logout
               </span>
-            </Link>
-          ))}
+            </button>
+          </div>
         </nav>
-
-        <div className="p-4 text-center">
-          <p
-            className={`text-xs text-gray-400 transition-opacity duration-200 ${
-              isSidebarOpen ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            © 2025 Your Company
-          </p>
-        </div>
       </aside>
 
       {/* Main Content */}
@@ -211,7 +244,6 @@ const Dashboard = () => {
   );
 };
 
-// Komponen kartu statistik
 const StatCard = ({ title, value, color }) => (
   <div className="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
     <div>
@@ -224,7 +256,6 @@ const StatCard = ({ title, value, color }) => (
   </div>
 );
 
-// Badge status publikasi
 const StatusBadge = ({ status }) => {
   const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold inline-block";
   if (status === "Published") {

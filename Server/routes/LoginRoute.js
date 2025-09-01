@@ -1,11 +1,13 @@
-// routes/LoginRoute.js
 import express from 'express';
-import User from '../models/User.js'; // ✅ Import model untuk cek ke DB
+import User from '../models/User.js';
 
 const router = express.Router();
 
 // 🔐 Login Route
 router.post('/login', async (req, res) => {
+  // 👇 TAMBAHKAN BARIS INI UNTUK DEBUGGING
+  console.log("Request Body yang diterima server:", req.body);
+
   const { username, password } = req.body;
 
   // 1. Validasi input
@@ -15,7 +17,7 @@ router.post('/login', async (req, res) => {
 
   try {
     // 2. Cek ke database: apakah user 'admin' ada?
-    const user = await User.findOne({ username: 'admin' }); // 🔍 Cari user admin
+    const user = await User.findOne({ username: 'admin' });
 
     // 3. Jika tidak ada user 'admin' di database → ditolak
     if (!user) {

@@ -16,29 +16,33 @@ const LoginPage = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // 👇 TAMBAHKAN BARIS INI UNTUK DEBUGGING
+    console.log("Data yang akan dikirim ke server:", form); 
 
     try {
       const res = await axios.post("http://localhost:5000/auth/login", form);
 
-      // Pop-up SweetAlert kalau login berhasil
       await MySwal.fire({
         title: "Login Berhasil 🎉",
         text: res.data.message,
         icon: "success",
-        confirmButtonText: "Lanjut ke Dashboard",
+        timer: 1500,
+        showConfirmButton: false,
       });
 
       navigate("/Dashboard");
     } catch (err) {
-      // Pop-up kalau login gagal
       MySwal.fire({
         title: "Login Gagal ❌",
-        text: err.response?.data?.message || "Terjadi kesalahan",
+        text: err.response?.data?.message || "Terjadi kesalahan pada server",
         icon: "error",
         confirmButtonText: "Coba Lagi",
       });
+      // 👇 TAMBAHKAN BARIS INI UNTUK MELIHAT ERROR DARI AXIOS
+      console.error("Error dari Axios:", err);
     }
   };
 
@@ -88,7 +92,7 @@ const LoginPage = () => {
           {/* Tombol */}
           <button
             type="submit"
-            className="w-full bg-rose-500 hover:bg-rose-600 text-black font-semibold py-2 rounded-lg transition duration-300"
+            className="w-full bg-yellow-500 hover:bg-rose-800 text-white font-semibold py-2 rounded-lg transition duration-300"
           >
             Masuk
           </button>
