@@ -1,12 +1,13 @@
-// utils/seedAdmin.js
 import User from '../models/User.js';
 
+//Login Username dan Password 
 const seedAdmin = async () => {
   const adminData = {
     username: 'admin',
-    password: 'admin123' // Akan di-hash oleh pre-save
+    password: 'admin123'
   };
 
+//Kondisi ketika masuk kedalam database  
   try {
     const existing = await User.findOne({ username: 'admin' });
     if (!existing) {

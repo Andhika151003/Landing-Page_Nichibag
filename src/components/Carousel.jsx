@@ -1,23 +1,37 @@
-import React from "react";
+// src/components/Carousel.jsx
+
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
-const heroContent = [
-  {
-    img: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1920&h=1080&fit=crop&auto=format&q=80",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1920&h=1080&fit=crop&auto=format&q=80",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&h=1080&fit=crop&auto=format&q=80",
-  }
-];
-
 function Carousel() {
+  const [slides, setSlides] = useState([]);
+
+  useEffect(() => {
+    const fetchCarouselImages = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/home/carousel");
+        setSlides(response.data);
+      } catch (error) {
+        console.error("Gagal mengambil gambar carousel:", error);
+        // Fallback ke gambar default jika API gagal
+        setSlides([
+          { _id: '1', url: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1920&h=1080&fit=crop&auto=format&q=80" },
+          { _id: '2', url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1920&h=1080&fit=crop&auto=format&q=80" },
+        ]);
+      }
+    };
+    fetchCarouselImages();
+  }, []);
+
+  if (slides.length === 0) {
+    return <div className="w-full h-[60vh] bg-gray-200 animate-pulse"></div>; // Tampilkan loading state
+  }
+
   return (
     <div className="relative w-full">
       <Swiper
@@ -39,19 +53,13 @@ function Carousel() {
         }}
         className="w-full h-[60vh] sm:h-[450px] md:h-[550px] lg:h-[650px]"
       >
-        {heroContent.map((slide, index) => (
-          <SwiperSlide key={index}>
+        {slides.map((slide, index) => (
+          <SwiperSlide key={slide._id || index}>
             <div className="relative w-full h-full">
               <img
-                src={slide.img}
+                src={slide.url} // Menggunakan URL dari backend
                 alt={`Slide ${index + 1}`}
                 className="w-full h-full object-cover"
-                onLoad={() =>
-                  console.log(`Image ${index + 1} loaded successfully`)
-                }
-                onError={(e) =>
-                  console.error(`Failed to load image ${index + 1}:`, e)
-                }
               />
             </div>
           </SwiperSlide>

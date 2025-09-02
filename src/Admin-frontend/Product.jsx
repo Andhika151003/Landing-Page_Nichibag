@@ -1,175 +1,191 @@
+// src/Admin-frontend/Product.jsx
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { PlusCircle, Edit, Trash2, Upload, X } from "lucide-react";
+import Swal from 'sweetalert2';
 
-const EditProduct = ({ productId }) => {
-  const [product, setProduct] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    images: [],
+const KelolaProduk = () => {
+  const [products, setProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({
+    name: "", description: "", price: "", category: "", images: [],
   });
+  
+  const [fileToUpload, setFileToUpload] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const categories = ["Paper bag", "Gift box", "Gift card", "Ribbon", "Kotak sepatu"];
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/products/${productId}`)
-      .then((res) => setProduct(res.data))
-      .catch((err) => console.error(err));
-  }, [productId]);
+    fetchProducts();
+  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
-  };
-
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setProduct({ ...product, images: files });
-  };
-
-  const handleUpdate = () => {
-    const formData = new FormData();
-    formData.append("name", product.name);
-    formData.append("description", product.description);
-    formData.append("price", product.price);
-    formData.append("category", product.category);
-
-    product.images.forEach((img) => {
-      formData.append("images", img);
-    });
-
-    axios
-      .put(`http://localhost:5000/products/${productId}`, formData)
-      .then(() => alert("Produk berhasil diperbarui"))
-      .catch((err) => console.error(err));
-  };
-
-  const handleDelete = () => {
-    if (window.confirm("Yakin ingin menghapus produk ini?")) {
-      axios
-        .delete(`http://localhost:5000/products/${productId}`)
-        .then(() => alert("Produk berhasil dihapus"))
-        .catch((err) => console.error(err));
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/products");
+      setProducts(res.data);
+    } catch (error) {
+      Swal.fire("Error", "Gagal memuat data produk.", "error");
     }
   };
 
+  const handleOpenModal = (product = null) => {
+    if (product) {
+      setIsEditing(true);
+      setCurrentProduct({ ...product, images: product.images || [] });
+    } else {
+      setIsEditing(false);
+      setCurrentProduct({ name: "", description: "", price: "", category: categories[0], images: [] });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFileToUpload(null);
+    setPreviewUrl(null);
+  };
+
+  const handleChange = (e) => {
+    setCurrentProduct({ ...currentProduct, [e.target.name]: e.target.value });
+  };
+  
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileToUpload(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleAddImage = async () => {
+    if (!fileToUpload) return;
+    
+    const formData = new FormData();
+    formData.append('image', fileToUpload);
+
+    try {
+        const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);
+        const newImageUrl = uploadRes.data.imageUrl;
+        setCurrentProduct(prev => ({ ...prev, images: [...prev.images, newImageUrl] }));
+        setFileToUpload(null);
+        setPreviewUrl(null);
+    } catch (error) {
+        Swal.fire("Error", "Gagal mengupload gambar.", "error");
+    }
+  };
+  
+  const handleRemoveImage = (indexToRemove) => {
+      setCurrentProduct(prev => ({ ...prev, images: prev.images.filter((_, index) => index !== indexToRemove) }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isEditing) {
+        await axios.put(`http://localhost:5000/products/${currentProduct._id}`, currentProduct);
+        Swal.fire("Sukses!", "Produk berhasil diperbarui.", "success");
+      } else {
+        await axios.post("http://localhost:5000/products", currentProduct);
+        Swal.fire("Sukses!", "Produk berhasil ditambahkan.", "success");
+      }
+      fetchProducts();
+      handleCloseModal();
+    } catch (error) {
+      Swal.fire("Error", "Gagal menyimpan produk.", "error");
+    }
+  };
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: 'Anda Yakin?', text: "Produk yang dihapus tidak dapat dikembalikan!", icon: 'warning',
+      showCancelButton: true, confirmButtonColor: '#d33', cancelButtonText: 'Batal', confirmButtonText: 'Ya, hapus!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:5000/products/${id}`);
+          Swal.fire('Terhapus!', 'Produk berhasil dihapus.', 'success');
+          fetchProducts();
+        } catch (error) {
+          Swal.fire("Error", "Gagal menghapus produk.", "error");
+        }
+      }
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-8">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold mb-1">Edit Product Details</h2>
-        <p className="text-sm text-pink-500 mb-6">
-          Modify the product information below.
-        </p>
-
-        <div className="space-y-4">
-          {/* Product Name */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Product Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={product.name}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-              placeholder="Enter product name"
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Product Description
-            </label>
-            <textarea
-              name="description"
-              value={product.description}
-              onChange={handleChange}
-              rows="4"
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-              placeholder="Enter product description"
-            />
-          </div>
-
-          {/* Price */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Price</label>
-            <input
-              type="number"
-              name="price"
-              value={product.price}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-              placeholder="Enter price"
-            />
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Category</label>
-            <input
-              type="text"
-              name="category"
-              value={product.category}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-400"
-              placeholder="Enter category"
-            />
-          </div>
-
-          {/* Images */}
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Product Images
-            </label>
-            <input
-              type="file"
-              multiple
-              onChange={handleImageUpload}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                         file:rounded-full file:border-0
-                         file:text-sm file:font-semibold
-                         file:bg-pink-50 file:text-pink-600
-                         hover:file:bg-pink-100"
-            />
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
-              {product.images &&
-                product.images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={
-                      typeof img === "string"
-                        ? img
-                        : URL.createObjectURL(img)
-                    }
-                    alt="product"
-                    className="w-full h-auto rounded-lg border"
-                  />
-                ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-8">
-          <button
-            onClick={handleUpdate}
-            className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-lg transition"
-          >
-            Update Product
-          </button>
-          <button
-            onClick={handleDelete}
-            className="px-6 py-3 bg-gray-300 hover:bg-gray-400 text-black font-medium rounded-lg transition"
-          >
-            Delete Product
-          </button>
-        </div>
+    <div className="p-8 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Kelola Semua Produk</h1>
+        <button onClick={() => handleOpenModal()} className="bg-pink-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-pink-600 transition">
+          <PlusCircle size={20} /> Tambah Produk
+        </button>
       </div>
+
+      <div className="bg-white rounded-lg shadow-md overflow-x-auto">
+        <table className="min-w-full">
+          {/* ... (kode tabel tidak berubah) ... */}
+        </table>
+      </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-6">{isEditing ? "Edit Produk" : "Tambah Produk Baru"}</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input type="text" name="name" value={currentProduct.name} onChange={handleChange} placeholder="Nama Produk" className="w-full p-3 border rounded-lg" required />
+              <textarea name="description" value={currentProduct.description} onChange={handleChange} placeholder="Deskripsi Produk" className="w-full p-3 border rounded-lg" rows="4" required />
+              
+              {/* 👇 INPUT HARGA DENGAN SIMBOL RP */}
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">Rp</span>
+                <input type="number" name="price" value={currentProduct.price} onChange={handleChange} placeholder="Harga" className="w-full p-3 pl-8 border rounded-lg" required />
+              </div>
+
+              <select name="category" value={currentProduct.category} onChange={handleChange} className="w-full p-3 border rounded-lg bg-white" required>
+                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
+              
+              {/* 👇 BAGIAN UPLOAD GAMBAR BARU */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Gambar Produk</label>
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-dashed rounded-lg cursor-pointer hover:border-pink-500 hover:bg-pink-50">
+                      <Upload size={20} className="text-gray-600" />
+                      <span className="text-sm font-medium text-gray-600">Pilih File</span>
+                      <input type="file" onChange={handleFileChange} className="hidden" accept="image/*" />
+                  </label>
+                  {previewUrl && (
+                    <div className="flex items-center gap-2">
+                        <img src={previewUrl} alt="Preview" className="w-20 h-20 rounded-lg object-cover" />
+                        <button type="button" onClick={handleAddImage} className="px-4 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600">Upload</button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Tampilan daftar gambar yang sudah diupload */}
+              <div className="grid grid-cols-4 gap-4 mt-2">
+                  {currentProduct.images.map((imgUrl, index) => (
+                      <div key={index} className="relative">
+                          <img src={`http://localhost:5000${imgUrl}`} alt={`Product image ${index+1}`} className="w-full h-24 object-cover rounded-lg" />
+                          <button type="button" onClick={() => handleRemoveImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"><X size={14}/></button>
+                      </div>
+                  ))}
+              </div>
+
+              <div className="flex justify-end gap-4 pt-4">
+                <button type="button" onClick={handleCloseModal} className="px-6 py-2 bg-gray-300 rounded-lg font-semibold">Batal</button>
+                <button type="submit" className="px-6 py-2 bg-pink-500 text-white rounded-lg font-semibold">Simpan</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default EditProduct;
+export default KelolaProduk;

@@ -28,7 +28,7 @@ const produkSchema = new mongoose.Schema({
   }
 });
 
-const kategoriSchema = new mongoose.Schema({
+const categorySchema = new mongoose.Schema({
   nama: {
     type: String,
     required: true,
@@ -41,5 +41,5 @@ const kategoriSchema = new mongoose.Schema({
 });
 
 export const Carousel = mongoose.model('Carousel', carouselSchema);
-export const Produk = mongoose.model('Produk', produkSchema);
-export const Kategori = mongoose.model('Kategori', kategoriSchema);
+export const FeaturedProduct = mongoose.model('FeaturedProduct', produkSchema);
+export const Category = mongoose.model('Category', categorySchema);
