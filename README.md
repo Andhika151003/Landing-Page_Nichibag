@@ -68,10 +68,10 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    [npm install]
 
 ### Usage
-1. Jalankan Server Backend:
+1. Jalankan Server Frontend:
    ```bash
    [npm run dev]
-2. Jalankan Server Frontend :
+2. Jalankan Server Backend :
   ```bash
    [cd Server]
    [npm start]
