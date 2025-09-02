@@ -82,7 +82,7 @@ const ProductDetail = () => {
 
           {/* Kolom Kanan: Info Produk */}
           <div>
-            <p className="text-sm font-semibold text-red-600 mb-1">Nichi Store</p>
+            <p className="text-sm font-semibold text-red-600 mb-1">Nichibag.id</p>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
               {product.name}
             </h1>
