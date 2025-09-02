@@ -55,7 +55,7 @@ Build Landing-Page_Nichibag from the source and install dependencies:
 
 1. Clone the repository:
    ```bash
-   [git clone https://github.com/nichikatsu889/Landing-Page_Nichibag](https://github.com/Andhika151003/Landing-Page_Nichibag.git)
+   [https://github.com/Andhika151003/Landing-Page_Nichibag.git]
 2. Navigate to the project directory:
    ```bash
    [cd Landing-Page_Nichibag]
