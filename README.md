@@ -61,7 +61,7 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    [cd Landing-Page_Nichibag]
 4. Arahkan ke direktori server dan instal dependensi:
    ``` bash
-   [cd server]
+   [cd Server]
    [npm install]
 5. Install the dependencies using npm:
    ```bash
