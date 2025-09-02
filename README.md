@@ -41,14 +41,11 @@ This project simplifies building sleek, high-performance web interfaces with a f
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-This project requires the following dependencies:
-
-- **Programming Language**: JavaScript  
-- **Package Manager**: npm
+### Memulai Prasyarat
+Proyek ini memerlukan dependensi berikut:
+Bahasa Pemrograman: JavaScript
+Manajer Paket: npm
+Database: MongoDB
 
 ---
 
@@ -60,22 +57,20 @@ Build Landing-Page_Nichibag from the source and install dependencies:
    ```bash
    [git clone https://github.com/nichikatsu889/Landing-Page_Nichibag](https://github.com/Andhika151003/Landing-Page_Nichibag.git)
 2. Navigate to the project directory:
+   ```bash
    [cd Landing-Page_Nichibag]
-3. Install the dependencies using npm:
+4. Arahkan ke direktori server dan instal dependensi:
+   ``` bash
+   [cd server]
    [npm install]
-   [npm install react-router-dom lucide-react]
-   [npm install gsap]
-   [npm i styled-components]
-   [npm install react-parallax-tilt]
-   [npm i @material-tailwind/react]
-   [npm install swiper]
+5. Install the dependencies using npm:
+   [npm install]
 
 ### Usage
-Run the project with:
-[npm run dev]
-
-### Testing
-Landing-page_nichibag uses the test framework. Run the test suite with:
-[npm test]
-
-🔙 Return
+1. Jalankan Server Backend:
+   ```bash
+   [npm run dev]
+2. Jalankan Server Frontend :
+  ```bash
+  [cd Server]
+  [npm start]
