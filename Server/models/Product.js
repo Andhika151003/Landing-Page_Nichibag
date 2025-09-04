@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    //agar rapi ku tambain product ID
     productID: {
       type: String,
       unique: true,
@@ -28,7 +27,7 @@ const productSchema = new mongoose.Schema(
     },
     images: [
       {
-        type: String,
+        type: String, // Menyimpan URL gambar
       },
     ],
   },
@@ -36,5 +35,5 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-// Export sebagai default
+
 export default mongoose.model("Product", productSchema);

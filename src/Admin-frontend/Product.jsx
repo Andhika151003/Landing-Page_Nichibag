@@ -1,5 +1,3 @@
-// src/Admin-frontend/Product.jsx
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { PlusCircle, Edit, Trash2, Upload, X } from "lucide-react";
@@ -9,15 +7,11 @@ const KelolaProduk = () => {
   const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState({
-    name: "", description: "", price: "", category: "", images: [],
-  });
+  const [currentProduct, setCurrentProduct] = useState(null);
   
-  const [fileToUpload, setFileToUpload] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
-
   const categories = ["Paper bag", "Gift box", "Gift card", "Ribbon", "Kotak sepatu"];
 
+  // Ambil data produk saat komponen pertama kali dimuat
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -31,77 +25,93 @@ const KelolaProduk = () => {
     }
   };
 
+  // Fungsi untuk membuka modal (baik untuk tambah maupun edit)
   const handleOpenModal = (product = null) => {
     if (product) {
       setIsEditing(true);
-      setCurrentProduct({ ...product, images: product.images || [] });
+      setCurrentProduct({ ...product });
     } else {
       setIsEditing(false);
-      setCurrentProduct({ name: "", description: "", price: "", category: categories[0], images: [] });
+      setCurrentProduct({
+        name: "",
+        description: "",
+        price: "",
+        category: categories[0],
+        images: [],
+      });
     }
     setIsModalOpen(true);
   };
 
+  // Fungsi untuk menutup modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setFileToUpload(null);
-    setPreviewUrl(null);
+    setCurrentProduct(null);
   };
 
+  // Fungsi untuk menangani perubahan pada input form
   const handleChange = (e) => {
-    setCurrentProduct({ ...currentProduct, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setCurrentProduct(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFileToUpload(file);
-      setPreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleAddImage = async () => {
-    if (!fileToUpload) return;
+  // Fungsi untuk menangani upload gambar
+  const handleFileChange = async (e) => {
+    const files = e.target.files;
+    if (!files.length) return;
     
     const formData = new FormData();
-    formData.append('images', fileToUpload);
+    for (let i = 0; i < files.length; i++) {
+        formData.append('images', files[i]);
+    }
 
     try {
-        const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);
-        const newImageUrl = uploadRes.data.imageUrl;
-        setCurrentProduct(prev => ({ ...prev, images: [...prev.images, newImageUrl] }));
-        setFileToUpload(null);
-        setPreviewUrl(null);
+        const res = await axios.post("http://localhost:5000/api/upload", formData);
+        setCurrentProduct(prev => ({
+            ...prev,
+            images: [...prev.images, ...res.data.imageUrls]
+        }));
     } catch (error) {
         Swal.fire("Error", "Gagal mengupload gambar.", "error");
     }
   };
   
+  // Fungsi untuk menghapus gambar dari daftar
   const handleRemoveImage = (indexToRemove) => {
-      setCurrentProduct(prev => ({ ...prev, images: prev.images.filter((_, index) => index !== indexToRemove) }));
+      setCurrentProduct(prev => ({
+          ...prev,
+          images: prev.images.filter((_, index) => index !== indexToRemove)
+      }));
   };
 
+  // Fungsi saat form disubmit (Simpan)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const url = isEditing 
+        ? `http://localhost:5000/products/${currentProduct._id}` 
+        : "http://localhost:5000/products";
+    const method = isEditing ? 'put' : 'post';
+
     try {
-      if (isEditing) {
-        await axios.put(`http://localhost:5000/products/${currentProduct._id}`, currentProduct);
-        Swal.fire("Sukses!", "Produk berhasil diperbarui.", "success");
-      } else {
-        await axios.post("http://localhost:5000/products", currentProduct);
-        Swal.fire("Sukses!", "Produk berhasil ditambahkan.", "success");
-      }
+      await axios[method](url, currentProduct);
+      Swal.fire("Sukses!", `Produk berhasil ${isEditing ? 'diperbarui' : 'ditambahkan'}.`, "success");
       fetchProducts();
       handleCloseModal();
     } catch (error) {
-      Swal.fire("Error", "Gagal menyimpan produk.", "error");
+      Swal.fire("Error", `Gagal ${isEditing ? 'memperbarui' : 'menambahkan'} produk.`, "error");
     }
   };
 
+  // Fungsi untuk menghapus produk
   const handleDelete = (id) => {
     Swal.fire({
-      title: 'Anda Yakin?', text: "Produk yang dihapus tidak dapat dikembalikan!", icon: 'warning',
-      showCancelButton: true, confirmButtonColor: '#d33', cancelButtonText: 'Batal', confirmButtonText: 'Ya, hapus!'
+      title: 'Anda Yakin?',
+      text: "Produk yang dihapus tidak dapat dikembalikan!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonText: 'Batal',
+      confirmButtonText: 'Ya, hapus!'
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -118,18 +128,56 @@ const KelolaProduk = () => {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Kelola Semua Produk</h1>
+        <h1 className="text-3xl font-bold">Kelola Produk</h1>
         <button onClick={() => handleOpenModal()} className="bg-pink-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-pink-600 transition">
           <PlusCircle size={20} /> Tambah Produk
         </button>
       </div>
 
+      {/* --- TABEL PRODUK --- */}
       <div className="bg-white rounded-lg shadow-md overflow-x-auto">
-        <table className="min-w-full">
-          {/* ... (kode tabel tidak berubah) ... */}
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100 font-medium">
+            <tr>
+              <th className="p-4 text-left">No</th>
+              <th className="p-4 text-left">Gambar</th>
+              <th className="p-4 text-left">Nama Produk</th>
+              <th className="p-4 text-left">Kategori</th>
+              <th className="p-4 text-left">Harga</th>
+              <th className="p-4 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product, index) => (
+              <tr key={product._id} className="border-b hover:bg-gray-50">
+                <td className="p-4">{index + 1}</td>
+                <td className="p-4">
+                  <img 
+                    src={product.images.length > 0 ? `http://localhost:5000${product.images[0]}` : 'https://via.placeholder.com/150'} 
+                    alt={product.name} 
+                    className="w-16 h-16 object-cover rounded-md"
+                  />
+                </td>
+                <td className="p-4 font-medium">{product.name}</td>
+                <td className="p-4 text-gray-600">{product.category}</td>
+                <td className="p-4 text-gray-800">Rp{product.price.toLocaleString("id-ID")}</td>
+                <td className="p-4">
+                  <div className="flex justify-center items-center gap-3">
+                    <button onClick={() => handleOpenModal(product)} className="text-blue-500 hover:text-blue-700 transition" title="Edit">
+                      <Edit size={18} />
+                    </button>
+                    <button onClick={() => handleDelete(product._id)} className="text-red-500 hover:text-red-700 transition" title="Hapus">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
 
+      {/* --- MODAL TAMBAH/EDIT PRODUK --- */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
@@ -138,7 +186,6 @@ const KelolaProduk = () => {
               <input type="text" name="name" value={currentProduct.name} onChange={handleChange} placeholder="Nama Produk" className="w-full p-3 border rounded-lg" required />
               <textarea name="description" value={currentProduct.description} onChange={handleChange} placeholder="Deskripsi Produk" className="w-full p-3 border rounded-lg" rows="4" required />
               
-              {/* 👇 INPUT HARGA DENGAN SIMBOL RP */}
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">Rp</span>
                 <input type="number" name="price" value={currentProduct.price} onChange={handleChange} placeholder="Harga" className="w-full p-3 pl-8 border rounded-lg" required />
@@ -148,37 +195,31 @@ const KelolaProduk = () => {
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
               
-              {/* 👇 BAGIAN UPLOAD GAMBAR BARU */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Gambar Produk</label>
                 <div className="flex items-center gap-4">
                   <label className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-dashed rounded-lg cursor-pointer hover:border-pink-500 hover:bg-pink-50">
                       <Upload size={20} className="text-gray-600" />
-                      <span className="text-sm font-medium text-gray-600">Pilih File</span>
-                      <input type="file" onChange={handleFileChange} className="hidden" accept="image/*" />
+                      <span className="text-sm font-medium text-gray-600">Pilih & Upload File</span>
+                      <input type="file" onChange={handleFileChange} className="hidden" accept="image/*" multiple />
                   </label>
-                  {previewUrl && (
-                    <div className="flex items-center gap-2">
-                        <img src={previewUrl} alt="Preview" className="w-20 h-20 rounded-lg object-cover" />
-                        <button type="button" onClick={handleAddImage} className="px-4 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600">Upload</button>
-                    </div>
-                  )}
                 </div>
               </div>
 
-              {/* Tampilan daftar gambar yang sudah diupload */}
-              <div className="grid grid-cols-4 gap-4 mt-2">
-                  {currentProduct.images.map((imgUrl, index) => (
-                      <div key={index} className="relative">
-                          <img src={`http://localhost:5000${imgUrl}`} alt={`Product image ${index+1}`} className="w-full h-24 object-cover rounded-lg" />
-                          <button type="button" onClick={() => handleRemoveImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"><X size={14}/></button>
-                      </div>
-                  ))}
-              </div>
+              {currentProduct.images.length > 0 && (
+                <div className="grid grid-cols-4 gap-4 mt-2">
+                    {currentProduct.images.map((imgUrl, index) => (
+                        <div key={index} className="relative">
+                            <img src={`http://localhost:5000${imgUrl}`} alt={`Product image ${index+1}`} className="w-full h-24 object-cover rounded-lg" />
+                            <button type="button" onClick={() => handleRemoveImage(index)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"><X size={14}/></button>
+                        </div>
+                    ))}
+                </div>
+              )}
 
               <div className="flex justify-end gap-4 pt-4">
-                <button type="button" onClick={handleCloseModal} className="px-6 py-2 bg-gray-300 rounded-lg font-semibold">Batal</button>
-                <button type="submit" className="px-6 py-2 bg-pink-500 text-white rounded-lg font-semibold">Simpan</button>
+                <button type="button" onClick={handleCloseModal} className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300">Batal</button>
+                <button type="submit" className="px-6 py-2 bg-pink-500 text-white rounded-lg font-semibold hover:bg-pink-600">Simpan</button>
               </div>
             </form>
           </div>

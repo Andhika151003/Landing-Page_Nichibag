@@ -10,12 +10,18 @@ import {
 
 const router = express.Router();
 
-router.get('/', getAllProducts);
-// Route khusus harus di atas route :id
+// Mendapatkan semua produk & Membuat produk baru
+router.route('/')
+  .get(getAllProducts)
+  .post(createProduct);
+
+// Rute spesifik harus didefinisikan sebelum rute dinamis seperti /:id
 router.get('/by-productid/:productID', getProductByProductID);
-router.get('/:id', getProductById);
-router.post('/', createProduct);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
+
+// Mendapatkan, mengubah, dan menghapus produk berdasarkan ID unik (_id)
+router.route('/:id')
+  .get(getProductById)
+  .put(updateProduct)
+  .delete(deleteProduct);
 
 export default router;
