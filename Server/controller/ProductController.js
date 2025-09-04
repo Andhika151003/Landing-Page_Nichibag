@@ -1,59 +1,27 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
 
-// Get all products
+// Mengambil semua produk
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({ createdAt: -1 }); // Diurutkan dari yang terbaru
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// Get single product by MongoDB _id
-export const getProductById = async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ error: "ID produk tidak valid" });
-  }
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ error: "Product tidak tersedia" });
-    }
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-
-// menambahkan hal baru buat ga bingung di product ngurutin by id nya
-export const getProductByProductID = async (req, res) => {
-  try {
-    const product = await Product.findOne({ productID: req.params.productID });
-    if (!product) {
-      return res.status(404).json({ error: "Product tidak tersedia" });
-    }
-    res.json(product);
-  } catch (error) {
-    
-  }
-}
-
-// Create new product
+// Membuat produk baru
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, category, images } = req.body;
 
-    // Cari productID terbesar
+    // Membuat productID unik secara otomatis
     const lastProduct = await Product.findOne({})
-      .sort({ productID: -1 })
-      .collation({ locale: "en_US", numericOrdering: true });
+      .sort({ createdAt: -1 });
 
     let nextNumber = 1;
     if (lastProduct && lastProduct.productID) {
-      // Ambil angka dari productID terakhir
       const lastNumber = parseInt(lastProduct.productID.replace("PRD", ""));
       nextNumber = lastNumber + 1;
     }
@@ -75,7 +43,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// Update product
+// Mengupdate produk
 export const updateProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: "ID produk tidak valid" });
@@ -85,18 +53,12 @@ export const updateProduct = async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      {
-        name,
-        description,
-        price,
-        category,
-        images: images || undefined,
-      },
+      { name, description, price, category, images },
       { new: true, runValidators: true }
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({ error: "produk tidak tersedia" });
+      return res.status(404).json({ error: "Produk tidak ditemukan" });
     }
 
     res.json(updatedProduct);
@@ -105,7 +67,7 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-// Delete product
+// Menghapus produk
 export const deleteProduct = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: "ID produk tidak valid" });
@@ -114,11 +76,35 @@ export const deleteProduct = async (req, res) => {
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
-      return res.status(404).json({ error: "produk tidak tersedia" });
+      return res.status(404).json({ error: "Produk tidak ditemukan" });
     }
 
     res.json({ message: "Produk berhasil dihapus" });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Fungsi lainnya (getProductById, getProductByProductID) tetap sama...
+export const getProductById = async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ error: "ID produk tidak valid" });
+  }
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: "Produk tidak tersedia" });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getProductByProductID = async (req, res) => {
+  try {
+    const product = await Product.findOne({ productID: req.params.productID });
+    if (!product) return res.status(404).json({ error: "Produk tidak tersedia" });
+    res.json(product);
+  } catch (error) {
     res.status(500).json({ error: err.message });
   }
 };

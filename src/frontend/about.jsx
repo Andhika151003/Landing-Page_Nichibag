@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Gambar from "../assets/produk.png";
 import Button from "../components/ModernButton";
-import { motion as Motion } from "framer-motion";
+import { motion as Motion, useScroll, useTransform, useSpring } from "framer-motion";
+import Tilt from "react-parallax-tilt"; // Tambahan animasi 3D
 
 // VARIAN ANIMASI BARU
 // Kita akan membuat container untuk setiap seksi
@@ -29,34 +31,80 @@ const itemVariants = {
 };
 
 const About = () => {
-  const nilaiNilai = [
-    { title: "Berkualitas", desc: "Kemasan Berkualitas Dan Berbahan Premium", icon: "🌟" },
-    { title: "Inovasi", desc: "Selalu Menciptakan Produk Unggul", icon: "💡" },
-    { title: "Ramah Lingkungan", desc: "Pilihan Terbaik Mengurangi Limbah Plastik", icon: "🌿" },
-    { title: "Terpercaya", desc: "Memberikan Layanan Yang Terbaik", icon: "🤝" },
-  ];
+  const [aboutData, setAboutData] = useState({ imageUrl: '', buttonUrl: 'https://wa.me/628973809698' });
+  const { scrollY } = useScroll();
+  const scrollVelocity = useSpring(scrollY, { damping: 40, stiffness: 400 });
+  const scaleOnScroll = useTransform(scrollVelocity, [0, 1000], [1, 1.05]);
+  const opacityOnScroll = useTransform(scrollVelocity, [0, 500], [1, 0.9]);
 
-  const timelineItems = [
-    { year: "2022", title: "Didirikan", desc: "Nichibag resmi berdiri pada tahun 2022 yang berada di kota Surabaya" },
-    { year: "2023", title: "Berkembang", desc: "Memperluas jangkauan dan Pasar Produk dengan mengembangkan produk - produk yang inovatif" },
-    { year: "2024", title: "Inovasi Digital", desc: "Mengembangkan platform digital" },
-    { year: "2025", title: "Go Global", desc: "Menembus pasar internasional" },
-  ];
+  useEffect(() => {
+    // Mengambil data dari backend saat komponen dimuat
+    axios.get("http://localhost:5000/api/about")
+      .then(res => {
+        if (res.data) {
+          setAboutData(res.data);
+        }
+      })
+      .catch(err => console.error("Gagal mengambil data about:", err));
+  }, []);
 
   return (
-    <div className="pt-20 overflow-x-hidden">
-      
-      {/* Kita bungkus semua seksi dalam satu container animasi */}
-      <Motion.div
-        variants={containerVariants}
+    <div className="pt-6 overflow-x-hidden">
+      {/* Header */}
+      <Motion.section
+        className="text-white text-center pt-28 pb-20 bg-red-800"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <SplitText
+          text="NICHIBAG.ID"
+          className="text-4xl font-semibold text-center leading-[normal] align-bottom tracking-tight"
+          delay={100}
+          duration={0.6}
+          ease="power3.out"
+          splitType="chars"
+          from={{ opacity: 0, y: 40 }}
+          to={{ opacity: 1, y: 0 }}
+          threshold={0.1}
+          rootMargin="-100px"
+          textAlign="center"
+        />
+        <p className="text-lg">Bukan Sekadar Tas, Ini Identitas</p>
+      </Motion.section>
+
+      {/* Siapa Kami */}
+      <Motion.section
+        className="bg-[#F9F6EE] flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-20 py-16"
+        variants={fadeInUp}
         initial="hidden"
         animate="visible"
       >
-        {/* Header */}
-        <Motion.section variants={itemVariants} className="text-white text-center py-20 bg-red-800">
-          <h1 className="text-4xl font-semibold text-center leading-normal tracking-tight">NICHIBAG.ID</h1>
-          <p className="text-lg">Bukan Sekadar Tas, Ini Identitas</p>
-        </Motion.section>
+        <div className="md:w-1/2">
+          <h2 className="text-2xl text-black font-semibold mb-4">Siapa Kami</h2>
+          <p className="text-black mb-4">
+            Didirikan sejak tahun 2022, Nichibag.id hadir sebagai solusi kemasan modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap lingkungan.
+          </p>
+          <p className="text-blue-600 font-semibold text-lg">500K+ Klien yang puas</p>
+        </div>
+        <Motion.div
+          className="md:w-1/2"
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          style={{ scale: scaleOnScroll }}
+        >
+          <Tilt glareEnable={true} glareMaxOpacity={0.3} scale={1.02} transitionSpeed={1500}>
+            {/* PERUBAHAN DI SINI: Gambar akan diambil dari state */}
+            <img 
+              src={aboutData.imageUrl ? `http://localhost:5000${aboutData.imageUrl}` : Gambar} 
+              alt="Tentang Kami" 
+              className="rounded-lg shadow-lg" 
+            />
+          </Tilt>
+        </Motion.div>
+      </Motion.section>
 
         {/* Siapa Kami */}
         <Motion.section variants={itemVariants} className="bg-[#F9F6EE] flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-20 py-16">
@@ -72,41 +120,53 @@ const About = () => {
           </div>
         </Motion.section>
 
-        {/* Visi Misi */}
-        <Motion.section variants={itemVariants} className="bg-red-800 py-16 px-6 md:px-20">
-          <h2 className="text-2xl font-semibold mb-8 text-center text-white">Visi & Misi</h2>
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="bg-[#F9F6EE] p-6 rounded-lg shadow-md w-full">
-              <h3 className="text-lg font-semibold text-red-700 mb-2">Visi</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Mengubah cara bisnis melihat kemasan dari sekadar pembungkus menjadi media cerita, identitas, dan keberlanjutan.
-              </p>
-            </div>
-            <div className="bg-[#F9F6EE] p-6 rounded-lg shadow-md w-full">
-              <h3 className="text-lg font-semibold text-red-700 mb-2">Misi</h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Membuat kemasan yang tidak hanya indah, tapi juga berdampak baik untuk lingkungan dan masyarakat.</li>
-                <li>Menyediakan solusi packaging yang fleksibel dan personal bagi brand lokal maupun global.</li>
-                <li>Menjadi pelopor dalam penggunaan bahan daur ulang dan proses produksi beretika.</li>
-                <li>Berkolaborasi dengan klien sebagai partner, bukan hanya vendor.</li>
-              </ul>
-            </div>
-          </div>
-        </Motion.section>
-        
-        {/* Nilai-Nilai */}
-        <Motion.section variants={itemVariants} className="py-20 px-6 md:px-20 bg-[#F9F6EE]">
-          <h2 className="text-3xl font-bold text-center mb-12 text-[#800000]">Nilai-Nilai Kami</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {nilaiNilai.map((item) => (
-              <div key={item.title} className="p-6 bg-red-800 rounded-2xl shadow-md flex flex-col items-center">
-                <div className="text-4xl mb-4">{item.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
-                <p className="text-white">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </Motion.section>
+      {/* Nilai-Nilai */}
+      <Motion.section
+        className="py-20 px-6 md:px-20 bg-[#F9F6EE]"
+        variants={fadeInUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-3xl font-bold text-center mb-12 text-[#800000]">Nilai-Nilai Kami</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            {
+              title: "Berkualitas",
+              desc: "Kemasan Berkualitas Dan Berbahan Premium",
+              icon: "🌟",
+            },
+            {
+              title: "Inovasi",
+              desc: "Selalu Menciptakan Produk Unggul",
+              icon: "💡",
+            },
+            {
+              title: "Ramah Lingkungan",
+              desc: "Pilihan Terbaik Mengurangi Limbah Plastik",
+              icon: "🌿",
+            },
+            {
+              title: "Terpercaya",
+              desc: "Memberikan Layanan Yang Terbaik",
+              icon: "🤝",
+            },
+          ].map((item, i) => (
+            <Motion.div
+              key={i}
+              className="p-6 bg-red-800 rounded-2xl shadow-md flex flex-col items-center"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              style={{ scale: scaleOnScroll }}
+            >
+              <div className="text-4xl mb-4">{item.icon}</div>
+              <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
+              <p className="text-white">{item.desc}</p>
+            </Motion.div>
+          ))}
+        </div>
+      </Motion.section>
 
         {/* Perjalanan Kami (Timeline) */}
         <Motion.section variants={itemVariants} className="bg-red-800 py-16 px-6 md:px-20">
@@ -126,17 +186,32 @@ const About = () => {
           </div>
         </Motion.section>
 
-        {/* CTA */}
-        <Motion.section variants={itemVariants} className="text-black text-center py-12 px-6 bg-[#F9F6EE]">
-          <h2 className="text-2xl font-bold mb-4">Siap Berkolaborasi dengan Kami?</h2>
-          <p className="mb-6">Hubungi kami untuk berdiskusi lebih lanjut tentang kemasan Anda.</p>
-          <div className="flex justify-center mt-6">
-            <a href="https://wa.me/6287788261298" target="_blank" rel="noopener noreferrer">
-              <Button text="Kontak Kami" />
-            </a>
-          </div>
-        </Motion.section>
-      </Motion.div>
+      {/* CTA */}
+      <Motion.section
+        className="text-black text-center py-12 px-6 bg-[#F9F6EE]"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        style={{ opacity: opacityOnScroll }}
+      >
+        <h2 className="text-2xl font-bold mb-4">
+          Siap Berkolaborasi dengan Kami?
+        </h2>
+        <p className="mb-6">
+          Hubungi kami untuk berdiskusi lebih lanjut tentang kemasan Anda.
+        </p>
+        <div className="flex justify-center mt-6">
+          <a
+            href={aboutData.buttonUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className=" text-white font-semibold px-6 py-2 rounded"
+          >
+            <Button text="Kontak Kami" />
+          </a>
+        </div>
+      </Motion.section>
     </div>
   );
 };

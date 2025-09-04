@@ -8,6 +8,7 @@ import uploadRoute from './routes/uploadRoute.js';
 import UserRoute from './routes/LoginRoute.js';
 import ProductRoute from './routes/ProductRoute.js';
 import HomeRoute from './routes/HomeRoute.js';
+import AboutRoute from './routes/AboutRoute.js';
 import ServiceRoute from './routes/ServiceRoute.js';
 import seedAdmin from './utils/seedAdmin.js';
 
@@ -48,6 +49,7 @@ app.use('/api/upload', uploadRoute);
 app.use("/auth", UserRoute);
 app.use("/products", ProductRoute);
 app.use("/home", HomeRoute);
-app.use("/services", ServiceRoute);
+app.use("/api/about", AboutRoute);
+app.use("/api/service", ServiceRoute); 
 
 app.listen(PORT, () => console.log(`🚀 Server berjalan di port ${PORT}`));

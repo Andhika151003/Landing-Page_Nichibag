@@ -1,67 +1,30 @@
-import Service from "../models/Service.js";
+import Service from '../models/Service.js';
 
-// Get all services
-export const getAllServices = async (req, res) => {
-  try {
-    const services = await Service.find();
-    res.json(services);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
-// Get service by ID
-export const getServiceById = async (req, res) => {
+export const getServiceData = async (req, res) => {
   try {
-    const service = await Service.findById(req.params.id);
-    if (!service) {
-      return res.status(404).json({ error: "Service tidak ditemukan" });
+    let data = await Service.findOne();
+    if (!data) {
+      data = new Service(); 
+      await data.save();
     }
-    res.json(service);
+    res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// Create new service
-export const createService = async (req, res) => {
-  try {
-    const { name, description, icon } = req.body;
-    const service = new Service({ name, description, icon });
-    await service.save();
-    res.status(201).json(service);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
 
-// Update service
-export const updateService = async (req, res) => {
+export const updateServiceData = async (req, res) => {
   try {
-    const { name, description, icon } = req.body;
-    const updatedService = await Service.findByIdAndUpdate(
-      req.params.id,
-      { name, description, icon },
-      { new: true, runValidators: true }
+    const { cards, whatsappUrl, googleMapsUrl } = req.body;
+    const updatedData = await Service.findOneAndUpdate(
+      {},
+      { cards, whatsappUrl, googleMapsUrl },
+      { new: true, upsert: true, runValidators: true }
     );
-    if (!updatedService) {
-      return res.status(404).json({ error: "Service tidak ditemukan" });
-    }
-    res.json(updatedService);
+    res.json(updatedData);
   } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-// Delete service
-export const deleteService = async (req, res) => {
-  try {
-    const service = await Service.findByIdAndDelete(req.params.id);
-    if (!service) {
-      return res.status(404).json({ error: "Service tidak ditemukan" });
-    }
-    res.json({ message: "Service berhasil dihapus" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(400).json({ message: err.message });
   }
 };

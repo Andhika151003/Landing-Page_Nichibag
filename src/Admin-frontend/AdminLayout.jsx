@@ -56,10 +56,10 @@ const AdminLayout = ({ children }) => {
   const navItems = [
     { href: "/Dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/kelola-home", icon: Home, label: "Kelola Halaman Utama" },
-    { href: "/kelola-produk", icon: Package, label: "Kelola Produk" },
+    { href: "/kelola-Produk", icon: Package, label: "Kelola Produk" },
     { href: "/kelola-services", icon: FileText, label: "Kelola Services" },
     { href: "/kelola-about", icon: CircleUser, label: "Kelola About" },
-    { href: "/kelola-contact", icon: Phone, label: "Kelola Contact" },
+    
   ];
 
   return (
