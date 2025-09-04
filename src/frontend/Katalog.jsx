@@ -1,5 +1,3 @@
-// src/frontend/Katalog.jsx
-
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -31,9 +29,9 @@ const Katalog = () => {
   }, []);
 
   const filteredProducts = products
-    .filter((p) => {
-      return selectedCategory === "All" || p.category === selectedCategory;
-    })
+    // .filter((p) => {
+    
+    // })
     .filter((p) => {
       return p.name.toLowerCase().includes(searchQuery.toLowerCase());
     });
@@ -78,12 +76,15 @@ const Katalog = () => {
                 key={product._id}
                 className="border rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 block bg-white group"
               >
-                <div className="relative">
-                  <img
-                    src={product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/300"}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
+                <div className="relative w-full h-48 bg-gray-200">
+                  {product.images && product.images.length > 0 && (
+                    <img
+                      // <-- PERUBAHAN DI SINI
+                      src={`http://localhost:5000${product.images[0]}`} 
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
                 <div className="p-4">
                   <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-red-600 transition-colors">

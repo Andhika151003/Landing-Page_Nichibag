@@ -43,6 +43,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static('public'));
 app.use('/api/upload', uploadRoute);
 
 //Route Backend Intergrasi ke Frontend
