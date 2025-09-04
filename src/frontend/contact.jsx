@@ -1,20 +1,66 @@
-import React from "react";
-import { Mail, Phone, MapPin } from "lucide-react";
+import React, { useState } from "react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 
-const fadeUp = {
+const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: "easeInOut",
     },
   },
 };
 
 const ContactUs = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "", 
+    subject: "Tanya Produk", // Nilai default untuk dropdown
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // NOMOR HP TUJUAN (ganti dengan nomormu, awali dengan 62)
+    const phoneNumber = "6287788261298"; 
+
+    // ===== FORMAT PESAN BARU DENGAN TOPIK SPESIFIK =====
+    const whatsappMessage = `
+Hai Nichibag! 👋😄  
+Semoga tim Nichibag lagi sehat dan happy ya ✨🌈  
+
+Aku suka banget sama produk kalian, tapi aku ada sedikit hal yang mau aku tanyain nih 👇
+━━━━━━━━━━━━━━━
+*Perihal:* ${formData.subject}
+*Nama:* ${formData.firstName} ${formData.lastName}
+*Pesan:*
+${formData.message}
+━━━━━━━━━━━━━━━
+Makasih banyak ya Min 🙏💕  
+Ditunggu balasannya, semoga Nichibag makin kece terus! 🚀🔥
+
+_(Pesan ini otomatis terkirim dari formulir nichibag.id)_
+    `.trim();
+    // =======================================================
+
+    // Buat URL WhatsApp
+    const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      whatsappMessage
+    )}`;
+
+    // Buka WhatsApp di tab baru
+    window.open(whatsappURL, "_blank");
+  };
+
   return (
     <section
       className="min-h-screen w-full bg-[#F9F6EE] text-gray-800 px-4 md:px-8 flex items-center justify-center"
@@ -23,7 +69,7 @@ const ContactUs = () => {
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
         {/* Left Side */}
         <Motion.div
-          variants={fadeUp}
+          variants={fadeInUp}
           initial="hidden"
           animate="visible"
           className="space-y-6"
@@ -35,15 +81,14 @@ const ContactUs = () => {
             Kami siap membantu Anda! Silakan isi formulir atau hubungi kontak di
             bawah ini.
           </p>
-
           <div className="space-y-4 text-base">
             <div className="flex items-center gap-4">
               <Phone className="text-maroon" />
-              <span>+62 812 3456 7890</span>
+              <span>+62 877 8826 1298</span>
             </div>
             <div className="flex items-center gap-4">
               <Mail className="text-maroon" />
-              <span>info@nichi.id</span>
+              <span>nichibag.id@gmail.com</span>
             </div>
             <div className="flex items-center gap-4">
               <MapPin className="text-maroon" />
@@ -54,41 +99,62 @@ const ContactUs = () => {
 
         {/* Right Side */}
         <Motion.form
-          variants={fadeUp}
+          onSubmit={handleSubmit}
+          variants={fadeInUp}
           initial="hidden"
           animate="visible"
+          transition={{ delay: 0.2 }}
           className="bg-red-800 text-white p-8 rounded-xl shadow-lg space-y-6 w-full"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
+              name="firstName"
               placeholder="Nama Depan"
+              value={formData.firstName}
+              onChange={handleChange}
               className="px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon w-full"
               required
             />
             <input
               type="text"
+              name="lastName"
               placeholder="Nama Belakang"
+              value={formData.lastName}
+              onChange={handleChange}
               className="px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon w-full"
             />
           </div>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon"
+
+          {/* ===== DROPDOWN TOPIK BARU ===== */}
+          <select
+            name="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white focus:outline-none focus:ring-2 focus:ring-maroon"
             required
-          />
+          >
+            <option>Tanya Produk</option>
+            <option>Keluhan/Komplain</option>
+            <option>Peluang Kerjasama</option>
+            <option>Lainnya</option>
+          </select>
+          {/* ============================== */}
+
           <textarea
             rows="5"
-            placeholder="Pesan Anda"
+            name="message"
+            placeholder="Tulis pesan Anda di sini..."
+            value={formData.message}
+            onChange={handleChange}
             className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon"
             required
           ></textarea>
           <button
             type="submit"
-            className="w-full bg-[#F9F6EE] text-red-700 py-3 rounded-md font-semibold hover:bg-maroon/90 transition"
+            className="w-full bg-[#F9F6EE] text-red-700 py-3 rounded-md font-semibold hover:bg-maroon/90 transition flex items-center justify-center gap-2"
           >
-            Kirim Pesan
+            Kirim via WhatsApp <Send size={18} />
           </button>
         </Motion.form>
       </div>

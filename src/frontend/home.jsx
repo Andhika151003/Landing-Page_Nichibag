@@ -6,11 +6,23 @@ import { Link } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import Button from "../components/ButtonProduct";
 import HeroSection from "../components/HeroSection";
+import { motion as Motion } from "framer-motion"; // Import motion
 
-// Komponen Produk dengan perbaikan tampilan harga
+// Definisikan varian animasi
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeInOut",
+    },
+  },
+};
+
 const Product = ({ products }) => {
   const formatRupiah = (number) => {
-    // Pastikan input adalah angka, jika tidak, gunakan 0
     const validNumber = typeof number === 'number' ? number : 0;
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -22,17 +34,31 @@ const Product = ({ products }) => {
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <header className="text-center">
+        <Motion.header
+          className="text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={fadeInUp}
+        >
           <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
             Produk Terlaris yang Wajib Dimiliki
           </h2>
           <p className="mx-auto mt-4 max-w-md text-gray-500">
             Dipesan ratusan kali setiap bulan, inilah pilihan yang tak pernah mengecewakan.
           </p>
-        </header>
+        </Motion.header>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <li key={product._id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 transition-shadow duration-300 hover:shadow-lg">
+          {products.map((product, index) => (
+            <Motion.li
+              key={product._id}
+              className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 transition-shadow duration-300 hover:shadow-lg"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={fadeInUp}
+              transition={{ delay: index * 0.1 }}
+            >
               <Link to={product.link || "/katalog"} className="group block overflow-hidden">
                 <div className="relative">
                   <img
@@ -51,7 +77,6 @@ const Product = ({ products }) => {
                     {product.nama}
                   </h3>
                   <div className="mt-2 flex flex-col items-center justify-center">
-                    {/* ===== PERBAIKAN DI SINI: Tambahkan '|| 0' ===== */}
                     {(product.discountPrice || 0) > 0 ? (
                       <>
                         <p className="text-sm text-gray-500 line-through">
@@ -69,33 +94,52 @@ const Product = ({ products }) => {
                   </div>
                 </div>
               </Link>
-            </li>
+            </Motion.li>
           ))}
         </ul>
       </div>
-      <div className="mt-6 flex justify-center">
+      <Motion.div
+        className="mt-6 flex justify-center"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.5 }}
+        variants={fadeInUp}
+      >
         <Button />
-      </div>
+      </Motion.div>
     </section>
   );
 };
 
-// ... (Komponen Category dan Home tetap sama) ...
 const Category = ({ categories }) => {
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <header className="text-center">
+        <Motion.header
+          className="text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={fadeInUp}
+        >
           <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
             Temukan Kategori Produk Favorit Semua Orang!
           </h2>
           <p className="mx-auto mt-4 max-w-md text-gray-500">
              Dari ratusan pilihan, inilah kategori yang selalu jadi incaran — siap temukan yang cocok untuk Anda?
           </p>
-        </header>
+        </Motion.header>
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {categories.map((category) => (
-            <li key={category._id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 transition-shadow duration-300 hover:shadow-lg">
+          {categories.map((category, index) => (
+            <Motion.li
+              key={category._id}
+              className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 transition-shadow duration-300 hover:shadow-lg"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={fadeInUp}
+              transition={{ delay: index * 0.1 }}
+            >
               <Link to={category.link || "/katalog"} className="group block overflow-hidden">
                 <img
                   src={`http://localhost:5000${category.url}`}
@@ -108,7 +152,7 @@ const Category = ({ categories }) => {
                   </h3>
                 </div>
               </Link>
-            </li>
+            </Motion.li>
           ))}
         </ul>
       </div>

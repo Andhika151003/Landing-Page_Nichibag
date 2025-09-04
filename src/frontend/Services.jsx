@@ -1,4 +1,4 @@
-// src/frontend/Services.jsx (KODE ANDA YANG SEBELUMNYA)
+// src/frontend/Services.jsx
 
 import React from "react";
 import produk from "../assets/produk.png";
@@ -6,73 +6,36 @@ import hero1 from "../assets/hero1.png";
 import hero2 from "../assets/hero2.png";
 import HeroTitle from "../components/HeroTitle.jsx";
 import { motion as Motion } from "framer-motion";
-import Button from "../components/ButtonServices.jsx"; // <<< Tetap pakai ini
+import Button from "../components/ButtonServices.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
-// Animasi Variants
+// Varian animasi yang konsisten
 const fadeInUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: (i = 1) => ({
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.3,
-      duration: 0.4,
-      ease: "easeOut",
-    },
-  }),
-};
-
-const zoomIn = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    scale: 1,
-    transition: {
-      delay: i * 0.3,
-      duration: 0.4,
-      ease: "easeOut",
+      delay: i * 0.2,
+      duration: 0.6,
+      ease: "easeInOut",
     },
   }),
 };
 
 // Data Layanan
 const services = [
-  {
-    icon: "🧠",
-    title: "Berpengalaman",
-    desc: "Didukung oleh pengalaman sejak 2022, kami memahami kebutuhan desain kemasan yang tepat untuk setiap brand.",
-  },
-  {
-    icon: "🎨",
-    title: "Desain Eksklusif",
-    desc: "Pilih dari koleksi kemasan premium yang dirancang dengan estetika dan fungsionalitas tinggi.",
-  },
-  {
-    icon: "⚡",
-    title: "Cepat",
-    desc: "Proses pengerjaan dan pengiriman yang efisien memastikan pesanan Anda tiba tepat waktu tanpa mengorbankan kualitas.",
-  },
+  { icon: "🧠", title: "Berpengalaman", desc: "Didukung oleh pengalaman sejak 2022, kami memahami kebutuhan desain kemasan yang tepat untuk setiap brand." },
+  { icon: "🎨", title: "Desain Eksklusif", desc: "Pilih dari koleksi kemasan premium yang dirancang dengan estetika dan fungsionalitas tinggi." },
+  { icon: "⚡", title: "Cepat", desc: "Proses pengerjaan dan pengiriman yang efisien memastikan pesanan Anda tiba tepat waktu tanpa mengorbankan kualitas." },
 ];
 
 // Data Langkah
 const steps = [
-  {
-    img: produk,
-    title: "Produk Paling Laku",
-    desc: "Produk ini adalah produk yang paling laku dari Nichibag.id",
-  },
-  {
-    img: hero1,
-    title: "Kustomisasi Kemasan",
-    desc: "Tambahkan logo, desain, atau detail sesuka hati kalian untuk menciptakan kemasan yang unik dan sesuai dengan identitas brand.",
-  },
-  {
-    img: hero2,
-    title: "Template",
-    desc: "Ini adalah template yang bisa kalian gunakan untuk membuat kemasan yang sesuai dengan kebutuhan bisnis kalian.",
-  },
+  { img: produk, title: "Produk Paling Laku", desc: "Produk ini adalah produk yang paling laku dari Nichibag.id" },
+  { img: hero1, title: "Kustomisasi Kemasan", desc: "Tambahkan logo, desain, atau detail sesuka hati kalian untuk menciptakan kemasan yang unik dan sesuai dengan identitas brand." },
+  { img: hero2, title: "Template", desc: "Ini adalah template yang bisa kalian gunakan untuk membuat kemasan yang sesuai dengan kebutuhan bisnis kalian." },
 ];
 
 const ServicePage = () => {
@@ -102,18 +65,17 @@ const ServicePage = () => {
           brand. Di Nichibag.id, kami hadir untuk membantu Anda membungkus
           cerita dengan cara yang elegan dan bermakna.
         </Motion.p>
-        <Motion.a
-          href="#layanan"
-          className="py-2 px-6 inline-block" // Anda mungkin ingin mengubah ini menjadi div jika komponen Button tidak menerima href
+        <Motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeInUp}
           custom={2}
         >
-          <Button text="Layanan Kami" />{" "}
-          {/* <<< Gunakan komponen ButtonServices */}
-        </Motion.a>
+          <a href="#layanan" className="py-2 px-6 inline-block">
+            <Button />
+          </a>
+        </Motion.div>
       </section>
 
       {/* SERVICES */}
@@ -129,7 +91,6 @@ const ServicePage = () => {
             tampil menonjol di setiap kesempatan.
           </p>
         </div>
-
         <div className="grid md:grid-cols-3 gap-8">
           {services.map((s, i) => (
             <Motion.div
@@ -138,7 +99,7 @@ const ServicePage = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              variants={zoomIn}
+              variants={fadeInUp}
               className="border rounded-xl p-6 shadow-sm hover:shadow-md transition duration-300"
             >
               <div className="text-3xl mb-4">{s.icon}</div>
@@ -157,7 +118,6 @@ const ServicePage = () => {
             Menerima Segala Jenis Kemasan Apapun itu
           </p>
         </div>
-
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, i) => (
             <Motion.div
@@ -166,7 +126,7 @@ const ServicePage = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              variants={zoomIn}
+              variants={fadeInUp}
               className="text-center"
             >
               <img
@@ -193,7 +153,7 @@ const ServicePage = () => {
               dan biarkan kami membantu menciptakan pengalaman yang berkesan.
             </p>
             <a
-              href="https://wa.me/6287788261298?text=Halo%20admin%2C%20saya%20tertarik%20dengan%20produk%20Anda.%20Bisa%20minta%20detailnya%3F"
+              href="https://wa.me/6287788261298"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-3 bg-green-500 text-white font-bold py-3 px-8 rounded-full hover:bg-green-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -202,7 +162,6 @@ const ServicePage = () => {
               <span>Hubungi via WhatsApp</span>
             </a>
           </div>
-
           <div className="w-full h-64 md:h-80 bg-[#F9F6EE]">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.7603001896737!2d112.6744988!3d-7.2680958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7fe82331a6083%3A0x5822c119bea5851e!2sJl.%20Gadel%20Sari%20Madya%20II%20No.45%2C%20Gadel%2C%20Kec.%20Tandes%2C%20Surabaya%2C%20Jawa%20Timur%2060216!5e0!3m2!1sid!2sid!4v1754388155722!5m2!1sid!2sid"

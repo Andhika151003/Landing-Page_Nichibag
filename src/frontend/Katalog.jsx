@@ -3,6 +3,20 @@
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import { motion as Motion } from "framer-motion"; // Import motion
+
+// Definisikan varian animasi
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeInOut",
+    },
+  },
+};
 
 const Katalog = () => {
   const [products, setProducts] = useState([]);
@@ -45,14 +59,19 @@ const Katalog = () => {
   return (
     <div className="bg-gray-50 min-h-screen pt-24">
       <div className="max-w-7xl mx-auto">
-        <header className="text-center p-8">
+        <Motion.header
+          className="text-center p-8"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+        >
             <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Katalog Produk</h1>
             {searchQuery ? (
               <p className="mt-4 text-lg text-gray-600">Hasil pencarian untuk: <span className="font-bold">"{searchQuery}"</span></p>
             ) : (
               <p className="mt-4 text-lg text-gray-600">Temukan semua produk terbaik kami dalam satu tempat.</p>
             )}
-        </header>
+        </Motion.header>
       
         <div className="flex gap-2 sm:gap-4 p-4 justify-center flex-wrap sticky top-[80px] bg-gray-50/80 backdrop-blur-sm z-40">
           {categories.map((cat) => (
@@ -72,28 +91,36 @@ const Katalog = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 p-4">
           {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <Link
-                to={`/product/${product.productID}`}
+            filteredProducts.map((product, index) => (
+              <Motion.div
                 key={product._id}
-                className="border rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 block bg-white group"
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.3 }}
+                variants={fadeInUp}
+                transition={{ delay: index * 0.05 }}
               >
-                <div className="relative">
-                  <img
-                    src={product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/300"}
-                    alt={product.name}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-red-600 transition-colors">
-                    {product.name}
-                  </p>
-                  <p className="text-md font-bold text-gray-900 mt-1">
-                    Rp{product.price.toLocaleString("id-ID")}
-                  </p>
-                </div>
-              </Link>
+                <Link
+                  to={`/product/${product.productID}`}
+                  className="border rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 block bg-white group"
+                >
+                  <div className="relative">
+                    <img
+                      src={product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/300"}
+                      alt={product.name}
+                      className="w-full h-48 object-cover"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-red-600 transition-colors">
+                      {product.name}
+                    </p>
+                    <p className="text-md font-bold text-gray-900 mt-1">
+                      Rp{product.price.toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                </Link>
+              </Motion.div>
             ))
           ) : (
             <p className="col-span-full text-center text-gray-500 py-10">Produk tidak ditemukan.</p>

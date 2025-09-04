@@ -18,11 +18,11 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { href: "#", icon: faInstagram, label: "Instagram" },
-    { href: "#", icon: faTiktok, label: "TikTok" },
-    { href: "#", icon: faWhatsapp, label: "WhatsApp" },
-    { href: "#", icon: faStore, label: "Shopee" },
-    { href: "#", icon: faStore, label: "Tokopedia" },
+    { href: "https://www.instagram.com/nichibag.id", icon: faInstagram, label: "Instagram" },
+    { href: "https://www.tiktok.com/@nichibag", icon: faTiktok, label: "TikTok" },
+    { href: "https://wa.me/6287788261298", icon: faWhatsapp, label: "WhatsApp" },
+    { href: "https://shopee.co.id/nichibag.id", icon: faStore, label: "Shopee" },
+    { href: "https://www.tokopedia.com/nichii", icon: faStore, label: "Tokopedia" },
   ];
 
   return (
@@ -56,8 +56,8 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-lg mb-4 text-blue-100">Hubungi Kami</h3>
             <ul className="space-y-3 text-white">
-                <li>info@nichibag.id</li>
-                <li>+62 812 3456 7890</li>
+                <li>nichibag.id@gmail.com</li>
+                <li>+62 877 8826 1298</li>
                 <li>Surabaya, Indonesia</li>
             </ul>
           </div>
