@@ -1,11 +1,13 @@
+// Server/controller/serviceController.js
+
 import Service from '../models/Service.js';
 
-// Mengambil data halaman service
+
 export const getServiceData = async (req, res) => {
   try {
-    let data = await ServicePage.findOne();
+    let data = await Service.findOne();
     if (!data) {
-      data = new Service(); // Membuat dokumen baru jika belum ada
+      data = new Service(); 
       await data.save();
     }
     res.json(data);
@@ -14,11 +16,11 @@ export const getServiceData = async (req, res) => {
   }
 };
 
-// Memperbarui data halaman service
+
 export const updateServiceData = async (req, res) => {
   try {
     const { cards, whatsappUrl, googleMapsUrl } = req.body;
-    const updatedData = await ServicePage.findOneAndUpdate(
+    const updatedData = await Service.findOneAndUpdate(
       {},
       { cards, whatsappUrl, googleMapsUrl },
       { new: true, upsert: true, runValidators: true }

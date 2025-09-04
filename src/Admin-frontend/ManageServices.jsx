@@ -10,22 +10,16 @@ const ManageServices = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-<<<<<<< HEAD
-      const res = await axios.get("http://localhost:5000/services");
-=======
+      // Perbaikan: Menggunakan URL endpoint yang benar
       const res = await axios.get("http://localhost:5000/api/service");
->>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
       const fetchedData = res.data || {};
       if (!fetchedData.cards || fetchedData.cards.length !== 3) {
         fetchedData.cards = [{}, {}, {}].map((item, index) => fetchedData.cards?.[index] || item);
       }
       setData(fetchedData);
     } catch (error) {
-<<<<<<< HEAD
-      console.error(error);
-=======
->>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
-      Swal.fire("Error", "Gagal mengambil data layanan.", "error");
+      console.error("Gagal mengambil data layanan:", error);
+      Swal.fire("Error", `Gagal mengambil data layanan: ${error.message}`, "error");
     } finally {
       setLoading(false);
     }
@@ -51,30 +45,26 @@ const ManageServices = () => {
     formData.append('images', file);
     try {
       const res = await axios.post("http://localhost:5000/api/upload", formData);
-      handleCardChange(index, 'imageUrl', res.data.imageUrls[0]);
+      // Perbaikan: Mengambil URL dari array imageUrls
+      if (res.data.imageUrls && res.data.imageUrls.length > 0) {
+        handleCardChange(index, 'imageUrl', res.data.imageUrls[0]);
+      } else {
+        Swal.fire("Error", "URL gambar tidak ditemukan di respons server.", "error");
+      }
     } catch (error) {
-<<<<<<< HEAD
-       Swal.fire("Error", `Gagal mengunggah gambar: ${error.message}`, "error");
-=======
-       Swal.fire("Error", "Gagal mengunggah gambar.", "error");
->>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
+       console.error("Gagal mengunggah gambar:", error);
+       Swal.fire("Error", `Gagal mengunggah gambar: ${error.response?.data?.message || error.message}`, "error");
     }
   };
 
   const handleSave = async () => {
     try {
-      if (data.googleMapsUrl && !data.googleMapsUrl.includes('https://www.google.com/maps/embed?')) {
-        Swal.fire("Peringatan", "URL Google Maps sepertinya tidak valid. Pastikan Anda menyalin URL dari opsi 'Embed a map'.", "warning");
-        return;
-      }
-<<<<<<< HEAD
-      await axios.put("http://localhost:5000/Services", data);
-=======
+      // Perbaikan: Menghapus garis miring ganda pada URL
       await axios.put("http://localhost:5000/api/service", data);
->>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
       Swal.fire("Sukses!", "Data halaman layanan berhasil diperbarui.", "success");
     } catch (error) {
-      Swal.fire("Error", "Gagal menyimpan data.", "error");
+      console.error("Gagal menyimpan data:", error);
+      Swal.fire("Error", `Gagal menyimpan data: ${error.response?.data?.message || error.message}`, "error");
     }
   };
 
@@ -132,7 +122,7 @@ const ManageServices = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">URL Embed Google Maps</label>
-            <textarea name="googleMapsUrl" value={data.googleMapsUrl || ''} onChange={handleUrlChange} className="w-full p-2 border rounded-md font-mono text-xs" rows="5" placeholder="Contoh: https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3957.7603001896737!2d112.6744988!3d-7.2680958!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7fe82331a6083%3A0x5822c119bea5851e!2sJl.%20Gadel%20Sari%20Madya%20II%20No.45%2C%20Gadel%2C%20Kec.%20Tandes%2C%20Surabaya%2C%20Jawa%20Timur%2060216!5e0!3m2!1sid!2sid!4v1754388155722!5m2!1sid!2sid1..."/>
+            <textarea name="googleMapsUrl" value={data.googleMapsUrl || ''} onChange={handleUrlChange} className="w-full p-2 border rounded-md font-mono text-xs" rows="5" placeholder="Contoh: https://www.google.com/maps/embed?..."/>
             <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
               <HelpCircle size={14}/>
               Buka Google Maps, cari lokasi, klik "Share", lalu "Embed a map". Salin URL yang ada di dalam atribut `src="..."` dan tempel di sini.
