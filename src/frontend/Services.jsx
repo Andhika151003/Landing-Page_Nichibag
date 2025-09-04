@@ -1,10 +1,12 @@
+// src/frontend/Services.jsx
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion as Motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import HeroTitle from "../components/HeroTitle.jsx";
-import Button from "../components/ButtonServices.jsx"; 
+import Button from "../components/ButtonServices.jsx";
 
 const zoomIn = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -19,15 +21,22 @@ const zoomIn = {
   }),
 };
 
-const ServicePage = () => {
+// PERBAIKAN: Nama komponen disamakan menjadi 'Services'
+const Services = () => {
   const [pageData, setPageData] = useState({ cards: [{},{},{}], whatsappUrl: '', googleMapsUrl: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/service-page");
-        setPageData(res.data);
+        const res = await axios.get("http://localhost:5000/api/service");
+        // Memastikan data yang diterima adalah objek yang valid sebelum di-set
+        if (res.data && typeof res.data === 'object') {
+          setPageData(res.data);
+        } else {
+          // Tetap menggunakan data awal jika respons tidak valid
+          console.error("Data yang diterima dari server tidak valid:", res.data);
+        }
       } catch (error) {
         console.error("Gagal memuat data halaman layanan:", error);
       } finally {
@@ -65,7 +74,7 @@ const ServicePage = () => {
           <div className="text-center text-white">Memuat layanan...</div>
         ) : (
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {pageData.cards.map((card, i) => (
+            {pageData.cards && pageData.cards.map((card, i) => (
               <Motion.div
                 key={i}
                 custom={i}
@@ -77,11 +86,11 @@ const ServicePage = () => {
               >
                 <img
                   src={card.imageUrl ? `http://localhost:5000${card.imageUrl}` : 'https://via.placeholder.com/400x300'}
-                  alt={card.title}
+                  alt={card.title || 'Layanan'}
                   className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover"
                 />
-                <h3 className="text-lg font-semibold mb-2 text-white">{card.title}</h3>
-                <p className="text-white/80 text-sm">{card.description}</p>
+                <h3 className="text-lg font-semibold mb-2 text-white">{card.title || 'Judul Layanan'}</h3>
+                <p className="text-white/80 text-sm">{card.description || 'Deskripsi layanan akan muncul di sini.'}</p>
               </Motion.div>
             ))}
           </div>
@@ -111,11 +120,11 @@ const ServicePage = () => {
 
           <div className="w-full h-80 md:h-96 bg-gray-200 rounded-lg shadow-md overflow-hidden">
             {loading ? (
-              <div className="flex items-center justify-center h-full">Memuat Peta...</div>
+              <div className="flex items-center justify-center h-full text-gray-500">Memuat Peta...</div>
             ) : (
               <iframe
                 src={pageData.googleMapsUrl}
-                className="w-full h-full border-0"
+                className="w-full h-full border-0" // PERBAIKAN: Kelas border-10 tidak valid
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -129,4 +138,5 @@ const ServicePage = () => {
   );
 };
 
-export default ServicePage;
+// PERBAIKAN: Nama komponen yang diekspor disamakan menjadi 'Services'
+export default Services;

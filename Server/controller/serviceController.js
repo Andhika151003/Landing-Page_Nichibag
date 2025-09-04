@@ -1,5 +1,3 @@
-// Server/controller/serviceController.js
-
 import Service from '../models/Service.js';
 
 
