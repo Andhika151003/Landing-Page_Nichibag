@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Gambar from "../assets/produk.png";
 import SplitText from "../components/SplitText";
 import Button from "../components/ModernButton";
 import { motion as Motion, useScroll, useTransform, useSpring } from "framer-motion";
-// import CustomCursor from "../components/CustomCursor";
 import Tilt from "react-parallax-tilt"; // Tambahan animasi 3D
 
 const fadeInUp = {
@@ -12,15 +12,25 @@ const fadeInUp = {
 };
 
 const About = () => {
+  const [aboutData, setAboutData] = useState({ imageUrl: '', buttonUrl: 'https://wa.me/628973809698' });
   const { scrollY } = useScroll();
   const scrollVelocity = useSpring(scrollY, { damping: 40, stiffness: 400 });
   const scaleOnScroll = useTransform(scrollVelocity, [0, 1000], [1, 1.05]);
   const opacityOnScroll = useTransform(scrollVelocity, [0, 500], [1, 0.9]);
 
+  useEffect(() => {
+    // Mengambil data dari backend saat komponen dimuat
+    axios.get("http://localhost:5000/api/about")
+      .then(res => {
+        if (res.data) {
+          setAboutData(res.data);
+        }
+      })
+      .catch(err => console.error("Gagal mengambil data about:", err));
+  }, []);
+
   return (
     <div className="pt-6 overflow-x-hidden">
-      {/* <CustomCursor /> */}
-
       {/* Header */}
       <Motion.section
         className="text-white text-center pt-28 pb-20 bg-red-800"
@@ -69,7 +79,12 @@ const About = () => {
           style={{ scale: scaleOnScroll }}
         >
           <Tilt glareEnable={true} glareMaxOpacity={0.3} scale={1.02} transitionSpeed={1500}>
-            <img src={Gambar} alt="Tentang Kami" className="rounded-lg shadow-lg" />
+            {/* PERUBAHAN DI SINI: Gambar akan diambil dari state */}
+            <img 
+              src={aboutData.imageUrl ? `http://localhost:5000${aboutData.imageUrl}` : Gambar} 
+              alt="Tentang Kami" 
+              className="rounded-lg shadow-lg" 
+            />
           </Tilt>
         </Motion.div>
       </Motion.section>
@@ -138,7 +153,7 @@ const About = () => {
             {
               title: "Berkualitas",
               desc: "Kemasan Berkualitas Dan Berbahan Premium",
-              icon: "🎯",
+              icon: "🌟",
             },
             {
               title: "Inovasi",
@@ -148,7 +163,7 @@ const About = () => {
             {
               title: "Ramah Lingkungan",
               desc: "Pilihan Terbaik Mengurangi Limbah Plastik",
-              icon: "🌱",
+              icon: "🌿",
             },
             {
               title: "Terpercaya",
@@ -245,7 +260,7 @@ const About = () => {
         </p>
         <div className="flex justify-center mt-6">
           <a
-            href="https://wa.me/628973809698"
+            href={aboutData.buttonUrl}
             target="_blank"
             rel="noopener noreferrer"
             className=" text-white font-semibold px-6 py-2 rounded"

@@ -18,7 +18,7 @@ const produkSchema = new mongoose.Schema({
   nama: { type: String, required: true },
   url: { type: String, required: true },
   link: { type: String, default: '/katalog' },
-  price: { type: Number, default: 0 },             // Harga normal
+  price: { type: Number },             // Harga normal
   discountPrice: { type: Number },                  // Harga setelah diskon (opsional)
   discountPercentage: { type: Number },             // Persentase diskon (opsional)
   createdAt: { type: Date, default: Date.now }
