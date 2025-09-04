@@ -18,18 +18,13 @@ function Carousel() {
         setSlides(response.data);
       } catch (error) {
         console.error("Gagal mengambil gambar carousel:", error);
-        // Fallback ke gambar default jika API gagal
-        setSlides([
-          { _id: '1', url: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1920&h=1080&fit=crop&auto=format&q=80" },
-          { _id: '2', url: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1920&h=1080&fit=crop&auto=format&q=80" },
-        ]);
       }
     };
     fetchCarouselImages();
   }, []);
 
   if (slides.length === 0) {
-    return <div className="w-full h-[60vh] bg-gray-200 animate-pulse"></div>; // Tampilkan loading state
+    return <div className="w-full h-[60vh] bg-gray-200 animate-pulse"></div>;
   }
 
   return (
@@ -56,8 +51,9 @@ function Carousel() {
         {slides.map((slide, index) => (
           <SwiperSlide key={slide._id || index}>
             <div className="relative w-full h-full">
+              {/* ===== PERUBAHAN DI SINI: Tambahkan alamat server ===== */}
               <img
-                src={slide.url} // Menggunakan URL dari backend
+                src={`http://localhost:5000${slide.url}`}
                 alt={`Slide ${index + 1}`}
                 className="w-full h-full object-cover"
               />
@@ -101,26 +97,6 @@ function Carousel() {
 
       {/* Custom Pagination */}
       <div className="swiper-pagination-custom absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex space-x-4"></div>
-
-      <style jsx="true" global="true">{`
-        .swiper-pagination-bullet-custom {
-          width: 12px !important;
-          height: 12px !important;
-          background: rgba(255, 255, 255, 0.5) !important;
-          border-radius: 50% !important;
-          cursor: pointer !important;
-          transition: all 0.3s ease !important;
-        }
-
-        .swiper-pagination-bullet-active-custom {
-          background: white !important;
-          transform: scale(1.2) !important;
-        }
-
-        .swiper-pagination-bullet-custom:hover {
-          background: rgba(255, 255, 255, 0.8) !important;
-        }
-      `}</style>
     </div>
   );
 }

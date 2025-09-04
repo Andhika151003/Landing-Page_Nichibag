@@ -16,7 +16,7 @@ const AboutPage = () => {
   const handleUpload = async () => {
     if (!file) return alert("Pilih gambar dulu!");
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("images", file);
     try {
       const res = await axios.post("http://localhost:5000/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" }

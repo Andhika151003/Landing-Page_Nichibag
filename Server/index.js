@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import uploadRoute from './routes/uploadRoute.js'; 
 import UserRoute from './routes/LoginRoute.js';
 import ProductRoute from './routes/ProductRoute.js';
-import HomeRoute from './routes/homeRoute.js';
+import HomeRoute from './routes/HomeRoute.js';
 import ServiceRoute from './routes/ServiceRoute.js';
 import seedAdmin from './utils/seedAdmin.js';
 
@@ -16,12 +16,25 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Menyalakan logging query Mongoose untuk debugging
+mongoose.set('debug', true);
+
 mongoose.connect(process.env.MONGO_URI);
 
 const db = mongoose.connection;
-db.on("error", (error) => console.error("MongoDB error:", error));
+
+// Notifikasi jika koneksi GAGAL
+db.on("error", (error) => {
+  console.error("==============================================");
+  console.error("❌ KONEKSI DATABASE GAGAL:", error.message);
+  console.error("==============================================");
+});
+
+// Notifikasi jika koneksi BERHASIL
 db.once("open", async () => {
-  console.log("✅ Connected to database");
+  console.log("==============================================");
+  console.log("✅ Berhasil terhubung ke database MongoDB.");
+  console.log("==============================================");
   await seedAdmin();
 });
 
@@ -37,4 +50,4 @@ app.use("/products", ProductRoute);
 app.use("/home", HomeRoute);
 app.use("/services", ServiceRoute);
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server berjalan di port ${PORT}`));

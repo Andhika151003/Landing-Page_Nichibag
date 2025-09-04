@@ -1,7 +1,11 @@
 import express from 'express';
-import { carouselController, featuredProductController, categoryController } from '../controller/HomePageController.js';
+import { carouselController, featuredProductController, categoryController, heroButtonController } from '../controller/HomePageController.js';
 
 const router = express.Router();
+
+// Rute Tombol Hero
+router.get('/hero-button', heroButtonController.get);
+router.put('/hero-button', heroButtonController.update);
 
 // Carousel Routes
 router.get('/carousel', carouselController.getAll);

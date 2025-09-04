@@ -64,7 +64,7 @@ const KelolaProduk = () => {
     if (!fileToUpload) return;
     
     const formData = new FormData();
-    formData.append('image', fileToUpload);
+    formData.append('images', fileToUpload);
 
     try {
         const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);

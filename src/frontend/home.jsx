@@ -2,14 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import Carousel from "../components/Carousel";
 import Button from "../components/ButtonProduct";
 import HeroSection from "../components/HeroSection";
 
-// ====================================================================
-// KOMPONEN PRODUK (STRUKTUR ASLI ANDA)
-// ====================================================================
+// Komponen Produk dengan perbaikan tampilan harga
 const Product = ({ products }) => {
+  const formatRupiah = (number) => {
+    // Pastikan input adalah angka, jika tidak, gunakan 0
+    const validNumber = typeof number === 'number' ? number : 0;
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0
+    }).format(validNumber);
+  };
+
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
@@ -21,22 +30,45 @@ const Product = ({ products }) => {
             Dipesan ratusan kali setiap bulan, inilah pilihan yang tak pernah mengecewakan.
           </p>
         </header>
-        {/* Menampilkan data dinamis dari 'products' */}
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-            <li key={product._id}>
-              <a href="#" className="group block overflow-hidden">
-                <img
-                  src={product.imageUrl || "https://via.placeholder.com/300"}
-                  alt={product.name}
-                  className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px]"
-                />
-                <div className="relative bg-transparent pt-3">
-                  <h3 className="text-sm text-gray-700 group-hover:underline group-hover:underline-offset-4">
-                    {product.name}
-                  </h3>
+            <li key={product._id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 transition-shadow duration-300 hover:shadow-lg">
+              <Link to={product.link || "/katalog"} className="group block overflow-hidden">
+                <div className="relative">
+                  <img
+                    src={`http://localhost:5000${product.url}`}
+                    alt={product.nama}
+                    className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px] rounded-md"
+                  />
+                  {(product.discountPercentage || 0) > 0 && (
+                    <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md">
+                      -{product.discountPercentage}%
+                    </span>
+                  )}
                 </div>
-              </a>
+                <div className="relative pt-3">
+                  <h3 className="text-base text-gray-700 group-hover:underline group-hover:underline-offset-4 text-center h-12">
+                    {product.nama}
+                  </h3>
+                  <div className="mt-2 flex flex-col items-center justify-center">
+                    {/* ===== PERBAIKAN DI SINI: Tambahkan '|| 0' ===== */}
+                    {(product.discountPrice || 0) > 0 ? (
+                      <>
+                        <p className="text-sm text-gray-500 line-through">
+                          {formatRupiah(product.price || 0)}
+                        </p>
+                        <p className="text-lg font-bold text-red-600">
+                          {formatRupiah(product.discountPrice || 0)}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-lg font-bold text-gray-800">
+                        {formatRupiah(product.price || 0)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>
@@ -48,9 +80,7 @@ const Product = ({ products }) => {
   );
 };
 
-// ====================================================================
-// KOMPONEN KATEGORI (STRUKTUR ASLI ANDA)
-// ====================================================================
+// ... (Komponen Category dan Home tetap sama) ...
 const Category = ({ categories }) => {
   return (
     <section>
@@ -63,22 +93,21 @@ const Category = ({ categories }) => {
              Dari ratusan pilihan, inilah kategori yang selalu jadi incaran — siap temukan yang cocok untuk Anda?
           </p>
         </header>
-        {/* Menampilkan data dinamis dari 'categories' */}
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
-            <li key={category._id}>
-              <a href="#" className="group block overflow-hidden">
+            <li key={category._id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 transition-shadow duration-300 hover:shadow-lg">
+              <Link to={category.link || "/katalog"} className="group block overflow-hidden">
                 <img
-                  src={category.imageUrl || "https://via.placeholder.com/300"}
-                  alt={category.name}
-                  className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px]"
+                  src={`http://localhost:5000${category.url}`}
+                  alt={category.nama}
+                  className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px] rounded-md"
                 />
-                <div className="relative bg-transparent pt-3">
-                  <h3 className="text-sm text-gray-700 group-hover:underline group-hover:underline-offset-4">
-                    {category.name}
+                <div className="relative pt-3">
+                  <h3 className="text-base text-gray-700 group-hover:underline group-hover:underline-offset-4 text-center">
+                    {category.nama}
                   </h3>
                 </div>
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
@@ -87,11 +116,7 @@ const Category = ({ categories }) => {
   );
 };
 
-// ====================================================================
-// KOMPONEN UTAMA HOME
-// ====================================================================
 const Home = () => {
-  // Logika untuk mengambil data dari backend
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -111,7 +136,6 @@ const Home = () => {
     fetchHomeData();
   }, []);
   
-  // Tampilan JSX Anda kembali seperti semula
   return (
     <div className="min-h-screen">
       <Carousel />

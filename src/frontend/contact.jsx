@@ -63,30 +63,30 @@ const ContactUs = () => {
             <input
               type="text"
               placeholder="Nama Depan"
-              className="px-4 py-3 rounded-md border border-gray-500 bg-red-800 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-maroon w-full"
+              className="px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon w-full"
               required
             />
             <input
               type="text"
               placeholder="Nama Belakang"
-              className="px-4 py-3 rounded-md border border-gray-500 bg-red-800 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-maroon w-full"
+              className="px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon w-full"
             />
           </div>
           <input
             type="email"
             placeholder="Email"
-            className="w-full px-4 py-3 rounded-md border border-gray-500 bg-red-800 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-maroon"
+            className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon"
             required
           />
           <textarea
             rows="5"
             placeholder="Pesan Anda"
-            className="w-full px-4 py-3 rounded-md border border-gray-500 bg-red-800 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-maroon"
+            className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon"
             required
           ></textarea>
           <button
             type="submit"
-            className="w-full bg-maroon text-red-700 py-3 rounded-md font-semibold hover:bg-maroon/90 transition"
+            className="w-full bg-[#F9F6EE] text-red-700 py-3 rounded-md font-semibold hover:bg-maroon/90 transition"
           >
             Kirim Pesan
           </button>

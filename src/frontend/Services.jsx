@@ -182,7 +182,7 @@ const ServicePage = () => {
       </section>
 
       {/* CTA & MAP */}
-      <section className="w-full bg-white pt-20 px-4">
+      <section className="w-full bg-[#F9F6EE] pt-20 px-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 items-center pb-20 border-b border-gray-300">
           <div className="text-center md:text-left">
             <h2 className="text-2xl text-black font-bold mb-4">

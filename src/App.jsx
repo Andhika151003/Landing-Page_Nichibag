@@ -23,7 +23,6 @@ import KelolaHome from "./Admin-frontend/KelolaHome.jsx";
 import KelolaProduk from "./Admin-frontend/Product.jsx";
 import AboutAdmin from "./Admin-frontend/AboutAdmin.jsx";
 import ManageServices from "./Admin-frontend/ManageServices.jsx";
-// import ManageContact from "./Admin-frontend/ManageContact.jsx"; // Kita akan buat file ini nanti
 
 // Wrapper untuk Halaman User
 const UserPages = ({ children }) => (
@@ -47,7 +46,6 @@ const App = () => {
         <Route path="/kelola-produk" element={<AdminLayout><KelolaProduk /></AdminLayout>} />
         <Route path="/kelola-services" element={<AdminLayout><ManageServices /></AdminLayout>} />
         <Route path="/kelola-about" element={<AdminLayout><AboutAdmin /></AdminLayout>} />
-        {/* <Route path="/kelola-contact" element={<AdminLayout><ManageContact /></AdminLayout>} /> */}
 
         {/* Halaman User (Menggunakan Layout User) */}
         <Route path="/" element={<UserPages><Home /></UserPages>} />

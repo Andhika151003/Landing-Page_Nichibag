@@ -4,7 +4,7 @@ import { Package, PlusCircle, FilePenLine, Trash2 } from "lucide-react";
 
 // Komponen-komponen ini kita letakkan di sini agar file tetap rapi
 const StatCard = ({ title, value, color }) => (
-  <div className="bg-white p-6 rounded-xl shadow-md flex items-center justify-between">
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md flex items-center justify-between">
     <div>
       <p className="text-sm font-medium text-gray-500">{title}</p>
       <p className="text-3xl font-bold text-gray-900">{value}</p>

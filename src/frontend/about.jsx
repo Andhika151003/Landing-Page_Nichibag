@@ -58,7 +58,7 @@ const About = () => {
           <p className="text-black mb-4">
             Didirikan sejak tahun 2022, Nichibag.id hadir sebagai solusi kemasan modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap lingkungan.
           </p>
-          <p className="text-blue-600 font-semibold text-lg">500+ Klien yang puas</p>
+          <p className="text-blue-600 font-semibold text-lg">500K+ Klien yang puas</p>
         </div>
         <Motion.div
           className="md:w-1/2"
@@ -158,14 +158,14 @@ const About = () => {
           ].map((item, i) => (
             <Motion.div
               key={i}
-              className="p-6 bg-[#F9F6EE] rounded-2xl shadow-md flex flex-col items-center"
+              className="p-6 bg-red-800 rounded-2xl shadow-md flex flex-col items-center"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
               style={{ scale: scaleOnScroll }}
             >
               <div className="text-4xl mb-4">{item.icon}</div>
-              <h3 className="text-xl font-semibold text-[#800000] mb-2">{item.title}</h3>
-              <p className="text-gray-600">{item.desc}</p>
+              <h3 className="text-xl font-semibold text-white mb-2">{item.title}</h3>
+              <p className="text-white">{item.desc}</p>
             </Motion.div>
           ))}
         </div>
@@ -230,7 +230,7 @@ const About = () => {
 
       {/* CTA */}
       <Motion.section
-        className="text-black text-center py-12 px-6 bg-white"
+        className="text-black text-center py-12 px-6 bg-[#F9F6EE]"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

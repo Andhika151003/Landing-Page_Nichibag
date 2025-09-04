@@ -11,21 +11,29 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
+// ===== PERUBAHAN DI SINI: Ganti upload.single menjadi upload.array =====
+// 'images' adalah nama field, dan 10 adalah batas maksimal file per request
 const upload = multer({ storage: storage });
 
-// Endpoint untuk upload file
-router.post('/', upload.single('image'), (req, res) => {
-  if (!req.file) {
+router.post('/', upload.array('images', 10), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    console.error('❌ Gagal: Tidak ada file yang dipilih untuk diunggah.');
     return res.status(400).send({ message: 'Pilih file untuk diupload.' });
   }
-  // Kirim kembali URL dari gambar yang berhasil diupload
+
+  // ===== PERUBAHAN DI SINI: Mapping hasil unggahan menjadi array of URLs =====
+  const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+  
+  console.log(`✅ Berhasil: ${req.files.length} gambar telah diunggah.`);
+  
   res.status(200).send({
     message: 'Gambar berhasil diupload',
-    imageUrl: `/uploads/${req.file.filename}`
+    imageUrls: imageUrls // Kirim kembali array of URLs
   });
 });
 

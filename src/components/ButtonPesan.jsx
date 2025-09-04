@@ -1,8 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Button = () => {
+const Button = ({ link = '/katalog' }) => { // Terima prop link
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(link);
+  };
+
   return (
-    <button className="cursor-pointer group relative bg-white hover:bg-zinc-300 text-black font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 ease-in-out shadow hover:shadow-lg w-40 h-12">
+    <button onClick={handleClick} className="cursor-pointer group relative bg-white hover:bg-zinc-300 text-black font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 ease-in-out shadow hover:shadow-lg w-40 h-12">
       <div className="relative flex items-center justify-center gap-2">
         <span className="relative inline-block overflow-hidden">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full">
