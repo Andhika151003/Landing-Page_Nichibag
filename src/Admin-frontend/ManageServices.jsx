@@ -10,14 +10,21 @@ const ManageServices = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+<<<<<<< HEAD
       const res = await axios.get("http://localhost:5000/services");
+=======
+      const res = await axios.get("http://localhost:5000/api/service");
+>>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
       const fetchedData = res.data || {};
       if (!fetchedData.cards || fetchedData.cards.length !== 3) {
         fetchedData.cards = [{}, {}, {}].map((item, index) => fetchedData.cards?.[index] || item);
       }
       setData(fetchedData);
     } catch (error) {
+<<<<<<< HEAD
       console.error(error);
+=======
+>>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
       Swal.fire("Error", "Gagal mengambil data layanan.", "error");
     } finally {
       setLoading(false);
@@ -46,7 +53,11 @@ const ManageServices = () => {
       const res = await axios.post("http://localhost:5000/api/upload", formData);
       handleCardChange(index, 'imageUrl', res.data.imageUrls[0]);
     } catch (error) {
+<<<<<<< HEAD
        Swal.fire("Error", `Gagal mengunggah gambar: ${error.message}`, "error");
+=======
+       Swal.fire("Error", "Gagal mengunggah gambar.", "error");
+>>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
     }
   };
 
@@ -56,7 +67,11 @@ const ManageServices = () => {
         Swal.fire("Peringatan", "URL Google Maps sepertinya tidak valid. Pastikan Anda menyalin URL dari opsi 'Embed a map'.", "warning");
         return;
       }
+<<<<<<< HEAD
       await axios.put("http://localhost:5000/Services", data);
+=======
+      await axios.put("http://localhost:5000/api/service", data);
+>>>>>>> bd1312cbb1bf19e6ad49c99e082baa5d8dfdd2c9
       Swal.fire("Sukses!", "Data halaman layanan berhasil diperbarui.", "success");
     } catch (error) {
       Swal.fire("Error", "Gagal menyimpan data.", "error");
