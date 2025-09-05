@@ -11,25 +11,34 @@ const KelolaProduk = () => {
   
   const categories = ["Paper bag", "Gift box", "Gift card", "Ribbon", "Kotak sepatu"];
 
-  // Ambil data produk saat komponen pertama kali dimuat
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const getErrorMessage = (error) => {
+    // Fungsi bantuan untuk mendapatkan pesan error yang lebih baik
+    return error.response?.data?.msg || error.message || "Terjadi kesalahan yang tidak diketahui.";
+  };
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get("http://localhost:5000/products");
-      setProducts(res.data);
+      // PERBAIKAN: Pastikan data yang diterima adalah array untuk mencegah error .map
+      if (Array.isArray(res.data)) {
+        setProducts(res.data);
+      } else {
+        setProducts([]); // Fallback ke array kosong jika data tidak valid
+        console.error("Data produk yang diterima bukan array:", res.data);
+      }
     } catch (error) {
-      Swal.fire("Error", "Gagal memuat data produk.", "error");
+      Swal.fire("Error", `Gagal memuat data produk: ${getErrorMessage(error)}`, "error");
     }
   };
 
-  // Fungsi untuk membuka modal (baik untuk tambah maupun edit)
   const handleOpenModal = (product = null) => {
     if (product) {
       setIsEditing(true);
-      setCurrentProduct({ ...product });
+      setCurrentProduct({ ...product, images: product.images || [] }); // Pastikan images adalah array
     } else {
       setIsEditing(false);
       setCurrentProduct({
@@ -43,19 +52,16 @@ const KelolaProduk = () => {
     setIsModalOpen(true);
   };
 
-  // Fungsi untuk menutup modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setCurrentProduct(null);
   };
 
-  // Fungsi untuk menangani perubahan pada input form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCurrentProduct(prev => ({ ...prev, [name]: value }));
   };
   
-  // Fungsi untuk menangani upload gambar
   const handleFileChange = async (e) => {
     const files = e.target.files;
     if (!files.length) return;
@@ -67,16 +73,17 @@ const KelolaProduk = () => {
 
     try {
         const res = await axios.post("http://localhost:5000/api/upload", formData);
+        // PERBAIKAN: Pastikan res.data.imageUrls adalah array
+        const newImageUrls = Array.isArray(res.data?.imageUrls) ? res.data.imageUrls : [];
         setCurrentProduct(prev => ({
             ...prev,
-            images: [...prev.images, ...res.data.imageUrls]
+            images: [...(prev.images || []), ...newImageUrls]
         }));
     } catch (error) {
-        Swal.fire("Error", "Gagal mengupload gambar.", "error");
+        Swal.fire("Error", `Gagal mengupload gambar: ${getErrorMessage(error)}`, "error");
     }
   };
   
-  // Fungsi untuk menghapus gambar dari daftar
   const handleRemoveImage = (indexToRemove) => {
       setCurrentProduct(prev => ({
           ...prev,
@@ -84,9 +91,10 @@ const KelolaProduk = () => {
       }));
   };
 
-  // Fungsi saat form disubmit (Simpan)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!currentProduct) return;
+
     const url = isEditing 
         ? `http://localhost:5000/products/${currentProduct._id}` 
         : "http://localhost:5000/products";
@@ -98,11 +106,10 @@ const KelolaProduk = () => {
       fetchProducts();
       handleCloseModal();
     } catch (error) {
-      Swal.fire("Error", `Gagal ${isEditing ? 'memperbarui' : 'menambahkan'} produk.`, "error");
+      Swal.fire("Error", `Gagal menyimpan produk: ${getErrorMessage(error)}`, "error");
     }
   };
 
-  // Fungsi untuk menghapus produk
   const handleDelete = (id) => {
     Swal.fire({
       title: 'Anda Yakin?',
@@ -119,7 +126,7 @@ const KelolaProduk = () => {
           Swal.fire('Terhapus!', 'Produk berhasil dihapus.', 'success');
           fetchProducts();
         } catch (error) {
-          Swal.fire("Error", "Gagal menghapus produk.", "error");
+          Swal.fire("Error", `Gagal menghapus produk: ${getErrorMessage(error)}`, "error");
         }
       }
     });
@@ -134,7 +141,6 @@ const KelolaProduk = () => {
         </button>
       </div>
 
-      {/* --- TABEL PRODUK --- */}
       <div className="bg-white rounded-lg shadow-md overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 font-medium">
@@ -149,24 +155,26 @@ const KelolaProduk = () => {
           </thead>
           <tbody>
             {products.map((product, index) => (
-              <tr key={product._id} className="border-b hover:bg-gray-50">
+              <tr key={product?._id || index} className="border-b hover:bg-gray-50">
                 <td className="p-4">{index + 1}</td>
                 <td className="p-4">
                   <img 
-                    src={product.images.length > 0 ? `http://localhost:5000${product.images[0]}` : 'https://via.placeholder.com/150'} 
-                    alt={product.name} 
+                    
+                    src={product?.images?.[0] ? `http://localhost:5000${product.images[0]}` : 'https://via.placeholder.com/150'} 
+                    alt={product?.name || 'Gambar Produk'} 
                     className="w-16 h-16 object-cover rounded-md"
                   />
                 </td>
-                <td className="p-4 font-medium">{product.name}</td>
-                <td className="p-4 text-gray-600">{product.category}</td>
-                <td className="p-4 text-gray-800">Rp{product.price.toLocaleString("id-ID")}</td>
+                <td className="p-4 font-medium">{product?.name ?? 'Nama Tidak Tersedia'}</td>
+                <td className="p-4 text-gray-600">{product?.category ?? '-'}</td>
+                {/* PERBAIKAN: Format harga dengan aman, beri nilai default 0 jika null/undefined */}
+                <td className="p-4 text-gray-800">Rp{(product?.price ?? 0).toLocaleString("id-ID")}</td>
                 <td className="p-4">
                   <div className="flex justify-center items-center gap-3">
                     <button onClick={() => handleOpenModal(product)} className="text-blue-500 hover:text-blue-700 transition" title="Edit">
                       <Edit size={18} />
                     </button>
-                    <button onClick={() => handleDelete(product._id)} className="text-red-500 hover:text-red-700 transition" title="Hapus">
+                    <button onClick={() => handleDelete(product?._id)} className="text-red-500 hover:text-red-700 transition" title="Hapus">
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -177,24 +185,20 @@ const KelolaProduk = () => {
         </table>
       </div>
 
-      {/* --- MODAL TAMBAH/EDIT PRODUK --- */}
-      {isModalOpen && (
+      {isModalOpen && currentProduct && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-6">{isEditing ? "Edit Produk" : "Tambah Produk Baru"}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" name="name" value={currentProduct.name} onChange={handleChange} placeholder="Nama Produk" className="w-full p-3 border rounded-lg" required />
               <textarea name="description" value={currentProduct.description} onChange={handleChange} placeholder="Deskripsi Produk" className="w-full p-3 border rounded-lg" rows="4" required />
-              
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">Rp</span>
                 <input type="number" name="price" value={currentProduct.price} onChange={handleChange} placeholder="Harga" className="w-full p-3 pl-8 border rounded-lg" required />
               </div>
-
               <select name="category" value={currentProduct.category} onChange={handleChange} className="w-full p-3 border rounded-lg bg-white" required>
                 {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
               </select>
-              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Gambar Produk</label>
                 <div className="flex items-center gap-4">
@@ -206,7 +210,8 @@ const KelolaProduk = () => {
                 </div>
               </div>
 
-              {currentProduct.images.length > 0 && (
+              {/* PERBAIKAN: Gunakan optional chaining untuk mapping gambar */}
+              {(currentProduct?.images?.length ?? 0) > 0 && (
                 <div className="grid grid-cols-4 gap-4 mt-2">
                     {currentProduct.images.map((imgUrl, index) => (
                         <div key={index} className="relative">

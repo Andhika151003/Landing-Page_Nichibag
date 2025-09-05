@@ -25,9 +25,11 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // DIUBAH: dari imageUrls menjadi images agar konsisten
     images: [
       {
-        type: String, // Menyimpan URL gambar
+        type: String,
+        required: true,
       },
     ],
   },

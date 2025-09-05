@@ -1,9 +1,7 @@
-// src/frontend/Katalog.jsx
-
 import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
-import { motion as Motion } from "framer-motion"; // Import motion
+import { motion as Motion } from "framer-motion";
 
 // Definisikan varian animasi
 const fadeInUp = {
@@ -21,7 +19,7 @@ const fadeInUp = {
 const Katalog = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const categories = ["All", "Paper bag", "Gift box", "Gift card", "Ribbon", "Kotak sepatu"];
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -32,6 +30,7 @@ const Katalog = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        // Pastikan URL server Anda benar
         const response = await axios.get("http://localhost:5000/products");
         setProducts(response.data);
       } catch (error) {
@@ -44,16 +43,22 @@ const Katalog = () => {
     fetchProducts();
   }, []);
 
+  // Gabungkan filter kategori dan pencarian
   const filteredProducts = products
-    .filter((p) => {
-      return selectedCategory === "All" || p.category === selectedCategory;
+    .filter((product) => {
+      if (selectedCategory === "All") {
+        return true; // Tampilkan semua jika kategori "All"
+      }
+      // Pastikan produk Anda memiliki properti 'category'
+      return product.category === selectedCategory;
     })
-    .filter((p) => {
-      return p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    .filter((product) => {
+      // Filter berdasarkan query pencarian
+      return product.name.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
   if (loading) {
-    return <div className="pt-24 text-center min-h-screen">Memuat produk...</div>
+    return <div className="pt-24 text-center min-h-screen">Memuat produk...</div>;
   }
 
   return (
@@ -65,14 +70,16 @@ const Katalog = () => {
           animate="visible"
           variants={fadeInUp}
         >
-            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Katalog Produk</h1>
-            {searchQuery ? (
-              <p className="mt-4 text-lg text-gray-600">Hasil pencarian untuk: <span className="font-bold">"{searchQuery}"</span></p>
-            ) : (
-              <p className="mt-4 text-lg text-gray-600">Temukan semua produk terbaik kami dalam satu tempat.</p>
-            )}
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Katalog Produk</h1>
+          {searchQuery ? (
+            <p className="mt-4 text-lg text-gray-600">
+              Hasil pencarian untuk: <span className="font-bold">"{searchQuery}"</span>
+            </p>
+          ) : (
+            <p className="mt-4 text-lg text-gray-600">Temukan semua produk terbaik kami dalam satu tempat.</p>
+          )}
         </Motion.header>
-      
+
         <div className="flex gap-2 sm:gap-4 p-4 justify-center flex-wrap sticky top-[80px] bg-gray-50/80 backdrop-blur-sm z-40">
           {categories.map((cat) => (
             <button
@@ -98,21 +105,31 @@ const Katalog = () => {
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
                 variants={fadeInUp}
-                transition={{ delay: index * 0.05 }}
+                // Hapus transition delay dari sini agar tidak mengganggu Link
               >
+                {/* ====================================================== */}
+                {/* PERUBAHAN UTAMA DIMULAI DI SINI            */}
+                {/* ====================================================== */}
+
                 <Link
-                  to={`/product/${product.productID}`}
-                  className="border rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300 block bg-white group"
+                  to={`/produk/${product._id}`} // Tentukan URL tujuan
+                  className=" bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col"
                 >
-                  <div className="relative">
-                    <img
-                      src={product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/300"}
-                      alt={product.name}
-                      className="w-full h-48 object-cover"
-                    />
+                  <div className="relative w-full h-48 bg-gray-200">
+                    {product.images && product.images.length > 0 ? (
+                      <img
+                        src={`http://localhost:5000${product.images[0]}`}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                        No Image
+                      </div>
+                    )}
                   </div>
-                  <div className="p-4">
-                    <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-red-600 transition-colors">
+                  <div className="p-4 flex flex-col flex-grow">
+                    <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-red-600 transition-colors flex-grow">
                       {product.name}
                     </p>
                     <p className="text-md font-bold text-gray-900 mt-1">
@@ -120,6 +137,10 @@ const Katalog = () => {
                     </p>
                   </div>
                 </Link>
+
+                {/* ====================================================== */}
+                {/* PERUBAHAN UTAMA BERAKHIR DI SINI            */}
+                {/* ====================================================== */}
               </Motion.div>
             ))
           ) : (
