@@ -21,28 +21,44 @@ const fadeInUp = {
   }),
 };
 
-// Data Layanan
-const steps = [
-  { icon: "🧠", title: "Berpengalaman", desc: "Didukung oleh pengalaman sejak 2022, kami memahami kebutuhan desain kemasan yang tepat untuk setiap brand." },
-  { icon: "🎨", title: "Desain Eksklusif", desc: "Pilih dari koleksi kemasan premium yang dirancang dengan estetika dan fungsionalitas tinggi." },
-  { icon: "⚡", title: "Cepat", desc: "Proses pengerjaan dan pengiriman yang efisien memastikan pesanan Anda tiba tepat waktu tanpa mengorbankan kualitas." },
+// Data Layanan statis (sebelumnya bernama 'steps')
+const servicesData = [
+  {
+    icon: "🧠",
+    title: "Berpengalaman",
+    desc: "Didukung oleh pengalaman sejak 2022, kami memahami kebutuhan desain kemasan yang tepat untuk setiap brand.",
+  },
+  {
+    icon: "🎨",
+    title: "Desain Eksklusif",
+    desc: "Pilih dari koleksi kemasan premium yang dirancang dengan estetika dan fungsionalitas tinggi.",
+  },
+  {
+    icon: "⚡",
+    title: "Cepat",
+    desc: "Proses pengerjaan dan pengiriman yang efisien memastikan pesanan Anda tiba tepat waktu tanpa mengorbankan kualitas.",
+  },
 ];
 
-// PERBAIKAN: Nama komponen disamakan menjadi 'Services'
 const Services = () => {
-  const [pageData, setPageData] = useState({ cards: [{},{},{}], whatsappUrl: '', googleMapsUrl: '' });
+  const [pageData, setPageData] = useState({
+    cards: [{}, {}, {}],
+    whatsappUrl: "",
+    googleMapsUrl: "",
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/service");
-        // Memastikan data yang diterima adalah objek yang valid sebelum di-set
-        if (res.data && typeof res.data === 'object') {
+        if (res.data && typeof res.data === "object") {
           setPageData(res.data);
         } else {
-          // Tetap menggunakan data awal jika respons tidak valid
-          console.error("Data yang diterima dari server tidak valid:", res.data);
+          console.error(
+            "Data yang diterima dari server tidak valid:",
+            res.data
+          );
         }
       } catch (error) {
         console.error("Gagal memuat data halaman layanan:", error);
@@ -58,7 +74,8 @@ const Services = () => {
       {/* HERO */}
       <section className="text-center py-20 px-4 bg-gradient-to-r from-[#5C1717] to-[#99666E]">
         <h1 className="text-2xl md:text-xl font-bold mb-4 py-10 text-white">
-          <HeroTitle />
+          {/* PERBAIKAN: Menggunakan teks langsung karena komponen HeroTitle tidak ada */}
+          Temukan Solusi Kemasan Terbaik untuk Brand Anda
         </h1>
         <Motion.p
           className="max-w-2xl mx-auto mb-6 text-white"
@@ -99,7 +116,8 @@ const Services = () => {
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
-          {services.map((s, i) => (
+          {/* PERBAIKAN: Menggunakan variabel 'servicesData' yang sudah didefinisikan */}
+          {servicesData.map((s, i) => (
             <Motion.div
               key={s.title}
               custom={i}
@@ -130,25 +148,36 @@ const Services = () => {
           <div className="text-center text-white">Memuat layanan...</div>
         ) : (
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {pageData.cards && pageData.cards.map((card, i) => (
-              <Motion.div
-                key={i}
-                custom={i}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={zoomIn}
-                className="text-center bg-white/10 p-4 rounded-lg backdrop-blur-sm"
-              >
-                <img
-                  src={card.imageUrl ? `http://localhost:5000${card.imageUrl}` : 'https://via.placeholder.com/400x300'}
-                  alt={card.title || 'Layanan'}
-                  className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover"
-                />
-                <h3 className="text-lg font-semibold mb-2 text-white">{card.title || 'Judul Layanan'}</h3>
-                <p className="text-white/80 text-sm">{card.description || 'Deskripsi layanan akan muncul di sini.'}</p>
-              </Motion.div>
-            ))}
+            {pageData.cards &&
+              pageData.cards.map((card, i) => (
+                <Motion.div
+                  key={i}
+                  custom={i}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  // PERBAIKAN: Menggunakan 'fadeInUp' karena 'zoomIn' tidak ada
+                  variants={fadeInUp}
+                  className="text-center bg-white/10 p-4 rounded-lg backdrop-blur-sm"
+                >
+                  <img
+                    src={
+                      card.imageUrl
+                        ? `http://localhost:5000${card.imageUrl}`
+                        : "https://via.placeholder.com/400x300"
+                    }
+                    alt={card.title || "Layanan"}
+                    className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover"
+                  />
+                  <h3 className="text-lg font-semibold mb-2 text-white">
+                    {card.title || "Judul Layanan"}
+                  </h3>
+                  <p className="text-white/80 text-sm">
+                    {card.description ||
+                      "Deskripsi layanan akan muncul di sini."}
+                  </p>
+                </Motion.div>
+              ))}
           </div>
         )}
       </section>
@@ -161,7 +190,8 @@ const Services = () => {
               Siap Membuat Sesuatu yang Spesial?
             </h2>
             <p className="text-gray-600 max-w-md mb-6 mx-auto md:mx-0">
-              Hubungi kami hari ini untuk mendiskusikan kebutuhan kemasan Anda dan biarkan kami membantu menciptakan pengalaman yang berkesan.
+              Hubungi kami hari ini untuk mendiskusikan kebutuhan kemasan Anda
+              dan biarkan kami membantu menciptakan pengalaman yang berkesan.
             </p>
             <a
               href={pageData.whatsappUrl}
@@ -176,11 +206,13 @@ const Services = () => {
 
           <div className="w-full h-80 md:h-96 bg-gray-200 rounded-lg shadow-md overflow-hidden">
             {loading ? (
-              <div className="flex items-center justify-center h-full text-gray-500">Memuat Peta...</div>
+              <div className="flex items-center justify-center h-full text-gray-500">
+                Memuat Peta...
+              </div>
             ) : (
               <iframe
                 src={pageData.googleMapsUrl}
-                className="w-full h-full border-0" // PERBAIKAN: Kelas border-10 tidak valid
+                className="w-full h-full border-0"
                 allowFullScreen=""
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -194,5 +226,5 @@ const Services = () => {
   );
 };
 
-// PERBAIKAN: Nama komponen yang diekspor disamakan menjadi 'Services'
+// PERBAIKAN UTAMA: Nama komponen yang diekspor disamakan menjadi 'Services'
 export default Services;
