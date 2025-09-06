@@ -20,11 +20,18 @@ const Katalog = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const categories = ["All", "Paper bag", "Gift box", "Gift card", "Ribbon", "Kotak sepatu"];
+  const categories = [
+    "All",
+    "Paper bag",
+    "Gift box",
+    "Gift card",
+    "Ribbon",
+    "Kotak sepatu",
+  ];
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const [searchParams] = useSearchParams();
-  const searchQuery = searchParams.get('search') || '';
+  const searchQuery = searchParams.get("search") || "";
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -58,7 +65,9 @@ const Katalog = () => {
     });
 
   if (loading) {
-    return <div className="pt-24 text-center min-h-screen">Memuat produk...</div>;
+    return (
+      <div className="pt-24 text-center min-h-screen">Memuat produk...</div>
+    );
   }
 
   return (
@@ -70,13 +79,18 @@ const Katalog = () => {
           animate="visible"
           variants={fadeInUp}
         >
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Katalog Produk</h1>
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+            Katalog Produk
+          </h1>
           {searchQuery ? (
             <p className="mt-4 text-lg text-gray-600">
-              Hasil pencarian untuk: <span className="font-bold">"{searchQuery}"</span>
+              Hasil pencarian untuk:{" "}
+              <span className="font-bold">"{searchQuery}"</span>
             </p>
           ) : (
-            <p className="mt-4 text-lg text-gray-600">Temukan semua produk terbaik kami dalam satu tempat.</p>
+            <p className="mt-4 text-lg text-gray-600">
+              Temukan semua produk terbaik kami dalam satu tempat.
+            </p>
           )}
         </Motion.header>
 
@@ -108,13 +122,13 @@ const Katalog = () => {
                 // Hapus transition delay dari sini agar tidak mengganggu Link
               >
                 <Link
-                  to={`/product/${product._id}`} // Tentukan URL tujuan
+                  to={`/product/${product.slug}`} // <-- UBAH DARI product._id MENJADI product.slug
                   className=" bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col"
                 >
                   <div className="relative w-full h-48 bg-gray-200">
-                    {product.images && product.images.length > 0 ? (
+                    {product.colors && product.colors.length > 0 ? (
                       <img
-                        src={`http://localhost:5000${product.images[0]}`}
+                        src={`http://localhost:5000${product.colors[0].imageUrl}`}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
@@ -136,7 +150,9 @@ const Katalog = () => {
               </Motion.div>
             ))
           ) : (
-            <p className="col-span-full text-center text-gray-500 py-10">Produk tidak ditemukan.</p>
+            <p className="col-span-full text-center text-gray-500 py-10">
+              Produk tidak ditemukan.
+            </p>
           )}
         </div>
       </div>

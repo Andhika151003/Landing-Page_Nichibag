@@ -7,220 +7,219 @@ import {
   Upload,
   X,
   ImageOff,
-  Palette,
-  Tag,
   Percent,
   Link as LinkIcon,
-} from "lucide-react"; // Import LinkIcon
+} from "lucide-react";
 import Swal from "sweetalert2";
 
 // Daftar warna rekomendasi
 const recommendedColors = [
-  { name: "Merah", hex: "#ef4444" },
-  { name: "Pink", hex: "#ec4899" },
-  { name: "Ungu", hex: "#a855f7" },
-  { name: "Biru", hex: "#3b82f6" },
-  { name: "Hijau", hex: "#22c55e" },
-  { name: "Kuning", hex: "#eab308" },
-  { name: "Oranye", hex: "#f97316" },
-  { name: "Coklat", hex: "#845427" },
-  { name: "Abu-abu", hex: "#6b7280" },
-  { name: "Hitam", hex: "#000000" },
-  { name: "Putih", hex: "#ffffff" },
-  { name: "Light Beige", hex: "#F5F5DC" },
-  { name: "Gold", hex: "#FFD700" },
-  { name: "Silver", hex: "#C0C0C0" },
+    { name: "Merah", hex: "#ef4444" },
+    { name: "Pink", hex: "#ec4899" },
+    { name: "Ungu", hex: "#a855f7" },
+    { name: "Biru", hex: "#3b82f6" },
+    { name: "Hijau", hex: "#22c55e" },
+    { name: "Kuning", hex: "#eab308" },
+    { name: "Oranye", hex: "#f97316" },
+    { name: "Coklat", hex: "#845427" },
+    { name: "Abu-abu", hex: "#6b7280" },
+    { name: "Hitam", hex: "#000000" },
+    { name: "Putih", hex: "#ffffff" },
+    { name: "Light Beige", hex: "#F5F5DC" },
+    { name: "Gold", hex: "#FFD700" },
+    { name: "Silver", hex: "#C0C0C0" },
 ];
 
 const KelolaProduk = () => {
-  const [products, setProducts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
-  const [newColor, setNewColor] = useState({ name: "", hex: "#000000" });
-  const categories = [
-    "Paper bag",
-    "Gift box",
-    "Gift card",
-    "Ribbon",
-    "Kotak sepatu",
-  ];
-  const [colorImageFile, setColorImageFile] = useState(null);
-  const [colorImagePreview, setColorImagePreview] = useState("");
+    const [products, setProducts] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentProduct, setCurrentProduct] = useState(null);
+    const [newColor, setNewColor] = useState({ name: "", hex: "#000000" });
+    const categories = [
+        "Paper bag",
+        "Gift box",
+        "Gift card",
+        "Ribbon",
+        "Kotak sepatu",
+    ];
+    const [colorImageFile, setColorImageFile] = useState(null);
+    const [colorImagePreview, setColorImagePreview] = useState("");
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/products");
-      setProducts(Array.isArray(res.data) ? res.data : []);
-    } catch (error) {
-      Swal.fire("Error", "Gagal memuat data produk.", "error");
-    }
-  };
-
-  const handleOpenModal = (product = null) => {
-    if (product) {
-      setIsEditing(true);
-      setCurrentProduct({
-        ...product,
-        images: product.images || [],
-        colors: product.colors || [],
-        discountPercentage: product.discountPercentage || 0,
-        orderLink: product.orderLink || "", // Inisialisasi orderLink
-      });
-    } else {
-      setIsEditing(false);
-      setCurrentProduct({
-        name: "",
-        description: "",
-        price: "",
-        productCode: "",
-        category: categories[0],
-        images: [],
-        colors: [],
-        discountPercentage: 0,
-        orderLink: "", // Inisialisasi orderLink
-      });
-    }
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => setIsModalOpen(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentProduct((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = async (e) => {
-    const files = e.target.files;
-    if (!files.length) return;
-
-    const formData = new FormData();
-    for (const file of files) formData.append("images", file);
-
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/upload",
-        formData
-      );
-      setCurrentProduct((prev) => ({
-        ...prev,
-        images: [...(prev.images || []), ...(res.data?.imageUrls || [])],
-      }));
-    } catch (error) {
-      Swal.fire("Error", "Gagal mengupload gambar.", "error");
-    }
-  };
-
-  const handleRemoveImage = (index) =>
-    setCurrentProduct((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-
-  const handleAddColor = async () => {
-    // Validasi: pastikan semua input terisi
-    if (!newColor.name || !newColor.hex || !colorImageFile) {
-      Swal.fire(
-        "Peringatan",
-        "Nama warna, kode hex, dan gambar wajib diisi.",
-        "warning"
-      );
-      return;
-    }
-
-    // 1. Upload gambar untuk warna ini
-    const formData = new FormData();
-    formData.append("images", colorImageFile);
-
-    try {
-      const uploadRes = await axios.post(
-        "http://localhost:5000/api/upload",
-        formData
-      );
-      const imageUrl = uploadRes.data.imageUrls[0];
-
-      // 2. Tambahkan data warna (termasuk imageUrl) ke state
-      setCurrentProduct((prev) => ({
-        ...prev,
-        colors: [...(prev.colors || []), { ...newColor, imageUrl }],
-      }));
-
-      // 3. Reset form warna
-      setNewColor({ name: "", hex: "#000000" });
-      setColorImageFile(null);
-      setColorImagePreview("");
-    } catch (error) {
-      Swal.fire("Error", "Gagal meng-upload gambar untuk warna.", "error");
-    }
-  };
-
-  const handleSelectRecommendedColor = (color) => {
-    // Hanya mengisi input, tidak langsung menambahkan
-    setNewColor({ name: color.name, hex: color.hex });
-  };
-
-  const handleRemoveColor = (index) =>
-    setCurrentProduct((prev) => ({
-      ...prev,
-      colors: prev.colors.filter((_, i) => i !== index),
-    }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Hapus field 'images' yang lama sebelum mengirim
-    const { images, ...productData } = currentProduct;
-    
-    const url = isEditing ? `http://localhost:5000/products/${productData._id}` : "http://localhost:5000/products";
-    const method = isEditing ? 'put' : 'post';
-
-    try {
-      // Kirim productData yang sudah bersih
-      await axios[method](url, productData);
-      Swal.fire("Sukses!", `Produk berhasil disimpan.`, "success");
-      fetchProducts();
-      handleCloseModal();
-    } catch (error) {
-      Swal.fire("Error", `Gagal menyimpan produk: ${error.response?.data?.msg || error.message}`, "error");
-    }
-};
-
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: "Anda Yakin?",
-      text: "Produk ini akan dihapus permanen!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonText: "Batal",
-      confirmButtonText: "Ya, hapus!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
+    const fetchProducts = async () => {
         try {
-          await axios.delete(`http://localhost:5000/products/${id}`);
-          Swal.fire("Terhapus!", "Produk berhasil dihapus.", "success");
-          fetchProducts();
+            const res = await axios.get("http://localhost:5000/products");
+            setProducts(Array.isArray(res.data) ? res.data : []);
         } catch (error) {
-          Swal.fire("Error", "Gagal menghapus produk.", "error");
+            Swal.fire("Error", "Gagal memuat data produk.", "error");
         }
-      }
-    });
-  };
+    };
 
-  const handleColorFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setColorImageFile(file);
-      setColorImagePreview(URL.createObjectURL(file));
-    }
-  };
+    const handleOpenModal = (product = null) => {
+        if (product) {
+            setIsEditing(true);
+            setCurrentProduct({
+                ...product,
+                images: product.images || [], // Tetap ada untuk konsistensi struktur
+                colors: product.colors || [],
+                discountPercentage: product.discountPercentage || 0,
+                orderLink: product.orderLink || "",
+            });
+        } else {
+            setIsEditing(false);
+            setCurrentProduct({
+                name: "",
+                description: "",
+                price: "",
+                productCode: "",
+                category: categories[0],
+                images: [], // Tetap ada untuk konsistensi struktur
+                colors: [],
+                discountPercentage: 0,
+                orderLink: "",
+            });
+        }
+        setIsModalOpen(true);
+    };
 
-  return (
-    <div className="p-8 max-w-7xl mx-auto">
+    const handleCloseModal = () => setIsModalOpen(false);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setCurrentProduct((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // Fungsi ini tidak terpakai tapi dibiarkan agar tidak mengubah struktur
+    const handleFileChange = async (e) => {
+        const files = e.target.files;
+        if (!files.length) return;
+        const formData = new FormData();
+        for (const file of files) formData.append("images", file);
+        try {
+            const res = await axios.post("http://localhost:5000/api/upload", formData);
+            setCurrentProduct((prev) => ({
+                ...prev,
+                images: [...(prev.images || []), ...(res.data?.imageUrls || [])],
+            }));
+        } catch (error) {
+            Swal.fire("Error", "Gagal mengupload gambar.", "error");
+        }
+    };
+
+    // Fungsi ini tidak terpakai tapi dibiarkan agar tidak mengubah struktur
+    const handleRemoveImage = (index) =>
+        setCurrentProduct((prev) => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index),
+        }));
+
+    const handleAddColor = async () => {
+        if (!newColor.name || !newColor.hex || !colorImageFile) {
+            Swal.fire("Peringatan", "Nama warna, kode hex, dan gambar wajib diisi.", "warning");
+            return;
+        }
+
+        // PERBAIKAN 1: Cek duplikasi SEBELUM upload gambar
+        const isDuplicate = currentProduct.colors.some(
+            (color) => color.name.toLowerCase() === newColor.name.trim().toLowerCase()
+        );
+
+        if (isDuplicate) {
+            Swal.fire("Peringatan", `Warna "${newColor.name}" sudah ada.`, "warning");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("images", colorImageFile);
+
+        try {
+            const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);
+            const imageUrl = uploadRes.data.imageUrls[0];
+
+            setCurrentProduct((prev) => ({
+                ...prev,
+                colors: [...(prev.colors || []), { ...newColor, imageUrl }],
+            }));
+
+            setNewColor({ name: "", hex: "#000000" });
+            setColorImageFile(null);
+            setColorImagePreview("");
+        } catch (error) {
+            Swal.fire("Error", "Gagal meng-upload gambar untuk warna.", "error");
+        }
+    };
+
+    const handleSelectRecommendedColor = (color) => {
+        setNewColor({ name: color.name, hex: color.hex });
+    };
+
+    const handleRemoveColor = (index) =>
+        setCurrentProduct((prev) => ({
+            ...prev,
+            colors: prev.colors.filter((_, i) => i !== index),
+        }));
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // PERBAIKAN 2: Validasi agar produk tidak disimpan tanpa warna/gambar
+        if (!currentProduct.colors || currentProduct.colors.length === 0) {
+            Swal.fire("Peringatan", "Produk harus memiliki minimal satu varian warna.", "warning");
+            return;
+        }
+        
+        const { images, ...productData } = currentProduct;
+        
+        const url = isEditing ? `http://localhost:5000/products/${productData._id}` : "http://localhost:5000/products";
+        const method = isEditing ? 'put' : 'post';
+
+        try {
+            await axios[method](url, productData);
+            Swal.fire("Sukses!", `Produk berhasil disimpan.`, "success");
+            fetchProducts();
+            handleCloseModal();
+        } catch (error) {
+            Swal.fire("Error", `Gagal menyimpan produk: ${error.response?.data?.msg || error.message}`, "error");
+        }
+    };
+
+    const handleDelete = (id) => {
+        Swal.fire({
+            title: "Anda Yakin?",
+            text: "Produk ini akan dihapus permanen!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonText: "Batal",
+            confirmButtonText: "Ya, hapus!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await axios.delete(`http://localhost:5000/products/${id}`);
+                    Swal.fire("Terhapus!", "Produk berhasil dihapus.", "success");
+                    fetchProducts();
+                } catch (error) {
+                    Swal.fire("Error", "Gagal menghapus produk.", "error");
+                }
+            }
+        });
+    };
+
+    const handleColorFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setColorImageFile(file);
+            setColorImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    return (
+      // ... sisa JSX return Anda tidak berubah sama sekali ...
+      <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Kelola Produk</h1>
         <button
@@ -245,7 +244,6 @@ const KelolaProduk = () => {
             {products.map((product) => (
               <tr key={product._id} className="border-b hover:bg-gray-50">
                <td className="p-4">
-  {/* LOGIKA BARU: Ambil gambar dari warna pertama */}
   {product.colors && product.colors.length > 0 ? (
     <img 
       src={`http://localhost:5000${product.colors[0].imageUrl}`} 
@@ -514,7 +512,7 @@ const KelolaProduk = () => {
         </div>
       )}
     </div>
-  );
+    );
 };
 
 export default KelolaProduk;

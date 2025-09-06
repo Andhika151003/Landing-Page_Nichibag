@@ -23,6 +23,18 @@ export const getProductById = async (req, res) => {
   }
 };
 
+export const getProductBySlug = async (req, res) => {
+  try {
+    const product = await Product.findOne({ slug: req.params.slug });
+    if (!product) {
+      return res.status(404).json({ msg: "Produk tidak ditemukan" });
+    }
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ msg: "Gagal mengambil data produk", error: error.message });
+  }
+};
+
 // Membuat produk baru
 export const createProduct = async (req, res) => {
   try {

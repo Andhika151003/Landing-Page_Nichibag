@@ -6,26 +6,26 @@ import axios from "axios";
 import { ShoppingCart, ChevronLeft, ChevronRight, ImageOff, ArrowLeft } from "lucide-react";
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // State untuk sinkronisasi
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      if (!id) {
+      if (!slug) {
         setLoading(false);
-        setError("ID produk tidak valid.");
+        setError("Slug produk tidak valid.");
         return;
       }
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`http://localhost:5000/products/${id}`);
+        const response = await axios.get(`http://localhost:5000/products/slug/${slug}`);
         const productData = response.data;
         setProduct(productData);
 
@@ -44,7 +44,7 @@ const ProductDetail = () => {
     };
 
     fetchProductDetails();
-  }, [id]);
+  }, [slug]);
 
   // FUNGSI BARU UNTUK SINKRONISASI
   const handleColorSelect = (color, index) => {
@@ -90,11 +90,11 @@ const ProductDetail = () => {
       </div>
     );
   }
-  
+
   if (!product) {
     return <p className="pt-24 text-center min-h-screen">Produk tidak dapat ditemukan.</p>;
   }
-  
+
   // Ambil semua gambar dari setiap warna
   const productImages = product.colors?.map(color => color.imageUrl) || [];
   const hasDiscount = product.discountPercentage > 0 && product.discountPrice != null;
@@ -177,7 +177,7 @@ const ProductDetail = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="prose prose-sm max-w-none text-gray-600 mt-8">
               <h3 className="font-bold text-gray-800">Deskripsi Produk:</h3>
               <p>{product.description}</p>
