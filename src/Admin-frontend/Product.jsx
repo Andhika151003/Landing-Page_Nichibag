@@ -9,21 +9,23 @@ import {
   ImageOff,
   Percent,
   Link as LinkIcon,
+  Box,
+  Weight,
+  Ruler,
 } from "lucide-react";
 import Swal from "sweetalert2";
 
-// --- PENAMBAHAN 1: Kamus untuk memetakan nama warna ke kode hex ---
 const colorNameToHex = {
   merah: "#ff0000",
-  "merah hati": "#b22222", // firebrick
+  "merah hati": "#b22222",
   pink: "#ffc0cb",
   oranye: "#ffa500",
   kuning: "#ffff00",
   hijau: "#008000",
-  "hijau daun": "#228b22", // forestgreen
+  "hijau daun": "#228b22",
   biru: "#0000ff",
-  "biru laut": "#1e90ff", // dodgerblue
-  "biru langit": "#87ceeb", // skyblue
+  "biru laut": "#1e90ff",
+  "biru langit": "#87ceeb",
   ungu: "#800080",
   coklat: "#a52a2a",
   hitam: "#000000",
@@ -74,6 +76,13 @@ const KelolaProduk = () => {
     fetchProducts();
   }, []);
 
+  // --- Cleanup function for image previews ---
+  useEffect(() => {
+    return () => {
+      colorImagePreviews.forEach((file) => URL.revokeObjectURL(file));
+    };
+  }, [colorImagePreviews]);
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get("http://localhost:5000/products");
@@ -91,6 +100,9 @@ const KelolaProduk = () => {
         colors: product.colors || [],
         discountPercentage: product.discountPercentage || 0,
         orderLink: product.orderLink || "",
+        weight: product.weight || 0,
+        material: product.material || "",
+        dimensions: product.dimensions || { length: 0, width: 0, height: 0 },
       });
     } else {
       setIsEditing(false);
@@ -103,6 +115,9 @@ const KelolaProduk = () => {
         colors: [],
         discountPercentage: 0,
         orderLink: "",
+        weight: 0,
+        material: "",
+        dimensions: { length: 0, width: 0, height: 0 },
       });
     }
     setIsModalOpen(true);
@@ -111,20 +126,23 @@ const KelolaProduk = () => {
   };
 
   const handleCloseModal = () => setIsModalOpen(false);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setCurrentProduct((prev) => ({ ...prev, [name]: value }));
+    if (name.startsWith("dimensions.")) {
+      const field = name.split(".")[1];
+      setCurrentProduct((prev) => ({
+        ...prev,
+        dimensions: { ...prev.dimensions, [field]: value },
+      }));
+    } else {
+      setCurrentProduct((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  // --- PENAMBAHAN 2: Fungsi baru untuk menangani input nama warna ---
   const handleColorNameChange = (e) => {
     const name = e.target.value;
     const lowerCaseName = name.toLowerCase().trim();
-
-    // Cek jika nama warna ada di kamus, jika tidak, gunakan warna yang sudah ada
     const hex = colorNameToHex[lowerCaseName] || newColor.hex;
-
     setNewColor({ name: name, hex: hex });
   };
 
@@ -137,10 +155,11 @@ const KelolaProduk = () => {
       );
       return;
     }
-    const isDuplicate = currentProduct.colors.some(
-      (color) => color.name.toLowerCase() === newColor.name.trim().toLowerCase()
-    );
-    if (isDuplicate) {
+    if (
+      currentProduct.colors.some(
+        (c) => c.name.toLowerCase() === newColor.name.trim().toLowerCase()
+      )
+    ) {
       Swal.fire("Peringatan", `Warna "${newColor.name}" sudah ada.`, "warning");
       return;
     }
@@ -153,10 +172,12 @@ const KelolaProduk = () => {
         "http://localhost:5000/api/upload",
         formData
       );
-      const imageUrls = uploadRes.data.imageUrls;
       setCurrentProduct((prev) => ({
         ...prev,
-        colors: [...(prev.colors || []), { ...newColor, imageUrls }],
+        colors: [
+          ...(prev.colors || []),
+          { ...newColor, imageUrls: uploadRes.data.imageUrls },
+        ],
       }));
       setNewColor({ name: "", hex: "#000000" });
       setColorImageFiles([]);
@@ -169,7 +190,6 @@ const KelolaProduk = () => {
   const handleSelectRecommendedColor = (color) => {
     setNewColor({ name: color.name, hex: color.hex });
   };
-
   const handleRemoveColor = (index) =>
     setCurrentProduct((prev) => ({
       ...prev,
@@ -230,15 +250,24 @@ const KelolaProduk = () => {
   const handleColorFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
-      // Hapus preview lama sebelum membuat yang baru untuk mencegah memory leak
-      colorImagePreviews.forEach((previewUrl) =>
-        URL.revokeObjectURL(previewUrl)
-      );
+      // Tambahkan file baru ke array yang sudah ada (jangan timpa)
+      setColorImageFiles((prev) => [...prev, ...files]);
 
-      setColorImageFiles(files);
-      const previews = files.map((file) => URL.createObjectURL(file));
-      setColorImagePreviews(previews);
+      // Buat preview untuk file baru saja
+      const newPreviews = files.map((file) => URL.createObjectURL(file));
+
+      // Tambahkan preview baru ke array preview yang sudah ada
+      setColorImagePreviews((prev) => [...prev, ...newPreviews]);
     }
+  };
+
+  const handleRemoveColorImage = (index) => {
+    // Revoke URL preview yang akan dihapus
+    URL.revokeObjectURL(colorImagePreviews[index]);
+
+    // Hapus dari array files dan previews
+    setColorImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setColorImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -252,7 +281,6 @@ const KelolaProduk = () => {
           <PlusCircle size={20} /> Tambah Produk
         </button>
       </div>
-
       <div className="bg-white rounded-lg shadow-md overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 font-medium">
@@ -267,9 +295,7 @@ const KelolaProduk = () => {
             {products.map((product) => (
               <tr key={product._id} className="border-b hover:bg-gray-50">
                 <td className="p-4">
-                  {product.colors &&
-                  product.colors.length > 0 &&
-                  product.colors[0].imageUrls.length > 0 ? (
+                  {product.colors?.[0]?.imageUrls?.[0] ? (
                     <img
                       src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
                       alt={product.name}
@@ -309,101 +335,307 @@ const KelolaProduk = () => {
 
       {isModalOpen && currentProduct && (
         <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 z-10"
+            >
+              <X size={24} />
+            </button>
             <h2 className="text-2xl font-bold mb-6">
               {isEditing ? "Edit Produk" : "Tambah Produk Baru"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* NAMA PRODUK & KODE PRODUK */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  name="name"
-                  value={currentProduct.name}
-                  onChange={handleChange}
-                  placeholder="Nama Produk"
-                  className="w-full p-3 border rounded-lg"
-                  required
-                />
-                <input
-                  type="text"
-                  name="productCode"
-                  value={currentProduct.productCode}
-                  onChange={handleChange}
-                  placeholder="Kode Produk (cth: NB-001)"
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-
-              <select
-                name="category"
-                value={currentProduct.category}
-                onChange={handleChange}
-                className="w-full p-3 border rounded-lg bg-white"
-                required
-              >
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
-                    Rp
-                  </span>
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Nama Produk
+                  </label>
                   <input
-                    type="number"
-                    name="price"
-                    value={currentProduct.price}
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={currentProduct.name}
                     onChange={handleChange}
-                    placeholder="Harga"
-                    className="w-full p-3 pl-8 border rounded-lg"
+                    placeholder="Nama Produk"
+                    className="w-full p-3 border rounded-lg"
                     required
                   />
                 </div>
-                <div className="relative">
+                <div>
+                  <label
+                    htmlFor="productCode"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Kode Produk
+                  </label>
                   <input
-                    type="number"
-                    name="discountPercentage"
-                    value={currentProduct.discountPercentage}
+                    type="text"
+                    id="productCode"
+                    name="productCode"
+                    value={currentProduct.productCode}
                     onChange={handleChange}
-                    placeholder="Diskon"
-                    className="w-full p-3 pr-8 border rounded-lg"
-                  />
-                  <Percent
-                    size={18}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    placeholder="cth: NB-001"
+                    className="w-full p-3 border rounded-lg"
                   />
                 </div>
               </div>
 
-              <textarea
-                name="description"
-                value={currentProduct.description}
-                onChange={handleChange}
-                placeholder="Deskripsi Produk"
-                className="w-full p-3 border rounded-lg"
-                rows="4"
-                required
-              />
-
-              <div className="relative">
-                <input
-                  type="url"
-                  name="orderLink"
-                  value={currentProduct.orderLink}
+              {/* KATEGORI */}
+              <div>
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Kategori
+                </label>
+                <select
+                  id="category"
+                  name="category"
+                  value={currentProduct.category}
                   onChange={handleChange}
-                  placeholder="Link Pesan Sekarang (cth: https://wa.me/628...)"
-                  className="w-full p-3 pl-10 border rounded-lg"
-                />
-                <LinkIcon
-                  size={18}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="w-full p-3 border rounded-lg bg-white"
+                  required
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* HARGA & DISKON */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Harga
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                      Rp
+                    </span>
+                    <input
+                      type="number"
+                      id="price"
+                      name="price"
+                      value={currentProduct.price}
+                      onChange={handleChange}
+                      placeholder="Harga"
+                      className="w-full p-3 pl-8 border rounded-lg"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="discountPercentage"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Diskon (%)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      id="discountPercentage"
+                      name="discountPercentage"
+                      value={currentProduct.discountPercentage}
+                      onChange={handleChange}
+                      placeholder="0"
+                      className="w-full p-3 pr-8 border rounded-lg"
+                    />
+                    <Percent
+                      size={18}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* DESKRIPSI */}
+              <div>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Deskripsi Produk
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={currentProduct.description}
+                  onChange={handleChange}
+                  placeholder="Deskripsi Produk"
+                  className="w-full p-3 border rounded-lg"
+                  rows="4"
+                  required
                 />
               </div>
 
+              {/* DETAIL SPESIFIKASI - DIPINDAHKAN KE ATAS */}
+              {/* DETAIL SPESIFIKASI */}
+              <div className="space-y-4 pt-4 border-t">
+                <label className="block text-base font-semibold text-gray-800">
+                  Detail Spesifikasi
+                </label>
+
+                {/* Bahan & Berat */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      htmlFor="material"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Bahan
+                    </label>
+                    <div className="relative">
+                      <Box
+                        size={18}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="text"
+                        id="material"
+                        name="material"
+                        value={currentProduct.material}
+                        onChange={handleChange}
+                        placeholder="cth: Kraft Paper"
+                        className="w-full p-3 pl-10 border rounded-lg"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="weight"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Berat (gram)
+                    </label>
+                    <div className="relative">
+                      <Weight
+                        size={18}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="weight"
+                        name="weight"
+                        value={currentProduct.weight}
+                        onChange={handleChange}
+                        placeholder="0"
+                        className="w-full p-3 pl-10 border rounded-lg"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ukuran dengan Label Masing-masing */}
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label
+                      htmlFor="dimensions_length"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Panjang (cm)
+                    </label>
+                    <div className="relative">
+                      <Ruler
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="dimensions_length"
+                        name="dimensions.length"
+                        value={currentProduct.dimensions.length}
+                        onChange={handleChange}
+                        placeholder="0"
+                        className="w-full p-2 pl-9 border rounded-md"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="dimensions_width"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Lebar (cm)
+                    </label>
+                    <div className="relative">
+                      <Ruler
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="dimensions_width"
+                        name="dimensions.width"
+                        value={currentProduct.dimensions.width}
+                        onChange={handleChange}
+                        placeholder="0"
+                        className="w-full p-2 pl-9 border rounded-md"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="dimensions_height"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Tinggi (cm)
+                    </label>
+                    <div className="relative">
+                      <Ruler
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="dimensions_height"
+                        name="dimensions.height"
+                        value={currentProduct.dimensions.height}
+                        onChange={handleChange}
+                        placeholder="0"
+                        className="w-full p-2 pl-9 border rounded-md"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* LINK ORDER */}
+              <div>
+                <label
+                  htmlFor="orderLink"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Link Button Order
+                </label>
+                <div className="relative">
+                  <LinkIcon
+                    size={18}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="url"
+                    id="orderLink"
+                    name="orderLink"
+                    value={currentProduct.orderLink}
+                    onChange={handleChange}
+                    placeholder="cth: https://wa.me/628..."
+                    className="w-full p-3 pl-10 border rounded-lg"
+                  />
+                </div>
+              </div>
+
+              {/* KELOLA WARNA & GAMBAR VARIASI */}
               <div className="space-y-4 pt-4 border-t">
                 <label className="block text-base font-semibold text-gray-800">
                   Kelola Warna & Gambar Variasi
@@ -412,7 +644,6 @@ const KelolaProduk = () => {
                   Setiap produk harus memiliki minimal satu varian warna. Anda
                   bisa mengupload banyak gambar untuk satu warna.
                 </p>
-
                 <div className="p-4 border rounded-lg bg-gray-50 space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -426,7 +657,6 @@ const KelolaProduk = () => {
                           }
                           className="h-10 w-12 p-1 rounded-md border-gray-300 cursor-pointer"
                         />
-                        {/* --- PERUBAHAN 3: Menggunakan handleColorNameChange --- */}
                         <input
                           type="text"
                           value={newColor.name}
@@ -452,29 +682,37 @@ const KelolaProduk = () => {
                           onChange={handleColorFileChange}
                           className="hidden"
                           accept="image/*"
-                          multiple // <-- PASTIKAN ATRIBUT INI ADA
+                          multiple
                         />
                       </label>
                     </div>
                   </div>
 
+                  {/* PRATINJAU MULTIPLE */}
                   {colorImagePreviews.length > 0 && (
                     <div>
                       <label className="text-sm font-medium">Pratinjau:</label>
-                      <div className="mt-2 flex flex-wrap gap-2 border p-2 rounded-md">
+                      <div className="mt-2 flex flex-wrap gap-2 border p-2 rounded-md bg-white">
                         {colorImagePreviews.map((preview, index) => (
-                          <img
-                            key={index}
-                            src={preview}
-                            alt={`Preview ${index + 1}`}
-                            className="w-16 h-16 rounded-md object-cover border"
-                          />
+                          <div key={index} className="relative">
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              className="w-20 h-20 rounded-md object-cover border-2 border-gray-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveColorImage(index)}
+                              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* Rekomendasi Warna */}
                   <div className="text-sm text-gray-600">
                     <p className="mb-2">Pilih dari rekomendasi:</p>
                     <div className="flex flex-wrap gap-2">

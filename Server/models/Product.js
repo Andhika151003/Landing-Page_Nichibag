@@ -46,6 +46,20 @@ const productSchema = new mongoose.Schema(
         trim: true,
         default: "", // Default kosong
     },
+    weight: {
+      type: Number, // dalam gram
+      default: 0,
+    },
+    material: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    dimensions: {
+      length: { type: Number, default: 0 }, // Panjang dalam cm
+      width: { type: Number, default: 0 },  // Lebar dalam cm
+      height: { type: Number, default: 0 }, // Tinggi dalam cm
+    },
   },
   {
     timestamps: true,
