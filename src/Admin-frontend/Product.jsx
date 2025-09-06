@@ -43,8 +43,8 @@ const KelolaProduk = () => {
         "Ribbon",
         "Kotak sepatu",
     ];
-    const [colorImageFile, setColorImageFile] = useState(null);
-    const [colorImagePreview, setColorImagePreview] = useState("");
+    const [colorImageFiles, setColorImageFiles] = useState([]);
+    const [colorImagePreviews, setColorImagePreviews] = useState([]);
 
     useEffect(() => {
         fetchProducts();
@@ -84,6 +84,8 @@ const KelolaProduk = () => {
             });
         }
         setIsModalOpen(true);
+        setColorImageFiles([]);
+        setColorImagePreviews([]);
     };
 
     const handleCloseModal = () => setIsModalOpen(false);
@@ -118,12 +120,11 @@ const KelolaProduk = () => {
         }));
 
     const handleAddColor = async () => {
-        if (!newColor.name || !newColor.hex || !colorImageFile) {
-            Swal.fire("Peringatan", "Nama warna, kode hex, dan gambar wajib diisi.", "warning");
+        if (!newColor.name || !newColor.hex || colorImageFiles.length === 0) {
+            Swal.fire("Peringatan", "Nama warna, kode hex, dan minimal satu gambar wajib diisi.", "warning");
             return;
         }
 
-        // PERBAIKAN 1: Cek duplikasi SEBELUM upload gambar
         const isDuplicate = currentProduct.colors.some(
             (color) => color.name.toLowerCase() === newColor.name.trim().toLowerCase()
         );
@@ -134,20 +135,24 @@ const KelolaProduk = () => {
         }
 
         const formData = new FormData();
-        formData.append("images", colorImageFile);
+        for (const file of colorImageFiles) {
+            formData.append("images", file);
+        }
 
         try {
+            // Upload semua gambar sekaligus
             const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);
-            const imageUrl = uploadRes.data.imageUrls[0];
+            const imageUrls = uploadRes.data.imageUrls; // Ini sudah berupa array
 
             setCurrentProduct((prev) => ({
                 ...prev,
-                colors: [...(prev.colors || []), { ...newColor, imageUrl }],
+                colors: [...(prev.colors || []), { ...newColor, imageUrls }],
             }));
 
+            // Reset form warna
             setNewColor({ name: "", hex: "#000000" });
-            setColorImageFile(null);
-            setColorImagePreview("");
+            setColorImageFiles([]);
+            setColorImagePreviews([]);
         } catch (error) {
             Swal.fire("Error", "Gagal meng-upload gambar untuk warna.", "error");
         }
@@ -210,10 +215,11 @@ const KelolaProduk = () => {
     };
 
     const handleColorFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setColorImageFile(file);
-            setColorImagePreview(URL.createObjectURL(file));
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            setColorImageFiles(files);
+            const previews = files.map(file => URL.createObjectURL(file));
+            setColorImagePreviews(previews);
         }
     };
 
@@ -244,9 +250,9 @@ const KelolaProduk = () => {
             {products.map((product) => (
               <tr key={product._id} className="border-b hover:bg-gray-50">
                <td className="p-4">
-  {product.colors && product.colors.length > 0 ? (
+  {product.colors && product.colors.length > 0 && product.colors[0].imageUrls.length > 0 ? (
     <img 
-      src={`http://localhost:5000${product.colors[0].imageUrl}`} 
+      src={`http://localhost:5000${product.colors[0].imageUrls[0]}`} 
       alt={product.name} 
       className="w-16 h-16 object-cover rounded-md"
     />
@@ -409,7 +415,7 @@ const KelolaProduk = () => {
                   <label className="flex items-center justify-center gap-2 px-3 py-2 bg-white border-2 border-dashed rounded-lg cursor-pointer hover:border-pink-500">
                     <Upload size={16} />
                     <span className="text-sm">
-                      {colorImageFile ? "Ganti Gambar" : "Pilih Gambar"}
+                      {colorImageFiles.length > 0 ? `${colorImageFiles.length} Gambar` : "Pilih Gambar"}
                     </span>
                     <input
                       type="file"
@@ -419,12 +425,12 @@ const KelolaProduk = () => {
                     />
                   </label>
                 </div>
-                {colorImagePreview && (
-                  <img
-                    src={colorImagePreview}
-                    alt="Preview Warna"
-                    className="w-16 h-16 mt-2 rounded-md object-cover border"
-                  />
+                {colorImagePreviews.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        {colorImagePreviews.map((preview, index) => (
+                            <img key={index} src={preview} alt={`Preview ${index + 1}`} className="w-16 h-16 rounded-md object-cover border"/>
+                        ))}
+                    </div>
                 )}
                 <button
                   type="button"
@@ -477,6 +483,12 @@ const KelolaProduk = () => {
                         <span className="max-w-[80px] truncate">
                           {color.name}
                         </span>
+                        <div className="flex-grow flex flex-wrap gap-2">
+                                {/* 👇 PERBAIKAN 3: Gunakan imageUrls */}
+                                {color.imageUrls.map((url, imgIndex) => (
+                                    <img key={imgIndex} src={`http://localhost:5000${url}`} alt={`${color.name}-${imgIndex}`} className="w-16 h-16 object-cover rounded-md border"/>
+                                ))}
+                            </div>
                         <button
                           type="button"
                           onClick={() => handleRemoveColor(index)}

@@ -6,7 +6,7 @@ import axios from "axios";
 import { ShoppingCart, ChevronLeft, ChevronRight, ImageOff, ArrowLeft } from "lucide-react";
 
 const ProductDetail = () => {
-  const { slug } = useParams();
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,15 +17,15 @@ const ProductDetail = () => {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      if (!slug) {
+      if (!id) {
         setLoading(false);
-        setError("Slug produk tidak valid.");
+        setError("ID produk tidak valid.");
         return;
       }
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`http://localhost:5000/products/slug/${slug}`);
+        const response = await axios.get(`http://localhost:5000/products/${id}`);
         const productData = response.data;
         setProduct(productData);
 
@@ -44,31 +44,26 @@ const ProductDetail = () => {
     };
 
     fetchProductDetails();
-  }, [slug]);
+  }, [id]);
 
-  // FUNGSI BARU UNTUK SINKRONISASI
-  const handleColorSelect = (color, index) => {
+  // Fungsi untuk memilih warna
+  const handleColorSelect = (color) => {
     setSelectedColor(color);
-    setCurrentIndex(index);
+    setCurrentIndex(0); // Reset galeri ke gambar pertama dari warna baru
   };
-
-  const handleImageSelect = (index) => {
-    setCurrentIndex(index);
-    if (product?.colors && product.colors[index]) {
-        setSelectedColor(product.colors[index]);
-    }
-  };
+  
+  // Ambil gambar hanya dari warna yang sedang dipilih
+  const productImages = selectedColor?.imageUrls || [];
 
   // Navigasi slider/arrow
   const goToPrevious = () => {
     const newIndex = currentIndex === 0 ? productImages.length - 1 : currentIndex - 1;
-    handleImageSelect(newIndex);
+    setCurrentIndex(newIndex);
   };
   const goToNext = () => {
     const newIndex = currentIndex === productImages.length - 1 ? 0 : currentIndex + 1;
-    handleImageSelect(newIndex);
+    setCurrentIndex(newIndex);
   };
-
 
   // Tampilan saat data sedang dimuat
   if (loading) {
@@ -94,9 +89,7 @@ const ProductDetail = () => {
   if (!product) {
     return <p className="pt-24 text-center min-h-screen">Produk tidak dapat ditemukan.</p>;
   }
-
-  // Ambil semua gambar dari setiap warna
-  const productImages = product.colors?.map(color => color.imageUrl) || [];
+  
   const hasDiscount = product.discountPercentage > 0 && product.discountPrice != null;
 
   return (
@@ -130,7 +123,7 @@ const ProductDetail = () => {
                 </div>
                 <div className="grid grid-cols-5 gap-2">
                   {productImages.map((img, index) => (
-                    <button key={index} onClick={() => handleImageSelect(index)} className={`border rounded-md overflow-hidden transition ${currentIndex === index ? 'border-red-500 ring-2 ring-red-500' : 'border-gray-200'}`}>
+                    <button key={index} onClick={() => setCurrentIndex(index)} className={`border rounded-md overflow-hidden transition ${currentIndex === index ? 'border-red-500 ring-2 ring-red-500' : 'border-gray-200'}`}>
                       <img src={`http://localhost:5000${img}`} alt={`Thumbnail ${index + 1}`} className="w-full h-auto object-cover aspect-square" />
                     </button>
                   ))}
@@ -165,10 +158,10 @@ const ProductDetail = () => {
               <div className="mt-6">
                 <h3 className="text-sm font-bold text-gray-800 mb-2">WARNA: <span className="font-medium text-gray-600">{selectedColor?.name}</span></h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color, index) => (
+                  {product.colors.map((color) => (
                     <button
                       key={color._id}
-                      onClick={() => handleColorSelect(color, index)}
+                      onClick={() => handleColorSelect(color)}
                       className={`w-10 h-10 rounded-full border-2 transition ${selectedColor?._id === color._id ? 'border-red-600 ring-2 ring-offset-1 ring-red-500' : 'border-gray-300'}`}
                       style={{ backgroundColor: color.hex }}
                       aria-label={`Pilih warna ${color.name}`}
