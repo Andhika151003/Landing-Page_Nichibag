@@ -107,12 +107,8 @@ const Katalog = () => {
                 variants={fadeInUp}
                 // Hapus transition delay dari sini agar tidak mengganggu Link
               >
-                {/* ====================================================== */}
-                {/* PERUBAHAN UTAMA DIMULAI DI SINI            */}
-                {/* ====================================================== */}
-
                 <Link
-                  to={`/produk/${product._id}`} // Tentukan URL tujuan
+                  to={`/product/${product._id}`} // Tentukan URL tujuan
                   className=" bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col"
                 >
                   <div className="relative w-full h-48 bg-gray-200">
@@ -137,10 +133,6 @@ const Katalog = () => {
                     </p>
                   </div>
                 </Link>
-
-                {/* ====================================================== */}
-                {/* PERUBAHAN UTAMA BERAKHIR DI SINI            */}
-                {/* ====================================================== */}
               </Motion.div>
             ))
           ) : (
