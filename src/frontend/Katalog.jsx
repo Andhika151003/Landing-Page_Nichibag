@@ -128,7 +128,7 @@ const Katalog = () => {
                   <div className="relative w-full h-48 bg-gray-200">
                     {product.colors && product.colors.length > 0 ? (
                       <img
-                        src={`http://localhost:5000${product.colors[0].imageUrl}`}
+                        src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
                         alt={product.name}
                         className="w-full h-full object-cover"
                       />
