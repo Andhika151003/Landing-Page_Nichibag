@@ -1,65 +1,99 @@
-import Product from '../models/Product.js';
+import Product from "../models/Product.js";
+import Log from "../models/LogActivity.js";
 
-// Mengambil semua produk
-export const getAllProducts = async (req, res) => {
-  try {
-    const products = await Product.find({});
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ msg: "Gagal mengambil data produk", error: error.message });
-  }
-};
+// // Mengambil semua produk
+// export const getAllProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find({});
+//     res.status(200).json(products);
+//   } catch (error) {
+//     res.status(500).json({ msg: "Gagal mengambil data produk", error: error.message });
+//   }
+// };
 
-// Mengambil satu produk berdasarkan ID
-export const getProductById = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return res.status(404).json({ msg: "Produk tidak ditemukan" });
-    }
-    res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ msg: "Gagal mengambil data produk", error: error.message });
-  }
-};
-
-// Membuat produk baru
+// // Mengambil satu produk berdasarkan ID
+// export const getProductById = async (req, res) => {
+//   try {
+//     const product = await Product.findById(req.params.id);
+//     if (!product) {
+//       return res.status(404).json({ msg: "Produk tidak ditemukan" });
+//     }
+//     res.status(200).json(product);
+//   } catch (error) {
+//     res.status(500).json({ msg: "Gagal mengambil data produk", error: error.message });
+//   }
+// };
+// CREATE
 export const createProduct = async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
-  } catch (error) {
-    res.status(400).json({ msg: "Gagal membuat produk", error: error.message });
+    const product = await Product.create(req.body);
+
+    // catat log
+    await Log.create({
+      user: req.body.user || "Admin",
+      action: "create",
+      type: "Product",
+      status: "success",
+    });
+
+    res.status(201).json(product);
+  } catch (err) {
+    await Log.create({
+      user: req.body.user || "Admin",
+      action: "create",
+      type: "Product",
+      status: "failed",
+    });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// Memperbarui produk
+// UPDATE
 export const updateProduct = async (req, res) => {
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!updatedProduct) {
-      return res.status(404).json({ msg: "Produk tidak ditemukan untuk diperbarui" });
-    }
-    res.status(200).json(updatedProduct);
-  } catch (error) {
-    res.status(400).json({ msg: "Gagal memperbarui produk", error: error.message });
+    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+    await Log.create({
+      user: req.body.user || "Admin",
+      action: "update",
+      type: "Product",
+      status: "success",
+    });
+
+    res.json(updated);
+  } catch (err) {
+    await Log.create({
+      user: req.body.user || "Admin",
+      action: "update",
+      type: "Product",
+      status: "failed",
+    });
+
+    res.status(500).json({ message: err.message });
   }
 };
 
-// Menghapus produk
+// DELETE
 export const deleteProduct = async (req, res) => {
   try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-    if (!deletedProduct) {
-      return res.status(404).json({ msg: "Produk tidak ditemukan untuk dihapus" });
-    }
-    res.status(200).json({ msg: "Produk berhasil dihapus" });
-  } catch (error) {
-    res.status(500).json({ msg: "Gagal menghapus produk", error: error.message });
+    await Product.findByIdAndDelete(req.params.id);
+
+    await Log.create({
+      user: req.body.user || "Admin",
+      action: "delete",
+      type: "Product",
+      status: "success",
+    });
+
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    await Log.create({
+      user: req.body.user || "Admin",
+      action: "delete",
+      type: "Product",
+      status: "failed",
+    });
+
+    res.status(500).json({ message: err.message });
   }
 };

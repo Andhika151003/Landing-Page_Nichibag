@@ -11,6 +11,9 @@ import HomeRoute from './routes/HomeRoute.js';
 import AboutRoute from './routes/AboutRoute.js';
 import ServiceRoute from './routes/ServiceRoute.js';
 import seedAdmin from './utils/seedAdmin.js';
+import DashboardRoute from "./routes/DashboardRoute.js";
+import KelolaRoute from "./routes/KelolaRoute.js";
+import LogRoute from "./routes/LogRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -52,5 +55,8 @@ app.use("/products", ProductRoute);
 app.use("/home", HomeRoute);
 app.use("/api/about", AboutRoute);
 app.use("/api/service", ServiceRoute); 
+app.use("/api/dashboard", DashboardRoute);
+app.use("/api/kelola", KelolaRoute);
+app.use("/logs", LogRoute);
 
 app.listen(PORT, () => console.log(`🚀 Server berjalan di port ${PORT}`));
