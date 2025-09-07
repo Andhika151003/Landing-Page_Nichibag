@@ -114,7 +114,7 @@ const Katalog = () => {
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
               <Motion.div
-                key={product._id}
+                key={index}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
@@ -127,11 +127,11 @@ const Katalog = () => {
                 >
                   <div className="relative w-full h-48 bg-gray-200">
                     {product.colors && product.colors.length > 0 ? (
-                      <img
-                        src={`http://localhost:5000${product.colors[0].imageUrl}`}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
+                     <img
+                          src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
+                          
+                            alt={product.name}
+                          />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                         No Image
