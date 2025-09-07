@@ -132,6 +132,7 @@ const Katalog = () => {
                           
                             alt={product.name}
                           />
+                 
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                         No Image
