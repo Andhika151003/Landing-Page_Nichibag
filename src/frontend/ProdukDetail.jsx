@@ -1,8 +1,7 @@
-// src/frontend/ProdukDetail.jsx
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { motion as Motion } from "framer-motion";
 import {
   ShoppingCart,
   ChevronLeft,
@@ -13,6 +12,18 @@ import {
   Weight,
   Ruler,
 } from "lucide-react";
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeInOut",
+    },
+  },
+};
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -106,21 +117,19 @@ const ProductDetail = () => {
     );
   }
 
-  // --- VARIABEL DIDEKLARASIKAN DI SINI (TEMPAT YANG AMAN) ---
   const hasDiscount =
     product.discountPercentage > 0 && product.discountPrice != null;
   
-  const { material, weight = 0, dimensions, productCode } = product;
+  // --- PERBAIKAN: Memberi nilai default untuk dimensions ---
+  const { material, weight = 0, dimensions = {}, productCode } = product;
 
+  // --- PERBAIKAN: Logika untuk mengecek dimensi ---
   const hasDimensions =
     dimensions &&
-    dimensions.length > 0 &&
-    dimensions.width > 0 &&
-    dimensions.height > 0;
-  // -----------------------------------------------------------
+    (dimensions.length > 0 || dimensions.width > 0 || dimensions.height > 0);
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-24">
+    <div className="bg-[#F9F6EE] min-h-screen pt-24">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-6">
           <Link
@@ -132,8 +141,7 @@ const ProductDetail = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Bagian Galeri Gambar */}
-          <div>
+          <Motion.div variants={fadeInUp} initial="hidden" animate="visible">
             {productImages.length > 0 ? (
               <>
                 <div className="relative mb-4 border rounded-lg overflow-hidden shadow-lg bg-white">
@@ -148,13 +156,13 @@ const ProductDetail = () => {
                     <>
                       <button
                         onClick={goToPrevious}
-                        className="absolute top-1/2 left-2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 transition"
+                        className="absolute top-1/2 left-2 -translate-y-1/2 bg-red-700 bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 transition"
                       >
                         <ChevronLeft size={24} />
                       </button>
                       <button
                         onClick={goToNext}
-                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 transition"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 bg-red-700 bg-opacity-40 text-white p-2 rounded-full hover:bg-opacity-60 transition"
                       >
                         <ChevronRight size={24} />
                       </button>
@@ -187,10 +195,14 @@ const ProductDetail = () => {
                 <p className="mt-2 font-semibold">Tidak ada gambar</p>
               </div>
             )}
-          </div>
+          </Motion.div>
 
-          {/* Bagian Info Produk */}
-          <div>
+          <Motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.2, duration: 0.6, ease: "easeInOut" }}
+          >
             <p className="text-sm font-semibold text-red-600 mb-1">
               {product.category}
             </p>
@@ -198,7 +210,6 @@ const ProductDetail = () => {
               {product.name}
             </h1>
 
-            {/* Sekarang `productCode` bisa digunakan di sini karena sudah dideklarasikan di atas */}
             {productCode && (
               <p className="flex items-center gap-2 mt-2 text-sm text-gray-500">
                 <Package size={16} />
@@ -229,6 +240,7 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
+            
             {product.colors && product.colors.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-sm font-bold text-gray-800 mb-2">
@@ -261,7 +273,6 @@ const ProductDetail = () => {
                 {product.description || "Tidak ada deskripsi untuk produk ini."}
               </p>
               
-              {/* Blok Spesifikasi sekarang lebih bersih dan menggunakan variabel dari atas */}
               {(material || weight > 0 || hasDimensions) && (
                  <>
                     <h3 className="font-bold text-gray-800 mt-6">
@@ -283,8 +294,8 @@ const ProductDetail = () => {
                         {hasDimensions && (
                             <li className="flex items-center gap-2">
                                 <Ruler size={16} className="text-gray-500" />
-                                <strong>Ukuran:</strong> {dimensions.length} x{" "}
-                                {dimensions.width} x {dimensions.height} cm
+                                <strong>Ukuran:</strong> {dimensions.length || 0} x{" "}
+                                {dimensions.width || 0} x {dimensions.height || 0} cm
                             </li>
                         )}
                     </ul>
@@ -310,7 +321,7 @@ const ProductDetail = () => {
                 Dengan menekan tombol ini, Anda akan diarahkan ke halaman pemesanan shopee sesuai produk yang anda pilih.
               </p>
             </div>
-          </div>
+          </Motion.div>
         </div>
       </div>
     </div>

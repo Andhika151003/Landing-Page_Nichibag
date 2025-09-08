@@ -125,7 +125,7 @@ const Services = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="border rounded-xl p-6 shadow-sm hover:shadow-md transition duration-300"
+              className="border rounded-xl p-6 shadow-sm hover:shadow-md transition duration-300 bg-red-800 text-white/90"
             >
               <div className="text-3xl mb-4">{s.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{s.title}</h3>
@@ -147,7 +147,7 @@ const Services = () => {
         {loading ? (
           <div className="text-center text-white">Memuat layanan...</div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {pageData.cards &&
               pageData.cards.map((card, i) => (
                 <Motion.div
@@ -158,7 +158,7 @@ const Services = () => {
                   viewport={{ once: true }}
                   // PERBAIKAN: Menggunakan 'fadeInUp' karena 'zoomIn' tidak ada
                   variants={fadeInUp}
-                  className="text-center bg-white/10 p-4 rounded-lg backdrop-blur-sm"
+                  className="text-center bg-[#F9F6EE] p-4 rounded-lg backdrop-blur-sm"
                 >
                   <img
                     src={
@@ -167,12 +167,12 @@ const Services = () => {
                         : "https://via.placeholder.com/400x300"
                     }
                     alt={card.title || "Layanan"}
-                    className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover"
+                    className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover border-4 border-red-700"
                   />
-                  <h3 className="text-lg font-semibold mb-2 text-white">
+                  <h3 className="text-lg font-semibold mb-2 text-red-700">
                     {card.title || "Judul Layanan"}
                   </h3>
-                  <p className="text-white/80 text-sm">
+                  <p className="text-red-700 text-sm">
                     {card.description ||
                       "Deskripsi layanan akan muncul di sini."}
                   </p>

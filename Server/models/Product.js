@@ -3,9 +3,8 @@ import mongoose from "mongoose";
 const colorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   hex: { type: String, required: true },
-  imageUrls: { type: [String], required: true } // Setiap warna punya 1 gambar
+  imageUrls: { type: [String], required: true },
 });
-
 
 const productSchema = new mongoose.Schema(
   {
@@ -40,12 +39,26 @@ const productSchema = new mongoose.Schema(
       max: 100,
     },
     colors: [colorSchema],
-    // 👇 FIELD BARU: Untuk link tombol "Pesan Sekarang"
     orderLink: {
         type: String,
         trim: true,
-        default: "", // Default kosong
+        default: "", 
     },
+    // --- PENAMBAHAN FIELD YANG HILANG DIMULAI DI SINI ---
+    material: { 
+      type: String, 
+      default: '' 
+    },
+    weight: { 
+      type: Number, 
+      default: 0 
+    },
+    dimensions: {
+      length: { type: Number, default: 0 },
+      width: { type: Number, default: 0 },
+      height: { type: Number, default: 0 },
+    },
+    // --- PENAMBAHAN FIELD SELESAI ---
   },
   {
     timestamps: true,

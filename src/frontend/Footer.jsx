@@ -54,7 +54,7 @@ const Footer = () => {
 
           {/* Kolom 3: Hubungi Kami */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-blue-100">Hubungi Kami</h3>
+            <h3 className="font-bold text-lg mb-4 text-amber-50">Hubungi Kami</h3>
             <ul className="space-y-3 text-white">
                 <li>nichibag.id@gmail.com</li>
                 <li>+62 877 8826 1298</li>
@@ -64,7 +64,7 @@ const Footer = () => {
 
           {/* Kolom 4: Follow Us */}
           <div>
-             <h3 className="font-bold text-lg mb-4 text-blue-100">Follow Us</h3>
+             <h3 className="font-bold text-lg mb-4 text-amber-50">Follow Us</h3>
              {/* 👇 BAGIAN INI YANG DIPERBARUI */}
              <div className="flex flex-wrap gap-6">
               {socialLinks.map((social) => (

@@ -28,7 +28,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [itemName, setItemName] = useState('');
-  const [itemLink, setItemLink] = useState('/katalog');
+  const [itemLink, setItemLink] = useState('');
   const [price, setPrice] = useState('');
   const [discountPercentage, setDiscountPercentage] = useState('');
   const fileInputRef = useRef(null);
@@ -69,7 +69,6 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
       setPreview(null);
   };
 
-  // ===== PERBAIKAN UTAMA ADA DI FUNGSI INI =====
   const handleAdd = async () => {
     if (!file) return Swal.fire("Peringatan", "Pilih gambar.", "warning");
 
@@ -80,14 +79,12 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
       const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);
       const imageUrl = uploadRes.data.imageUrls[0];
       
-      // Siapkan data dasar yang selalu ada
       const itemToAdd = {
         nama: itemName || 'Item Baru',
         url: imageUrl,
         link: itemLink,
       };
 
-      // HANYA proses harga jika section-nya adalah "Produk Terlaris"
       if (title === 'Produk Terlaris') {
         const normalPrice = parseFloat(price);
         const discount = parseFloat(discountPercentage);
@@ -103,12 +100,10 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
         }
       }
 
-      // Untuk debugging: lihat data yang akan dikirim
       console.log("Data yang dikirim ke server:", itemToAdd);
 
       onAdd(itemToAdd);
       
-      // Reset semua field
       setFile(null);
       setPreview(null);
       setItemName('');
@@ -124,6 +119,9 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
 
   const isLimitReached = items.length >= limit;
   const isProductSection = title === 'Produk Terlaris';
+  // --- PENAMBAHAN: Variabel baru untuk menentukan kapan input nama diperlukan ---
+  const isNameNeeded = title === 'Produk Terlaris' || title === 'Kategori Unggulan';
+
 
   return (
     <section className="mb-10 p-6 bg-white rounded-lg shadow-md">
@@ -154,17 +152,26 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
       
       <div className="p-4 border-t">
         <div className="flex flex-col gap-4">
-            {isProductSection && (
+            {/* --- PERBAIKAN: Menggunakan variabel isNameNeeded --- */}
+            {isNameNeeded && (
                 <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Nama Item</label>
-                    <input type="text" value={itemName} onChange={(e) => setItemName(e.target.value)} placeholder="Nama Produk" className="w-full p-2 border rounded-md" disabled={isLimitReached} />
+                    <input 
+                      type="text" 
+                      value={itemName} 
+                      onChange={(e) => setItemName(e.target.value)} 
+                      // --- PERBAIKAN: Placeholder dinamis ---
+                      placeholder={isProductSection ? "Nama Produk" : "Nama Kategori"} 
+                      className="w-full p-2 border rounded-md" 
+                      disabled={isLimitReached} 
+                    />
                 </div>
             )}
             <div className="w-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Link</label>
                 <div className="relative">
                   <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" value={itemLink} onChange={(e) => setItemLink(e.target.value)} placeholder="Contoh: /katalog atau URL lengkap" className="w-full p-2 pl-10 border rounded-md" disabled={isLimitReached} />
+                  <input type="text" value={itemLink} onChange={(e) => setItemLink(e.target.value)} placeholder="Contoh:https://shopee.co.id/PAPER-BAG-PREMIUM...." className="w-full p-2 pl-10 border rounded-md" disabled={isLimitReached} />
                 </div>
             </div>
 
@@ -244,7 +251,7 @@ const HeroButtonManager = ({ buttonData, onSave }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">URL Tujuan</label>
                     <div className="relative">
                         <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                        <input type="text" value={link} onChange={(e) => setLink(e.target.value)} className="w-full p-2 pl-10 border rounded-md" placeholder="/katalog" />
+                        <input type="text" value={link} onChange={(e) => setLink(e.target.value)} className="w-full p-2 pl-10 border rounded-md" placeholder="Contoh : https://shopee.co.id/nichibag.id" />
                     </div>
                 </div>
                 <button onClick={handleSave} className="w-full md:w-auto bg-blue-500 text-white px-6 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-blue-600">
@@ -259,7 +266,7 @@ const KelolaHome = (props) => {
   const [carouselImages, setCarouselImages] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [heroButton, setHeroButton] = useState({ buttonLink: '/katalog' });
+  const [heroButton, setHeroButton] = useState({ buttonLink: '' });
 
   const fetchData = async () => {
     try {

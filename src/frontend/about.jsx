@@ -106,7 +106,7 @@ const About = () => {
             modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap
             lingkungan.
           </p>
-          <p className="text-blue-600 font-semibold text-lg">
+          <p className="text-red-800 font-semibold text-lg">
             500K+ Klien yang puas
           </p>
         </div>

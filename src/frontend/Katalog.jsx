@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { motion as Motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 
 // Definisikan varian animasi
 const fadeInUp = {
@@ -37,7 +38,6 @@ const Katalog = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        // Pastikan URL server Anda benar
         const response = await axios.get("http://localhost:5000/products");
         setProducts(response.data);
       } catch (error) {
@@ -50,31 +50,48 @@ const Katalog = () => {
     fetchProducts();
   }, []);
 
-  // Gabungkan filter kategori dan pencarian
   const filteredProducts = products
     .filter((product) => {
       if (selectedCategory === "All") {
-        return true; // Tampilkan semua jika kategori "All"
+        return true;
       }
-      // Pastikan produk Anda memiliki properti 'category'
       return product.category === selectedCategory;
     })
     .filter((product) => {
-      // Filter berdasarkan query pencarian
       return product.name.toLowerCase().includes(searchQuery.toLowerCase());
     });
+    
+  const formatRupiah = (number) => {
+    const validNumber = typeof number === 'number' ? number : 0;
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0
+    }).format(validNumber);
+  };
 
   if (loading) {
     return (
-      <div className="pt-24 text-center min-h-screen">Memuat produk...</div>
+      <div className="flex items-center justify-center min-h-screen bg-[#F9F6EE] pt-24">
+        <p className="text-lg text-gray-600">Memuat data produk...</p>
+      </div>
     );
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen pt-24">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-[#F9F6EE]  min-h-screen pt-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="text-gray-600 hover:text-red-700 flex items-center gap-2 font-semibold w-max"
+          >
+            <ArrowLeft size={18} />
+            Kembali ke Halaman Utama
+          </Link>
+        </div>
         <Motion.header
-          className="text-center p-8"
+          className="text-center pb-8"
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
@@ -82,19 +99,12 @@ const Katalog = () => {
           <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
             Katalog Produk
           </h1>
-          {searchQuery ? (
-            <p className="mt-4 text-lg text-gray-600">
-              Hasil pencarian untuk:{" "}
-              <span className="font-bold">"{searchQuery}"</span>
-            </p>
-          ) : (
-            <p className="mt-4 text-lg text-gray-600">
-              Temukan semua produk terbaik kami dalam satu tempat.
-            </p>
-          )}
+          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+            Temukan semua produk terbaik kami dalam satu tempat.
+          </p>
         </Motion.header>
 
-        <div className="flex gap-2 sm:gap-4 p-4 justify-center flex-wrap sticky top-[80px] bg-gray-50/80 backdrop-blur-sm z-40">
+        <div className="flex gap-2 sm:gap-4 p-4 justify-center flex-wrap sticky top-[80px] bg-[#F9F6EE]  backdrop-blur-sm z-40 mb-8">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -110,50 +120,72 @@ const Katalog = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pb-12">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
               <Motion.div
-                key={index}
+                key={product._id}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.3 }}
                 variants={fadeInUp}
-                // Hapus transition delay dari sini agar tidak mengganggu Link
+                transition={{ delay: index * 0.05 }}
               >
                 <Link
-                  to={`/product/${product._id}`} // Tentukan URL tujuan
-                  className=" bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group h-full flex flex-col"
+                  to={`/product/${product._id}`}
+                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group h-full flex flex-col border-2 border-red-800"
                 >
-                  <div className="relative w-full h-48 bg-gray-200">
+                  <div className="relative w-full aspect-square overflow-hidden bg-gray-200">
                     {product.colors && product.colors.length > 0 ? (
-                     <img
-                          src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
-                          
-                            alt={product.name}
-                          />
-                 
+                      <img
+                        src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 border-b-2 border-red-800"
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                         No Image
                       </div>
                     )}
+                    {/* --- PENAMBAHAN: Label Diskon --- */}
+                    {product.discountPercentage > 0 && (
+                      <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        -{product.discountPercentage}%
+                      </div>
+                    )}
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
-                    <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-red-600 transition-colors flex-grow">
+                    <p className="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition-colors flex-grow min-h-[40px]">
                       {product.name}
                     </p>
-                    <p className="text-md font-bold text-gray-900 mt-1">
-                      Rp{product.price.toLocaleString("id-ID")}
-                    </p>
+                    {/* --- PENAMBAHAN: Logika untuk harga diskon --- */}
+                    <div className="mt-2">
+                      {product.discountPrice && product.discountPercentage > 0 ? (
+                        <>
+                          <p className="text-xs text-gray-500 line-through">
+                            {formatRupiah(product.price)}
+                          </p>
+                          <p className="text-md font-bold text-red-600">
+                            {formatRupiah(product.discountPrice)}
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-md font-bold text-gray-900 mt-1">
+                          {formatRupiah(product.price)}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </Link>
               </Motion.div>
             ))
           ) : (
-            <p className="col-span-full text-center text-gray-500 py-10">
-              Produk tidak ditemukan.
-            </p>
+             <div className="col-span-full text-center py-16">
+              <p className="text-gray-600 text-lg">
+                Produk tidak ditemukan.
+              </p>
+              <p className="text-gray-500">Coba pilih kategori yang lain.</p>
+            </div>
           )}
         </div>
       </div>
