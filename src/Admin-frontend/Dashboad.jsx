@@ -1,8 +1,8 @@
-// src/Admin-frontend/Dashboad.jsx
-import React from "react";
-import { Package, PlusCircle, FilePenLine, Trash2 } from "lucide-react";
+// src/Admin-frontend/Dashboard.jsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Package } from "lucide-react";
 
-// Komponen-komponen ini kita letakkan di sini agar file tetap rapi
 const StatCard = ({ title, value, color }) => (
   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md flex items-center justify-between">
     <div>
@@ -17,68 +17,97 @@ const StatCard = ({ title, value, color }) => (
 
 const StatusBadge = ({ status }) => {
   const baseClasses = "px-3 py-1 rounded-full text-xs font-semibold inline-block";
-  if (status === "Published") {
-    return <span className={`${baseClasses} bg-green-100 text-green-800`}>Published</span>;
+  if (status === "success") {
+    return <span className={`${baseClasses} bg-green-100 text-green-800`}>Success</span>;
   }
-  return <span className={`${baseClasses} bg-amber-100 text-amber-800`}>Draft</span>;
+  return <span className={`${baseClasses} bg-red-100 text-red-800`}>Failed</span>;
 };
 
-
 const Dashboard = () => {
-    // Data dummy untuk contoh tampilan
-    const collections = [
-        { id: 1, name: "Paper Bag", type: "Paper Bag", status: "Published", date: "2023-08-15" },
-        { id: 2, name: "Packaging Box", type: "Packaging Box", status: "Published", date: "2023-08-15" },
-    ];
-    const totalCollections = 5;
-    const publishedCount = 4;
-    const draftCount = 1;
+  const [stats, setStats] = useState({
+    totalLogs: 0,
+    createCount: 0,
+    updateCount: 0,
+    deleteCount: 0,
+  });
+  const [logs, setLogs] = useState([]);
 
-    return (
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-              <p className="text-gray-500 mt-1">Selamat datang kembali, Admin!</p>
-            </div>
-          </div>
+  const fetchLogs = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/logs"); // ambil log dari backend
+      const data = res.data;
 
-          {/* Statistik */}
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <StatCard title="Total Koleksi" value={totalCollections} color="bg-rose-500" />
-            <StatCard title="Dipublikasikan" value={publishedCount} color="bg-green-500" />
-            <StatCard title="Draf" value={draftCount} color="bg-amber-500" />
-          </section>
+      // Hitung statistik
+      const totalLogs = data.length;
+      const createCount = data.filter((l) => l.action === "create").length;
+      const updateCount = data.filter((l) => l.action === "update").length;
+      const deleteCount = data.filter((l) => l.action === "delete").length;
 
-          {/* Tabel Contoh */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">Koleksi Terbaru</h2>
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
-                        <thead className="bg-gray-100 text-left text-gray-600 font-medium">
-                        <tr>
-                            <th className="px-6 py-4">Name</th>
-                            <th className="px-6 py-4">Type</th>
-                            <th className="px-6 py-4">Status</th>
-                        </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                        {collections.map((item) => (
-                            <tr key={item.id} className="hover:bg-gray-50 transition">
-                            <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{item.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-gray-600">{item.type}</td>
-                            <td className="px-6 py-4 whitespace-nowrap"><StatusBadge status={item.status} /></td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-          </section>
+      setStats({ totalLogs, createCount, updateCount, deleteCount });
+      setLogs(data);
+    } catch (error) {
+      console.error("Gagal memuat log dashboard:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-500 mt-1">Selamat datang kembali, Admin!</p>
         </div>
-    );
+      </div>
+
+      {/* Statistik */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatCard title="Total Activity" value={stats.totalLogs} color="bg-rose-500" />
+        <StatCard title="Created" value={stats.createCount} color="bg-green-500" />
+        <StatCard title="Updated" value={stats.updateCount} color="bg-blue-500" />
+        <StatCard title="Deleted" value={stats.deleteCount} color="bg-amber-500" />
+      </section>
+
+      {/* Tabel Log Activity */}
+      <section>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Log Activity</h2>
+        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-100 text-left text-gray-600 font-medium">
+                <tr>
+                  <th className="px-6 py-4">User</th>
+                  <th className="px-6 py-4">Action</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Time</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {logs.map((log) => (
+                  <tr key={log._id} className="hover:bg-gray-50 transition">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{log.user}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">{log.action}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">{log.type}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusBadge status={log.status} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      {new Date(log.createdAt).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 };
 
 export default Dashboard;
