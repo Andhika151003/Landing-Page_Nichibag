@@ -1,4 +1,5 @@
 import Service from '../models/Service.js';
+import { saveLog } from '../utils/logger.js';
 
 
 export const getServiceData = async (req, res) => {
@@ -23,8 +24,10 @@ export const updateServiceData = async (req, res) => {
       { cards, whatsappUrl, googleMapsUrl },
       { new: true, upsert: true, runValidators: true }
     );
+    await saveLog(req.user?.username || "Admin", "update", "ServicePage");
     res.json(updatedData);
   } catch (err) {
+    await saveLog(req.user?.username || "Admin", "update", "ServicePage", "failed");
     res.status(400).json({ message: err.message });
   }
 };

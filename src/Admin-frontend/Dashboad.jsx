@@ -1,7 +1,8 @@
 // src/Admin-frontend/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Package } from "lucide-react";
+import { Package, Trash2 } from "lucide-react";
+import Swal from 'sweetalert2';
 
 const StatCard = ({ title, value, color }) => (
   <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md flex items-center justify-between">
@@ -54,6 +55,38 @@ const Dashboard = () => {
     fetchLogs();
   }, []);
 
+  const handleResetLogs = () => {
+    Swal.fire({
+      title: 'Anda Yakin?',
+      text: "Semua data log aktivitas akan dihapus permanen!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, hapus semua!',
+      cancelButtonText: 'Batal'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete("http://localhost:5000/logs/reset");
+          Swal.fire(
+            'Terhapus!',
+            'Log aktivitas berhasil direset.',
+            'success'
+          );
+          fetchLogs(); // Ambil data log lagi setelah reset
+        } catch (error) {
+          Swal.fire(
+            'Gagal!',
+            'Gagal mereset log aktivitas.',
+            'error'
+          );
+          console.error("Gagal mereset log:", error);
+        }
+      }
+    })
+  };
+
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
@@ -62,7 +95,16 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-500 mt-1">Selamat datang kembali, Admin!</p>
         </div>
+        <button
+          onClick={handleResetLogs}
+          className="bg-red-500 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-600 transition-all duration-300"
+        >
+          <Trash2 size={18} />
+          Reset Log
+        </button>
       </div>
+
+      
 
       {/* Statistik */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

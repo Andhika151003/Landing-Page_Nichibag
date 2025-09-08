@@ -1,4 +1,5 @@
 import { Carousel, FeaturedProduct, Category, HeroButton } from '../models/kelola.js';
+import { saveLog } from '../utils/logger.js';
 
 const LIMITS = {
   Carousel: 4,
@@ -32,18 +33,22 @@ const genericAdd = (model, modelName) => async (req, res) => {
 
     const newItem = new model(req.body);
     await newItem.save();
+    await saveLog(req.user?.username || "Admin", "create", modelName);
     res.status(201).json(newItem);
   } catch (err) {
+    await saveLog(req.user?.username || "Admin", "create", modelName, "failed");
     res.status(400).json({ message: err.message });
   }
 };
 
-const genericDelete = (model) => async (req, res) => {
+const genericDelete = (model, modelName) => async (req, res) => {
   try {
     const deletedItem = await model.findByIdAndDelete(req.params.id);
     if (!deletedItem) return res.status(404).json({ message: 'Item tidak ditemukan' });
     res.status(200).json({ message: 'Item berhasil dihapus' });
+    await saveLog(req.user?.username || "Admin", "delete", modelName);
   } catch (err) {
+    await saveLog(req.user?.username || "Admin", "delete", modelName, "failed");
     res.status(500).json({ message: err.message });
   }
 };
@@ -66,8 +71,10 @@ const heroButtonController = {
     try {
       const { buttonText, buttonLink } = req.body;
       const updatedButton = await HeroButton.findOneAndUpdate({}, { buttonText, buttonLink }, { new: true, upsert: true });
+      await saveLog(req.user?.username || "Admin", "update", "HeroButton");
       res.status(200).json(updatedButton);
     } catch (err) {
+      await saveLog(req.user?.username || "Admin", "update", "HeroButton", "failed");
       res.status(400).json({ message: err.message });
     }
   }
@@ -76,19 +83,19 @@ const heroButtonController = {
 export const carouselController = {
     getAll: genericGetAll(Carousel),
     add: genericAdd(Carousel, 'Carousel'),
-    delete: genericDelete(Carousel),
+    delete: genericDelete(Carousel, 'Carousel'),
 };
 
 export const featuredProductController = {
     getAll: genericGetAll(FeaturedProduct),
     add: genericAdd(FeaturedProduct, 'FeaturedProduct'),
-    delete: genericDelete(FeaturedProduct),
+    delete: genericDelete(FeaturedProduct, 'FeaturedProduct'),
 };
 
 export const categoryController = {
     getAll: genericGetAll(Category),
     add: genericAdd(Category, 'Category'),
-    delete: genericDelete(Category),
+    delete: genericDelete(Category, 'Category'),
 };
 
 export { heroButtonController };

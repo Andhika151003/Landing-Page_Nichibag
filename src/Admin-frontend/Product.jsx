@@ -190,12 +190,13 @@ const KelolaProduk = () => {
   const handleSelectRecommendedColor = (color) => {
     setNewColor({ name: color.name, hex: color.hex });
   };
-  
-  const handleRemoveColor = (index) =>
+
+  const handleRemoveColor = (nameToRemove) => {
     setCurrentProduct((prev) => ({
       ...prev,
-      colors: prev.colors.filter((_, i) => i !== index),
+      colors: prev.colors.filter((color) => color.name !== nameToRemove),
     }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -208,7 +209,7 @@ const KelolaProduk = () => {
       return;
     }
     const { images, ...productData } = currentProduct;
-    console.log("Data yang akan dikirim ke backend:", productData); 
+    console.log("Data yang akan dikirim ke backend:", productData);
 
     const url = isEditing
       ? `http://localhost:5000/products/${productData._id}`
@@ -344,7 +345,10 @@ const KelolaProduk = () => {
               {/* NAMA PRODUK & KODE PRODUK */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Nama Produk
                   </label>
                   <input
@@ -359,7 +363,10 @@ const KelolaProduk = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="productCode" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="productCode"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Kode Produk
                   </label>
                   <input
@@ -376,7 +383,10 @@ const KelolaProduk = () => {
 
               {/* KATEGORI */}
               <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="category"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Kategori
                 </label>
                 <select
@@ -398,7 +408,10 @@ const KelolaProduk = () => {
               {/* HARGA & DISKON */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="price"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Harga
                   </label>
                   <div className="relative">
@@ -418,7 +431,10 @@ const KelolaProduk = () => {
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="discountPercentage" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="discountPercentage"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Diskon (%)
                   </label>
                   <div className="relative">
@@ -441,7 +457,10 @@ const KelolaProduk = () => {
 
               {/* DESKRIPSI */}
               <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Deskripsi Produk
                 </label>
                 <textarea
@@ -458,39 +477,53 @@ const KelolaProduk = () => {
 
               {/* DETAIL SPESIFIKASI */}
               <div className="space-y-4 pt-4 border-t">
-                <label className="block text-base font-semibold text-gray-800">Detail Spesifikasi</label>
-                
+                <label className="block text-base font-semibold text-gray-800">
+                  Detail Spesifikasi
+                </label>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="material" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="material"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Bahan
                     </label>
                     <div className="relative">
-                      <Box size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                      <input 
-                        type="text" 
-                        id="material" 
-                        name="material" 
-                        value={currentProduct.material} 
-                        onChange={handleChange} 
-                        placeholder="cth: Kraft Paper" 
+                      <Box
+                        size={18}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="text"
+                        id="material"
+                        name="material"
+                        value={currentProduct.material}
+                        onChange={handleChange}
+                        placeholder="cth: Kraft Paper"
                         className="w-full p-3 pl-10 border rounded-lg"
                       />
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="weight" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="weight"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Berat (gram)
                     </label>
                     <div className="relative">
-                      <Weight size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                      <input 
-                        type="number" 
-                        id="weight" 
-                        name="weight" 
-                        value={currentProduct.weight} 
-                        onChange={handleChange} 
-                        placeholder="0" 
+                      <Weight
+                        size={18}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="weight"
+                        name="weight"
+                        value={currentProduct.weight}
+                        onChange={handleChange}
+                        placeholder="0"
                         className="w-full p-3 pl-10 border rounded-lg"
                       />
                     </div>
@@ -499,52 +532,70 @@ const KelolaProduk = () => {
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label htmlFor="dimensions_length" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="dimensions_length"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Panjang (cm)
                     </label>
                     <div className="relative">
-                      <Ruler size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                      <input 
-                        type="number" 
-                        id="dimensions_length" 
-                        name="dimensions.length" 
-                        value={currentProduct.dimensions.length} 
-                        onChange={handleChange} 
-                        placeholder="0" 
+                      <Ruler
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="dimensions_length"
+                        name="dimensions.length"
+                        value={currentProduct.dimensions.length}
+                        onChange={handleChange}
+                        placeholder="0"
                         className="w-full p-2 pl-9 border rounded-md"
                       />
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="dimensions_width" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="dimensions_width"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Lebar (cm)
                     </label>
                     <div className="relative">
-                      <Ruler size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                      <input 
-                        type="number" 
-                        id="dimensions_width" 
-                        name="dimensions.width" 
-                        value={currentProduct.dimensions.width} 
-                        onChange={handleChange} 
-                        placeholder="0" 
+                      <Ruler
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="dimensions_width"
+                        name="dimensions.width"
+                        value={currentProduct.dimensions.width}
+                        onChange={handleChange}
+                        placeholder="0"
                         className="w-full p-2 pl-9 border rounded-md"
                       />
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="dimensions_height" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label
+                      htmlFor="dimensions_height"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
                       Tinggi (cm)
                     </label>
                     <div className="relative">
-                      <Ruler size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
-                      <input 
-                        type="number" 
-                        id="dimensions_height" 
-                        name="dimensions.height" 
-                        value={currentProduct.dimensions.height} 
-                        onChange={handleChange} 
-                        placeholder="0" 
+                      <Ruler
+                        size={16}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="number"
+                        id="dimensions_height"
+                        name="dimensions.height"
+                        value={currentProduct.dimensions.height}
+                        onChange={handleChange}
+                        placeholder="0"
                         className="w-full p-2 pl-9 border rounded-md"
                       />
                     </div>
@@ -554,7 +605,10 @@ const KelolaProduk = () => {
 
               {/* LINK ORDER */}
               <div>
-                <label htmlFor="orderLink" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="orderLink"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Link Button Order
                 </label>
                 <div className="relative">
@@ -685,9 +739,9 @@ const KelolaProduk = () => {
                     <label className="text-sm font-medium">
                       Varian Tersimpan:
                     </label>
-                    {currentProduct.colors.map((color, index) => (
+                    {currentProduct.colors.map((color) => (
                       <div
-                        key={index}
+                        key={color.name} // Gunakan color.name sebagai key
                         className="flex items-start gap-3 p-3 bg-white border rounded-lg"
                       >
                         <div className="flex-shrink-0 flex flex-col items-center gap-1 w-20">
@@ -702,7 +756,7 @@ const KelolaProduk = () => {
                         <div className="flex-grow flex flex-wrap gap-2">
                           {color.imageUrls.map((url, imgIndex) => (
                             <img
-                              key={imgIndex}
+                              key={`${color.name}-${imgIndex}`} // Buat key yang lebih unik
                               src={`http://localhost:5000${url}`}
                               alt={`${color.name}-${imgIndex}`}
                               className="w-16 h-16 object-cover rounded-md border"
@@ -711,7 +765,7 @@ const KelolaProduk = () => {
                         </div>
                         <button
                           type="button"
-                          onClick={() => handleRemoveColor(index)}
+                          onClick={() => handleRemoveColor(color.name)} // Hapus berdasarkan nama
                           className="text-gray-400 hover:text-red-500 flex-shrink-0"
                         >
                           <Trash2 size={16} />
@@ -721,7 +775,6 @@ const KelolaProduk = () => {
                   </div>
                 )}
               </div>
-
               <div className="flex justify-end gap-4 pt-4">
                 <button
                   type="button"
