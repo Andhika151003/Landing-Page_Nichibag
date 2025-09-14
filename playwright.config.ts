@@ -24,7 +24,15 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  // Jalankan global setup sebelum semua tes
+  globalSetup: './global-setup.ts',
   use: {
+    // URL dasar untuk aplikasi Anda
+    baseURL: 'http://localhost:5173/',
+
+    // File tempat menyimpan sesi login
+    storageState: '.auth/user.json',
+
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000',
 

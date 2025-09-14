@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const serviceSchema = new mongoose.Schema({
   imageUrl: { type: String, default: '' },
-  title: { type: String, default: 'Judul Layanan' },
-  description: { type: String, default: 'Deskripsi singkat layanan.' },
+  title: { type: String, default: '' },
+  description: { type: String, default: '' },
 });
 
 const servicePageSchema = new mongoose.Schema({
