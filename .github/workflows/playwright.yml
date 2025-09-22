@@ -8,43 +8,30 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-
     services:
       mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
-          
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-
     - name: Install frontend dependencies
       run: npm ci
-
     - name: Install backend dependencies
       run: npm ci --prefix Server
-
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-
-    # MENJALANKAN BACKEND DI BACKGROUND
     - name: Run backend in background
       run: cd Server && npm start &
-
-    # MENJALANKAN FRONTEND DI BACKGROUND (MENGGUNAKAN SCRIPT YANG BENAR)
     - name: Run frontend in background
       run: npm run dev &
-
-    # TUNGGU KEDUA SERVER SIAP
     - name: Wait for servers to be ready
       run: sleep 10 && npx wait-on http://localhost:5173 && npx wait-on http://localhost:5000
-
     - name: Run Playwright tests
       run: npx playwright test
-
     - uses: actions/upload-artifact@v4
       if: always()
       with:
