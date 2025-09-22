@@ -40,7 +40,7 @@ jobs:
 
     # TUNGGU KEDUA SERVER SIAP
     - name: Wait for servers to be ready
-      run: npx wait-on http://localhost:5173 && npx wait-on http://localhost:5000
+      run: sleep 10 && npx wait-on http://localhost:5173 && npx wait-on http://localhost:5000
 
     - name: Run Playwright tests
       run: npx playwright test
