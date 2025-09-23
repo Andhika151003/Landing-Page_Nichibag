@@ -11,17 +11,23 @@ on:
 # Daftar pekerjaan (jobs) yang akan dijalankan
 jobs:
   test:
-    # Mengatur batas waktu eksekusi job menjadi 15 menit
-    timeout-minutes: 15
+    # Mengatur batas waktu eksekusi job menjadi 20 menit
+    timeout-minutes: 20
     # Menjalankan di lingkungan Ubuntu versi terbaru
     runs-on: ubuntu-latest
 
     # Menyiapkan service eksternal (dalam hal ini, database MongoDB)
     services:
       mongodb:
-        image: mongo:latest # Menggunakan image Docker MongoDB terbaru
+        image: mongo:latest
         ports:
-          - 27017:27017 # Memetakan port container ke host
+          - 27017:27017
+        # Tambahkan health check untuk memastikan MongoDB siap
+        options: >-
+          --health-cmd "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
     # 1. Mengunduh kode dari repositori
@@ -32,7 +38,8 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: lts/* # Menggunakan versi Long-Term Support (LTS)
+        node-version: lts/*
+        cache: 'npm'
 
     # 3. Instal dependensi untuk direktori root (frontend)
     - name: Install root dependencies
@@ -46,28 +53,66 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps
 
-    # 6. Menjalankan server backend di background
+    # 6. Tunggu MongoDB siap
+    - name: Wait for MongoDB
+      run: |
+        timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
+        echo "MongoDB is ready"
+
+    # 7. Menjalankan server backend di background
     - name: Run backend in background
       env:
-        # Menggunakan GitHub Secret untuk koneksi database yang aman
-        MONGO_URI: ${{ secrets.MONGO_URI }}
+        # Gunakan MongoDB lokal untuk testing
+        MONGO_URI: mongodb://localhost:27017/test_database
         PORT: 5000
-      run: npm start --prefix Server &
+        NODE_ENV: test
+      run: |
+        npm start --prefix Server > backend.log 2>&1 &
+        echo $! > backend.pid
 
-    # 7. Menjalankan server frontend di background
+    # 8. Menjalankan server frontend di background  
     - name: Run frontend in background
-      run: npm run dev &
+      run: |
+        npm run dev > frontend.log 2>&1 &
+        echo $! > frontend.pid
 
-    # 8. Menunggu hingga kedua server siap menerima koneksi
-    # Ini penting untuk mencegah tes berjalan sebelum aplikasi siap
+    # 9. Menunggu hingga kedua server siap menerima koneksi dengan timeout
     - name: Wait for servers to be ready
-      run: npx wait-on http://localhost:5000 && npx wait-on http://localhost:5173
+      run: |
+        echo "Waiting for backend on port 5000..."
+        npx wait-on http://localhost:5000 --timeout 120000 --interval 2000
+        echo "Backend is ready!"
+        
+        echo "Waiting for frontend on port 5173..."
+        npx wait-on http://localhost:5173 --timeout 120000 --interval 2000
+        echo "Frontend is ready!"
 
-    # 9. Menjalankan tes Playwright
+    # 10. Debug: Cek status server
+    - name: Check servers status
+      run: |
+        echo "=== Backend Status ==="
+        curl -I http://localhost:5000 || echo "Backend check failed"
+        echo "=== Frontend Status ==="
+        curl -I http://localhost:5173 || echo "Frontend check failed"
+        echo "=== Running Processes ==="
+        ps aux | grep -E "(node|npm)" | grep -v grep
+
+    # 11. Menjalankan tes Playwright
     - name: Run Playwright tests
       run: npx playwright test
 
-    # 10. (Opsional) Mengunggah laporan hasil tes jika terjadi kegagalan
+    # 12. Upload logs jika ada kegagalan
+    - name: Upload logs on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: server-logs
+        path: |
+          backend.log
+          frontend.log
+        retention-days: 3
+
+    # 13. Upload test report jika terjadi kegagalan
     - name: Upload test report on failure
       uses: actions/upload-artifact@v4
       if: failure()
@@ -75,3 +120,14 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 7
+
+    # 14. Cleanup: Stop servers
+    - name: Stop servers
+      if: always()
+      run: |
+        if [ -f backend.pid ]; then
+          kill $(cat backend.pid) || true
+        fi
+        if [ -f frontend.pid ]; then
+          kill $(cat frontend.pid) || true
+        fi
