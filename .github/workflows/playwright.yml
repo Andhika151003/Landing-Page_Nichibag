@@ -59,39 +59,76 @@ jobs:
         timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
         echo "MongoDB is ready"
 
-    # 7. Menjalankan server backend di background
+    # 7. Debug backend setup dan test MongoDB
+    - name: Debug backend setup
+      run: |
+        echo "=== Checking Server directory ==="
+        ls -la Server/
+        echo "=== Checking package.json ==="
+        cat Server/package.json
+        echo "=== Testing MongoDB connection ==="
+        nc -z localhost 27017 && echo "MongoDB is accessible" || echo "MongoDB connection failed"
+        mongosh --eval "db.runCommand('ping')" mongodb://localhost:27017/test_database || echo "MongoDB ping failed"
+
+    # 8. Start backend with proper ES Module support
     - name: Run backend in background
       env:
-        # Gunakan MongoDB lokal untuk testing
         MONGO_URI: mongodb://localhost:27017/test_database
         PORT: 5000
         NODE_ENV: test
-        # Tambahkan environment variables lain yang mungkin dibutuhkan
         JWT_SECRET: test-jwt-secret-key
         SESSION_SECRET: test-session-secret
       run: |
-        echo "Starting backend with MONGO_URI: $MONGO_URI"
-        # Coba dengan npm run dev jika start tidak work
-        cd Server && (npm start || npm run dev) > ../backend.log 2>&1 &
-        echo $! > ../backend.pid
-        sleep 5  # Tunggu sebentar untuk backend start
+        echo "=== Environment Variables ==="
+        echo "MONGO_URI: $MONGO_URI"
+        echo "PORT: $PORT"
+        echo "NODE_ENV: $NODE_ENV"
+        echo "=== Starting backend with ES Modules ==="
+        cd Server
+        # Start backend and capture output
+        node index.js > ../backend.log 2>&1 &
+        BACKEND_PID=$!
+        echo $BACKEND_PID > ../backend.pid
+        echo "Backend started with PID: $BACKEND_PID"
+        sleep 10
+        # Check if process is still running
+        if kill -0 $BACKEND_PID 2>/dev/null; then
+          echo "Backend process is running successfully"
+        else
+          echo "Backend process died, checking logs:"
+          cat ../backend.log
+          exit 1
+        fi
 
-    # 8. Menjalankan server frontend di background  
+    # 9. Menjalankan server frontend di background  
     - name: Run frontend in background
       run: |
         npm run dev > frontend.log 2>&1 &
         echo $! > frontend.pid
+        sleep 5
 
-    # 9. Menunggu hingga kedua server siap menerima koneksi dengan timeout
+    # 10. Menunggu hingga kedua server siap menerima koneksi dengan timeout
     - name: Wait for servers to be ready
       run: |
-        echo "Waiting for backend on port 5000..."
-        npx wait-on http://localhost:5000 --timeout 120000 --interval 2000
-        echo "Backend is ready!"
+        echo "Checking if backend process is running..."
+        if [ -f backend.pid ] && kill -0 $(cat backend.pid) 2>/dev/null; then
+          echo "Backend process is running, checking connection..."
+          npx wait-on http://localhost:5000 --timeout 60000 --interval 2000
+          echo "Backend is ready!"
+        else
+          echo "Backend process is not running!"
+          exit 1
+        fi
         
-        echo "Waiting for frontend on port 5173..."
-        npx wait-on http://localhost:5173 --timeout 120000 --interval 2000
-        echo "Frontend is ready!"
+        echo "Checking if frontend process is running..."
+        if [ -f frontend.pid ] && kill -0 $(cat frontend.pid) 2>/dev/null; then
+          echo "Frontend process is running, checking connection..."
+          npx wait-on http://localhost:5173 --timeout 60000 --interval 2000
+          echo "Frontend is ready!"
+        else
+          echo "Frontend process is not running!"
+          exit 1
+        fi
 
     # 10. Debug: Cek status server dan log
     - name: Check servers status
