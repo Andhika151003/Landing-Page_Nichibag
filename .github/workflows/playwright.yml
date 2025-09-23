@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: DEBUG Playwright Tests
 on:
   push:
     branches: [ main, master ]
@@ -6,7 +6,7 @@ on:
     branches: [ main, master ]
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 10 # Mengurangi timeout karena kita ingin cepat gagal
     runs-on: ubuntu-latest
     services:
       mongodb:
@@ -18,23 +18,20 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Install frontend dependencies
-      run: npm ci
+
     - name: Install backend dependencies
       run: npm ci --prefix Server
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run backend in background
-      run: cd Server && npm start &
+
+    # LANGKAH DEBUG UTAMA: Jalankan server di foreground untuk melihat log
+    - name: DEBUG - Run backend and show logs
+      run: cd Server && npm start
+
+    # Langkah-langkah di bawah ini sengaja tidak akan dijalankan
     - name: Run frontend in background
-      run: npm run dev &
+      run: echo "Skipping for debug"
+
     - name: Wait for servers to be ready
-      run: sleep 10 && npx wait-on http://localhost:5173 && npx wait-on http://localhost:5000
+      run: echo "Skipping for debug"
+
     - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      run: echo "Skipping for debug"
