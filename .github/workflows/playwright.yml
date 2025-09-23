@@ -66,9 +66,15 @@ jobs:
         MONGO_URI: mongodb://localhost:27017/test_database
         PORT: 5000
         NODE_ENV: test
+        # Tambahkan environment variables lain yang mungkin dibutuhkan
+        JWT_SECRET: test-jwt-secret-key
+        SESSION_SECRET: test-session-secret
       run: |
-        npm start --prefix Server > backend.log 2>&1 &
-        echo $! > backend.pid
+        echo "Starting backend with MONGO_URI: $MONGO_URI"
+        # Coba dengan npm run dev jika start tidak work
+        cd Server && (npm start || npm run dev) > ../backend.log 2>&1 &
+        echo $! > ../backend.pid
+        sleep 5  # Tunggu sebentar untuk backend start
 
     # 8. Menjalankan server frontend di background  
     - name: Run frontend in background
@@ -87,9 +93,13 @@ jobs:
         npx wait-on http://localhost:5173 --timeout 120000 --interval 2000
         echo "Frontend is ready!"
 
-    # 10. Debug: Cek status server
+    # 10. Debug: Cek status server dan log
     - name: Check servers status
       run: |
+        echo "=== Backend Log (last 20 lines) ==="
+        tail -20 backend.log || echo "No backend log found"
+        echo "=== Frontend Log (last 10 lines) ==="
+        tail -10 frontend.log || echo "No frontend log found"
         echo "=== Backend Status ==="
         curl -I http://localhost:5000 || echo "Backend check failed"
         echo "=== Frontend Status ==="
