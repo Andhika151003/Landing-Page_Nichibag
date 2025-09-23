@@ -1,37 +1,77 @@
-name: DEBUG Playwright Tests
+# Nama alur kerja (workflow)
+name: Playwright CI/CD
+
+# Pemicu (trigger) untuk menjalankan alur kerja
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+# Daftar pekerjaan (jobs) yang akan dijalankan
 jobs:
   test:
-    timeout-minutes: 10 # Mengurangi timeout karena kita ingin cepat gagal
+    # Mengatur batas waktu eksekusi job menjadi 15 menit
+    timeout-minutes: 15
+    # Menjalankan di lingkungan Ubuntu versi terbaru
     runs-on: ubuntu-latest
+
+    # Menyiapkan service eksternal (dalam hal ini, database MongoDB)
     services:
       mongodb:
-        image: mongo:latest
+        image: mongo:latest # Menggunakan image Docker MongoDB terbaru
         ports:
-          - 27017:27017
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
+          - 27017:27017 # Memetakan port container ke host
 
+    steps:
+    # 1. Mengunduh kode dari repositori
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    # 2. Menyiapkan lingkungan Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: lts/* # Menggunakan versi Long-Term Support (LTS)
+
+    # 3. Instal dependensi untuk direktori root (frontend)
+    - name: Install root dependencies
+      run: npm ci
+
+    # 4. Instal dependensi untuk server (backend)
     - name: Install backend dependencies
       run: npm ci --prefix Server
 
-    # LANGKAH DEBUG UTAMA: Jalankan server di foreground untuk melihat log
-    - name: DEBUG - Run backend and show logs
-      run: cd Server && npm start
+    # 5. Instal browser yang dibutuhkan oleh Playwright
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
 
-    # Langkah-langkah di bawah ini sengaja tidak akan dijalankan
+    # 6. Menjalankan server backend di background
+    - name: Run backend in background
+      env:
+        # Menggunakan GitHub Secret untuk koneksi database yang aman
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        PORT: 5000
+      run: npm start --prefix Server &
+
+    # 7. Menjalankan server frontend di background
     - name: Run frontend in background
-      run: echo "Skipping for debug"
+      run: npm run dev &
 
+    # 8. Menunggu hingga kedua server siap menerima koneksi
+    # Ini penting untuk mencegah tes berjalan sebelum aplikasi siap
     - name: Wait for servers to be ready
-      run: echo "Skipping for debug"
+      run: npx wait-on http://localhost:5000 && npx wait-on http://localhost:5173
 
+    # 9. Menjalankan tes Playwright
     - name: Run Playwright tests
-      run: echo "Skipping for debug"
+      run: npx playwright test
+
+    # 10. (Opsional) Mengunggah laporan hasil tes jika terjadi kegagalan
+    - name: Upload test report on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 7
