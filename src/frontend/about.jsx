@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Gambar from "../assets/produk.png";
+import Gambar2 from "../assets/gym.png";
 import Button from "../components/ModernButton";
 import {
   motion as Motion,
@@ -12,41 +13,31 @@ import {
 } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 
-// PERBAIKAN: Mendefinisikan varian animasi 'fadeInUp'
+// Variabel animasi fade-in
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: {
-      duration: 0.8,
-      ease: "easeOut",
-    },
+    transition: { duration: 0.8, ease: "easeOut" },
   },
 };
 
-// PERBAIKAN: Mendefinisikan data untuk timeline
+// Data timeline
 const timelineItems = [
-  {
-    year: 2022,
-    title: "Pendirian Nichibag.id",
-    desc: "Memulai perjalanan dengan visi untuk menyediakan kemasan berkualitas.",
-  },
-  {
-    year: 2023,
-    title: "Ekspansi Produk",
-    desc: "Meluncurkan berbagai jenis kemasan baru untuk memenuhi permintaan pasar.",
-  },
-  {
-    year: 2024,
-    title: "Pencapaian 500K+ Klien",
-    desc: "Merayakan kepercayaan dari ratusan ribu klien di seluruh Indonesia.",
-  },
-  {
-    year: 2025,
-    title: "Go Internasional",
-    desc: "Memulai perjalanan sampai seluruh dunia.",
-  },
+  { year: 2022, title: "Pendirian Nichibag.id", desc: "Memulai perjalanan dengan visi untuk menyediakan kemasan berkualitas." },
+  { year: 2023, title: "Ekspansi Produk", desc: "Meluncurkan berbagai jenis kemasan baru untuk memenuhi permintaan pasar." },
+  { year: 2024, title: "Pencapaian 500K+ Klien", desc: "Merayakan kepercayaan dari ratusan ribu klien di seluruh Indonesia." },
+  { year: 2025, title: "Go Internasional", desc: "Memulai perjalanan sampai seluruh dunia." },
+];
+
+// 🔽 DATA CARD PRODUK (bisa kamu ganti sesuai gambar & nama produk)
+const productCards = [
+  { img: Gambar, title: "Paper Bag Premium" },
+  { img: Gambar, title: "Paper Bag Premium" },
+  { img: Gambar, title: "Cotton Tote Bag" },
+  { img: Gambar, title: "Box Packaging" },
+  { img: Gambar, title: "Gift Pouch" },
 ];
 
 const About = () => {
@@ -54,6 +45,7 @@ const About = () => {
     imageUrl: "",
     buttonUrl: "https://wa.me/628973809698",
   });
+
   const { scrollY } = useScroll();
   const scrollVelocity = useSpring(scrollY, { damping: 40, stiffness: 400 });
   const scaleOnScroll = useTransform(scrollVelocity, [0, 1000], [1, 1.05]);
@@ -63,9 +55,7 @@ const About = () => {
     axios
       .get("http://localhost:5000/api/about")
       .then((res) => {
-        if (res.data) {
-          setAboutData(res.data);
-        }
+        if (res.data) setAboutData(res.data);
       })
       .catch((err) => console.error("Gagal mengambil data about:", err));
   }, []);
@@ -79,9 +69,8 @@ const About = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        {/* PERBAIKAN: Mengganti SplitText dengan Motion.h1 biasa */}
         <Motion.h1
-          className="text-4xl font-semibold text-center leading-[normal] align-bottom tracking-tight"
+          className="text-4xl font-semibold text-center tracking-tight"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -96,7 +85,7 @@ const About = () => {
         className="bg-[#F9F6EE] flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-20 py-16"
         variants={fadeInUp}
         initial="hidden"
-        whileInView="visible" // Gunakan whileInView agar animasi terjadi saat di-scroll
+        whileInView="visible"
         viewport={{ once: true }}
       >
         <div className="md:w-1/2">
@@ -118,18 +107,9 @@ const About = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{ scale: scaleOnScroll }}
         >
-          <Tilt
-            glareEnable={true}
-            glareMaxOpacity={0.3}
-            scale={1.02}
-            transitionSpeed={1500}
-          >
+          <Tilt glareEnable glareMaxOpacity={0.3} scale={1.02} transitionSpeed={1500}>
             <img
-              src={
-                aboutData.imageUrl
-                  ? `http://localhost:5000${aboutData.imageUrl}`
-                  : Gambar
-              }
+              src={aboutData.imageUrl ? `http://localhost:5000${aboutData.imageUrl}` : Gambar}
               alt="Tentang Kami"
               className="rounded-lg shadow-lg"
             />
@@ -137,67 +117,41 @@ const About = () => {
         </Motion.div>
       </Motion.section>
 
-      {/* Nilai-Nilai (Sudah Benar) ... */}
+      {/* 🔽 BAGIAN BARU: CARD PRODUK */}
       <Motion.section
-        className="py-20 px-6 md:px-20 bg-[#F9F6EE]"
+        className="bg-[#F9F6EE] py-12 px-6 md:px-20"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <h2 className="text-3xl font-bold text-center mb-12 text-[#800000]">
-          Nilai-Nilai Kami
+        <h2 className="text-2xl font-semibold text-center text-black mb-10">
+          kami juga bekerja sama
         </h2>
-        <p className="text-lg text-center text-gray-700 max-w-3xl mx-auto mb-12">
-          Bagi kami, kemasan adalah cerminan identitas. Karena itu, setiap
-          produk Nichibag.id lahir dari empat pilar utama:{" "}
-          <strong>Kualitas</strong> tanpa kompromi sebagai fondasi,{" "}
-          <strong>Inovasi</strong> berkelanjutan untuk selalu menjadi yang
-          terdepan, <strong>Kepedulian</strong> terhadap lingkungan sebagai
-          tanggung jawab, dan <strong>Kepercayaan</strong> dari Anda sebagai
-          tujuan akhir kami. Nilai-nilai ini bukan sekadar kata, melainkan janji
-          yang kami tanamkan dalam setiap karya.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            {
-              title: "Berkualitas",
-              desc: "Kemasan Berkualitas Dan Berbahan Premium",
-              icon: "🌟",
-            },
-            {
-              title: "Inovasi",
-              desc: "Selalu Menciptakan Produk Unggul",
-              icon: "💡",
-            },
-            {
-              title: "Ramah Lingkungan",
-              desc: "Pilihan Terbaik Mengurangi Limbah Plastik",
-              icon: "🌿",
-            },
-            {
-              title: "Terpercaya",
-              desc: "Memberikan Layanan Yang Terbaik",
-              icon: "🤝",
-            },
-          ].map((item, i) => (
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {productCards.map((item, i) => (
             <Motion.div
               key={i}
-              className="p-6 bg-red-800 rounded-2xl shadow-md flex flex-col items-center"
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
               variants={fadeInUp}
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
+              whileHover={{ scale: 1.03 }}
             >
-              <div className="text-4xl mb-4">{item.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                {item.title}
-              </h3>
-              <p className="text-white">{item.desc}</p>
+              <img
+                src={Gambar2}
+                alt={item.title}
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4 text-center">
+                <h3 className="text-lg font-semibold text-red-800">
+                  {item.title}
+                </h3>
+              </div>
             </Motion.div>
           ))}
         </div>
       </Motion.section>
 
-      {/* Perjalanan Kami (Timeline) */}
+      {/* Timeline */}
       <Motion.section
         className="bg-red-800 py-16 px-6 md:px-20"
         initial="hidden"
@@ -209,7 +163,6 @@ const About = () => {
         </h2>
         <div className="relative flex flex-col items-center">
           <div className="absolute w-1 bg-[#F9F6EE] h-full left-1/2 transform -translate-x-1/2 z-0" />
-          {/* PERBAIKAN: Menggunakan variabel 'timelineItems' yang sudah ada */}
           {timelineItems.map((item, i) => (
             <Motion.div
               key={item.year}
@@ -231,7 +184,7 @@ const About = () => {
         </div>
       </Motion.section>
 
-      {/* CTA (Sudah Benar) ... */}
+      {/* CTA */}
       <Motion.section
         className="text-black text-center py-12 px-6 bg-[#F9F6EE]"
         initial={{ opacity: 0, y: 30 }}
