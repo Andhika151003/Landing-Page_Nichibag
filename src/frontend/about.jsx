@@ -3,7 +3,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Gambar from "../assets/produk.png";
-import Gambar2 from "../assets/gym.png";
+import GambarFitnesWork from "../assets/gym.png";
+import GambarUfume from "../assets/ufume.png";
+import GambarbataviaClinic from "../assets/bataviaClinic.png";
+import GambarTomolap from "../assets/tomolap.png";
 import Button from "../components/ModernButton";
 import {
   motion as Motion,
@@ -25,19 +28,34 @@ const fadeInUp = {
 
 // Data timeline
 const timelineItems = [
-  { year: 2022, title: "Pendirian Nichibag.id", desc: "Memulai perjalanan dengan visi untuk menyediakan kemasan berkualitas." },
-  { year: 2023, title: "Ekspansi Produk", desc: "Meluncurkan berbagai jenis kemasan baru untuk memenuhi permintaan pasar." },
-  { year: 2024, title: "Pencapaian 500K+ Klien", desc: "Merayakan kepercayaan dari ratusan ribu klien di seluruh Indonesia." },
-  { year: 2025, title: "Go Internasional", desc: "Memulai perjalanan sampai seluruh dunia." },
+  {
+    year: 2022,
+    title: "Pendirian Nichibag.id",
+    desc: "Memulai perjalanan dengan visi untuk menyediakan kemasan berkualitas.",
+  },
+  {
+    year: 2023,
+    title: "Ekspansi Produk",
+    desc: "Meluncurkan berbagai jenis kemasan baru untuk memenuhi permintaan pasar.",
+  },
+  {
+    year: 2024,
+    title: "Pencapaian 500K+ Klien",
+    desc: "Merayakan kepercayaan dari ratusan ribu klien di seluruh Indonesia.",
+  },
+  {
+    year: 2025,
+    title: "Go Internasional",
+    desc: "Memulai perjalanan sampai seluruh dunia.",
+  },
 ];
 
 // 🔽 DATA CARD PRODUK (bisa kamu ganti sesuai gambar & nama produk)
 const productCards = [
-  { img: Gambar, title: "Paper Bag Premium" },
-  { img: Gambar, title: "Paper Bag Premium" },
-  { img: Gambar, title: "Cotton Tote Bag" },
-  { img: Gambar, title: "Box Packaging" },
-  { img: Gambar, title: "Gift Pouch" },
+  { img: GambarFitnesWork, title: "Fitness Work" },
+  { img: GambarUfume, title: "Ufume" },
+  { img: GambarbataviaClinic, title: "Batavia Clinic" },
+  { img: GambarTomolap, title: "Tomolap" },
 ];
 
 const About = () => {
@@ -96,7 +114,8 @@ const About = () => {
             lingkungan.
           </p>
           <p className="text-red-800 font-semibold text-lg">
-            500K+ Klien yang puas
+            500K+ <br />
+            Klien yang puas
           </p>
         </div>
         <Motion.div
@@ -107,9 +126,18 @@ const About = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{ scale: scaleOnScroll }}
         >
-          <Tilt glareEnable glareMaxOpacity={0.3} scale={1.02} transitionSpeed={1500}>
+          <Tilt
+            glareEnable
+            glareMaxOpacity={0.3}
+            scale={1.02}
+            transitionSpeed={1500}
+          >
             <img
-              src={aboutData.imageUrl ? `http://localhost:5000${aboutData.imageUrl}` : Gambar}
+              src={
+                aboutData.imageUrl
+                  ? `http://localhost:5000${aboutData.imageUrl}`
+                  : Gambar
+              }
               alt="Tentang Kami"
               className="rounded-lg shadow-lg"
             />
@@ -119,29 +147,33 @@ const About = () => {
 
       {/* 🔽 BAGIAN BARU: CARD PRODUK */}
       <Motion.section
-        className="bg-[#F9F6EE] py-12 px-6 md:px-20"
+        className="bg-[#F9F6EE] py-12 px-4 md:px-25"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
       >
         <h2 className="text-2xl font-semibold text-center text-black mb-10">
-          kami juga bekerja sama
+          kami juga bekerja sama dengan
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center place-items-center">
           {productCards.map((item, i) => (
             <Motion.div
               key={i}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
+              custom={i}
               variants={fadeInUp}
-              whileHover={{ scale: 1.03 }}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-transform duration-300 w-[230px]"
+              whileHover={{ scale: 1.05 }}
             >
               <img
-                src={Gambar2}
+                src={item.img}
                 alt={item.title}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-4 text-center">
+              <div className="p-4 text-center bg-gray-100">
                 <h3 className="text-lg font-semibold text-red-800">
                   {item.title}
                 </h3>

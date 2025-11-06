@@ -26,25 +26,32 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-red-800 text-gray-800">
+    <footer className="bg-[#f8d7d0] text-gray-800">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          
           {/* Kolom 1: Logo & Deskripsi */}
           <div className="md:col-span-1">
-            <h2 className="text-3xl font-bold text-amber-50 mb-4">Nichibag.id</h2>
-            <p className="text-sm text-white">
-              Solusi kemasan modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap lingkungan.
+            <h2 className="text-3xl font-bold text-red-700 mb-4">
+              Nichibag.id
+            </h2>
+            <p className="text-sm text-black">
+              Solusi kemasan modern yang mengutamakan kualitas, estetika, dan
+              kepedulian terhadap lingkungan.
             </p>
           </div>
 
           {/* Kolom 2: Quick Links */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-amber-50">Quick Links</h3>
+            <h3 className="font-bold text-lg mb-4 text-black">
+              Quick Links
+            </h3>
             <ul className="space-y-3">
               {menuItems.map((item, index) => (
                 <li key={index}>
-                  <a href={item.path} className="text-blue-100 hover:text-yellow-200 transition-colors">
+                  <a
+                    href={item.path}
+                    className="text-black hover:text-yellow-200 transition-colors"
+                  >
                     {item.name}
                   </a>
                 </li>
@@ -54,19 +61,21 @@ const Footer = () => {
 
           {/* Kolom 3: Hubungi Kami */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-amber-50">Hubungi Kami</h3>
-            <ul className="space-y-3 text-white">
-                <li>nichibag.id@gmail.com</li>
-                <li>+62 877 8826 1298</li>
-                <li>Surabaya, Indonesia</li>
+            <h3 className="font-bold text-lg mb-4 text-black">
+              Hubungi Kami
+            </h3>
+            <ul className="space-y-3 text-black">
+              <li>nichibag.id@gmail.com</li>
+              <li>+62 877 8826 1298</li>
+              <li>Surabaya, Indonesia</li>
             </ul>
           </div>
 
           {/* Kolom 4: Follow Us */}
           <div>
-             <h3 className="font-bold text-lg mb-4 text-amber-50">Follow Us</h3>
-             {/* 👇 BAGIAN INI YANG DIPERBARUI */}
-             <div className="flex flex-wrap gap-6">
+            <h3 className="font-bold text-lg mb-4 text-black">Follow Us</h3>
+            {/* 👇 BAGIAN INI YANG DIPERBARUI */}
+            <div className="flex flex-wrap gap-6">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
@@ -74,7 +83,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="flex flex-col items-center gap-2 text-white hover:text-yellow-200 transition-all duration-300 transform hover:scale-110 w-16"
+                  className="flex flex-col items-center gap-2 text-black hover:text-yellow-200 transition-all duration-300 transform hover:scale-110 w-16"
                 >
                   <FontAwesomeIcon icon={social.icon} className="h-6 w-6" />
                   <span className="text-xs font-semibold">{social.label}</span>
@@ -85,7 +94,7 @@ const Footer = () => {
         </div>
 
         {/* Garis Pemisah & Copyright */}
-        <div className="border-t border-gray-200 mt-12 pt-8 text-center text-sm text-white">
+        <div className="border-t border-gray-200 mt-12 pt-8 text-center text-sm text-black">
           <p>© {new Date().getFullYear()} Nichibag.id. All Rights Reserved.</p>
         </div>
       </div>
