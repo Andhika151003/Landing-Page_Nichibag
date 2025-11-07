@@ -26,13 +26,13 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-red-800 text-gray-800">
+    <footer className="bg-[#f8d7d0] text-gray-800">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           
           {/* Kolom 1: Logo & Deskripsi */}
           <div className="md:col-span-1">
-            <h2 className="text-3xl font-bold text-amber-50 mb-4">Nichibag.id</h2>
+            <h2 className="text-3xl font-bold text-[#581b0a] mb-4">Nichibag.id</h2>
             <p className="text-sm text-white">
               Solusi kemasan modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap lingkungan.
             </p>
