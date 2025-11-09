@@ -55,7 +55,7 @@ const productCards = [
   { img: GambarFitnesWork, title: "Fitness Work" },
   { img: GambarUfume, title: "Ufume" },
   { img: GambarbataviaClinic, title: "Batavia Clinic" },
-  { img: GambarTomolap, title: "Tomolap" },
+  { img: GambarTomolap, title: "Tomolab" },
 ];
 
 const About = () => {
@@ -82,7 +82,7 @@ const About = () => {
     <div className="pt-6 overflow-x-hidden">
       {/* Header */}
       <Motion.section
-        className="text-white text-center pt-28 pb-20 bg-red-800"
+        className="text-red-700 text-center pt-28 pb-20 bg-[#f8d7d0]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -114,34 +114,25 @@ const About = () => {
             lingkungan.
           </p>
           <p className="text-red-800 font-semibold text-lg">
-            500K+ <br />
-            Klien yang puas
+            500K+ Klien yang puas
           </p>
         </div>
         <Motion.div
           className="md:w-1/2"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{ scale: scaleOnScroll }}
         >
-          <Tilt
-            glareEnable
-            glareMaxOpacity={0.3}
-            scale={1.02}
-            transitionSpeed={1500}
-          >
-            <img
-              src={
-                aboutData.imageUrl
-                  ? `http://localhost:5000${aboutData.imageUrl}`
-                  : Gambar
-              }
-              alt="Tentang Kami"
-              className="rounded-lg shadow-lg"
-            />
-          </Tilt>
+          <img
+            src={
+              aboutData.imageUrl
+                ? `http://localhost:5000${aboutData.imageUrl}`
+                : Gambar
+            }
+            alt="Tentang Kami"
+            className="rounded-lg shadow-lg"
+          />
         </Motion.div>
       </Motion.section>
 
@@ -153,44 +144,49 @@ const About = () => {
         viewport={{ once: true }}
       >
         <h2 className="text-2xl font-semibold text-center text-black mb-10">
-          kami juga bekerja sama dengan
+          Kami Pernah Bekerja Sama Dengan
         </h2>
 
+        {/* ==================================================
+          KODE DIPERBAIKI MULAI DARI SINI
+          Kita tambahkan lagi grid container dan .map()
+          ==================================================
+        */}
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 justify-center place-items-center">
           {productCards.map((item, i) => (
-            <Motion.div
+            <div
               key={i}
-              custom={i}
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-transform duration-300 w-[230px]"
-              whileHover={{ scale: 1.05 }}
+              // KELAS YANG DIHAPUS: bg-white, rounded-xl, shadow-md, overflow-hidden, hover:shadow-xl
+              // KELAS YANG DITAMBAH: text-center (untuk menengahkan judul)
+              className="w-[230px] text-center"
             >
               <img
                 src={item.img}
                 alt={item.title}
-                className="w-full h-48 object-cover"
+                // KELAS YANG DITAMBAH: rounded-xl (agar gambar tetap bulat) dan shadow-md (agar tetap ada bayangan)
+                className="w-full h-48 object-cover rounded-xl shadow-md"
               />
-              <div className="p-4 text-center bg-gray-100">
-                <h3 className="text-lg font-semibold text-red-800">
-                  {item.title}
-                </h3>
-              </div>
-            </Motion.div>
+
+              {/* Kotak abu-abu (div) dihilangkan, h3 diberi margin-top (mt-4) */}
+              <h3 className="text-lg font-semibold text-red-800 mt-4">
+                {item.title}
+              </h3>
+            </div>
           ))}
         </div>
+        {/* ================================================
+            KODE DIPERBAIKI SAMPAI SINI
+        ================================================= */}
       </Motion.section>
 
       {/* Timeline */}
       <Motion.section
-        className="bg-red-800 py-16 px-6 md:px-20"
+        className="bg-[#f8d7d0] py-16 px-6 md:px-20"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <h2 className="text-2xl font-semibold mb-12 text-center text-white">
+        <h2 className="text-2xl font-semibold mb-12 text-center text-red-700">
           Perjalanan Kami
         </h2>
         <div className="relative flex flex-col items-center">
