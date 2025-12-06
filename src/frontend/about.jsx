@@ -14,7 +14,6 @@ import {
   useTransform,
   useSpring,
 } from "framer-motion";
-import Tilt from "react-parallax-tilt";
 
 // Variabel animasi fade-in
 const fadeInUp = {
@@ -95,7 +94,7 @@ const About = () => {
         >
           NICHIBAG.ID
         </Motion.h1>
-        <p className="text-lg">Bukan Sekadar Tas, Ini Identitas</p>
+        <p className="text-lg text-black">Bukan Sekadar Tas, Ini Identitas</p>
       </Motion.section>
 
       {/* Siapa Kami */}
@@ -203,7 +202,7 @@ const About = () => {
                 <p className="text-red-800 font-bold text-lg mb-1">
                   {item.year}
                 </p>
-                <h4 className="font-semibold mb-2">{item.title}</h4>
+                <h4 className="text-black font-semibold mb-2">{item.title}</h4>
                 <p className="text-gray-700">{item.desc}</p>
               </div>
               <span className="absolute top-6 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[#F9F6EE] border-4 border-red-800 rounded-full z-20" />

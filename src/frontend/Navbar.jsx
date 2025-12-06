@@ -35,7 +35,7 @@ const Navbar = () => {
   const NavLink = ({ to, children }) => (
     <Link
       to={to}
-      className={`relative text-gray-800 font-semibold after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:scale-x-0 after:bg-red-700 after:transition-transform after:duration-300 hover:after:scale-x-100 ${
+      className={`relative text-gray-800 font-semibold after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:scale-x-0 after:bg-red-300 after:transition-transform after:duration-300 hover:after:scale-x-100 ${
         location.pathname === to ? "after:scale-x-100" : ""
       }`}
     >
@@ -69,7 +69,7 @@ const Navbar = () => {
           <div className="flex items-center gap-4">
             <button
                 onClick={() => navigate('/katalog')}
-                className="hidden md:block bg-red-700 text-white font-bold px-6 py-2 rounded-full hover:bg-red-800 transition-all duration-300 transform hover:scale-105"
+                className="hidden md:block bg-[#f8d7d0] text-red-500 font-bold px-6 py-2 rounded-full hover:bg-red-400 transition-all duration-300 transform hover:scale-105"
             >
                 Shop Now
             </button>
@@ -103,13 +103,13 @@ const Navbar = () => {
             <ul className="flex flex-col space-y-6 text-xl">
               {menuItems.map((item) => (
                 <li key={item.name}>
-                  <Link to={item.path} className="font-semibold text-gray-800 hover:text-red-700">{item.name}</Link>
+                  <Link to={item.path} className="font-semibold text-gray-800 hover:text-red-800">{item.name}</Link>
                 </li>
               ))}
             </ul>
              <button
                 onClick={() => navigate('/katalog')}
-                className="mt-8 w-full bg-red-700 text-white font-bold px-6 py-3 rounded-full hover:bg-red-800 transition-all duration-300"
+                className="mt-8 w-full bg-[#f8d7d0] text-red-500 font-bold px-6 py-3 rounded-full hover:bg-red-400 transition-all duration-300"
             >
                 Shop Now
             </button>

@@ -84,7 +84,7 @@ const Katalog = () => {
         <div className="mb-6">
           <Link
             to="/"
-            className="text-gray-600 hover:text-red-700 flex items-center gap-2 font-semibold w-max"
+            className="text-gray-600 hover:text-red-500 flex items-center gap-2 font-semibold w-max"
           >
             <ArrowLeft size={18} />
             Kembali ke Halaman Utama
@@ -111,7 +111,7 @@ const Katalog = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 ${
                 selectedCategory === cat
-                  ? "bg-red-700 text-white shadow-lg scale-105"
+                  ? "bg-[#f8d7d0] text-red-500 shadow-lg scale-105"
                   : "bg-white text-gray-700 hover:bg-gray-200 shadow-sm"
               }`}
             >
@@ -149,7 +149,7 @@ const Katalog = () => {
                     )}
                     {/* --- PENAMBAHAN: Label Diskon --- */}
                     {product.discountPercentage > 0 && (
-                      <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      <div className="absolute top-2 left-2 bg-red-100 text-white text-xs font-bold px-2 py-1 rounded-full">
                         -{product.discountPercentage}%
                       </div>
                     )}

@@ -203,23 +203,6 @@ const Services = () => {
               <span>Hubungi via WhatsApp</span>
             </a>
           </div>
-
-          <div className="w-full h-80 md:h-96 bg-gray-200 rounded-lg shadow-md overflow-hidden">
-            {loading ? (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                Memuat Peta...
-              </div>
-            ) : (
-              <iframe
-                src={pageData.googleMapsUrl}
-                className="w-full h-full border-0"
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Lokasi Nichibag.id"
-              ></iframe>
-            )}
-          </div>
         </div>
       </section>
     </div>
