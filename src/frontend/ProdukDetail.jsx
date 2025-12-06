@@ -1,7 +1,10 @@
+// src/frontend/ProdukDetail.jsx
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { motion as Motion } from "framer-motion";
+// Import Icon tambahan: Plus, Minus, ShoppingBag
 import {
   ShoppingCart,
   ChevronLeft,
@@ -11,7 +14,14 @@ import {
   Package,
   Weight,
   Ruler,
+  Plus,
+  Minus,
+  ShoppingBag,
 } from "lucide-react";
+
+// 1. Import SweetAlert dan CartContext
+import Swal from "sweetalert2";
+import { useCart } from "../context/CartContext";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -27,11 +37,18 @@ const fadeInUp = {
 
 const ProductDetail = () => {
   const { id } = useParams();
+
+  // 2. Panggil fungsi addToCart dari Context
+  const { addToCart } = useCart();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
+
+  // 3. State baru untuk jumlah (quantity), default 1
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -87,6 +104,33 @@ const ProductDetail = () => {
     setCurrentIndex(newIndex);
   };
 
+  // 4. Fungsi baru: Menangani klik tombol "+ Keranjang"
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    // Validasi: Pastikan warna dipilih jika produk punya opsi warna
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
+      Swal.fire({
+        icon: "warning",
+        title: "Pilih Warna",
+        text: "Silakan pilih varian warna terlebih dahulu.",
+      });
+      return;
+    }
+
+    // Masukkan ke Context
+    addToCart(product, selectedColor, quantity);
+
+    // Tampilkan notifikasi sukses
+    Swal.fire({
+      icon: "success",
+      title: "Berhasil!",
+      text: "Produk telah ditambahkan ke keranjang.",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-24">
@@ -119,11 +163,9 @@ const ProductDetail = () => {
 
   const hasDiscount =
     product.discountPercentage > 0 && product.discountPrice != null;
-  
-  // --- PERBAIKAN: Memberi nilai default untuk dimensions ---
+
   const { material, weight = 0, dimensions = {}, productCode } = product;
 
-  // --- PERBAIKAN: Logika untuk mengecek dimensi ---
   const hasDimensions =
     dimensions &&
     (dimensions.length > 0 || dimensions.width > 0 || dimensions.height > 0);
@@ -141,6 +183,7 @@ const ProductDetail = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          {/* BAGIAN KIRI: GAMBAR */}
           <Motion.div variants={fadeInUp} initial="hidden" animate="visible">
             {productImages.length > 0 ? (
               <>
@@ -197,6 +240,7 @@ const ProductDetail = () => {
             )}
           </Motion.div>
 
+          {/* BAGIAN KANAN: INFO PRODUK */}
           <Motion.div
             variants={fadeInUp}
             initial="hidden"
@@ -240,7 +284,7 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
-            
+
             {product.colors && product.colors.length > 0 && (
               <div className="mt-6">
                 <h3 className="text-sm font-bold text-gray-800 mb-2">
@@ -272,53 +316,81 @@ const ProductDetail = () => {
               <p>
                 {product.description || "Tidak ada deskripsi untuk produk ini."}
               </p>
-              
+
               {(material || weight > 0 || hasDimensions) && (
-                 <>
-                    <h3 className="font-bold text-gray-800 mt-6">
-                        Spesifikasi:
-                    </h3>
-                    <ul className="list-none p-0 space-y-2">
-                        {material && (
-                            <li className="flex items-center gap-2">
-                                <Package size={16} className="text-gray-500" />
-                                <strong>Bahan:</strong> {material}
-                            </li>
-                        )}
-                        {weight > 0 && (
-                            <li className="flex items-center gap-2">
-                                <Weight size={16} className="text-gray-500" />
-                                <strong>Berat:</strong> {weight} gram
-                            </li>
-                        )}
-                        {hasDimensions && (
-                            <li className="flex items-center gap-2">
-                                <Ruler size={16} className="text-gray-500" />
-                                <strong>Ukuran:</strong> {dimensions.length || 0} x{" "}
-                                {dimensions.width || 0} x {dimensions.height || 0} cm
-                            </li>
-                        )}
-                    </ul>
-                 </>
+                <>
+                  <h3 className="font-bold text-gray-800 mt-6">Spesifikasi:</h3>
+                  <ul className="list-none p-0 space-y-2">
+                    {material && (
+                      <li className="flex items-center gap-2">
+                        <Package size={16} className="text-gray-500" />
+                        <strong>Bahan:</strong> {material}
+                      </li>
+                    )}
+                    {weight > 0 && (
+                      <li className="flex items-center gap-2">
+                        <Weight size={16} className="text-gray-500" />
+                        <strong>Berat:</strong> {weight} gram
+                      </li>
+                    )}
+                    {hasDimensions && (
+                      <li className="flex items-center gap-2">
+                        <Ruler size={16} className="text-gray-500" />
+                        <strong>Ukuran:</strong> {dimensions.length || 0} x{" "}
+                        {dimensions.width || 0} x {dimensions.height || 0} cm
+                      </li>
+                    )}
+                  </ul>
+                </>
               )}
             </div>
 
-            <div className="mt-8">
-              <a
-                href={product.orderLink || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`w-full bg-red-600 text-white flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform transform hover:scale-105 shadow-lg ${
-                  !product.orderLink
-                    ? "bg-gray-400 cursor-not-allowed hover:bg-gray-400 hover:scale-100"
-                    : ""
-                }`}
-                onClick={(e) => !product.orderLink && e.preventDefault()}
-              >
-                <ShoppingCart /> Pesan Sekarang di Shopee
-              </a>
+            {/* 5. BAGIAN BARU: Pilih Jumlah & Tombol Keranjang */}
+            <div className="mt-8 border-t pt-6">
+              {/* Input Jumlah */}
+              <div className="flex items-center gap-4 mb-6">
+                <span className="font-bold text-gray-800">Jumlah:</span>
+
+                {/* Container: Tanpa Border, Pakai Shadow, dan Rounded Full (Kapsul) */}
+                <div className="flex items-center bg-[#f8d7d0] shadow-md rounded-full px-1">
+                  {/* Tombol Minus */}
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-3 text-red-800 hover:text-red-600 hover:bg-white/50 rounded-full transition-all active:scale-90 bg-transparent border-0"
+                    aria-label="Kurangi jumlah"
+                  >
+                    <Minus size={18} strokeWidth={3} />
+                  </button>
+
+                  {/* Angka Jumlah */}
+                  <span className="w-10 text-center font-extrabold text-red-900 text-lg select-none">
+                    {quantity}
+                  </span>
+
+                  {/* Tombol Plus */}
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="p-3 text-red-800 hover:text-red-600 hover:bg-white/50 rounded-full transition-all active:scale-90 bg-transparent border-0"
+                    aria-label="Tambah jumlah"
+                  >
+                    <Plus size={18} strokeWidth={3} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Tombol Aksi */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Tombol Tambah ke Keranjang */}
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-red-600 text-white flex items-center justify-center gap-2 py-3 rounded-lg font-bold text-lg hover:bg-red-700 transition-transform transform hover:scale-105 shadow-lg"
+                >
+                  <ShoppingCart size={20} /> + Keranjang
+                </button>
+              </div>
+
               <p className="text-xs text-gray-500 text-center mt-3">
-                Dengan menekan tombol ini, Anda akan diarahkan ke halaman pemesanan shopee sesuai produk yang anda pilih.
+                Tekan tombol keranjang untuk mengumpulkan pesanan, dan order melalui saluran Whatsapp.
               </p>
             </div>
           </Motion.div>

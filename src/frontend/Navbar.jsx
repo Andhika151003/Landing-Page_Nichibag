@@ -4,12 +4,15 @@ import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import Logo from "../assets/Logo1.png";
+import { ShoppingBag } from "lucide-react";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { getTotalItems } = useCart();
 
   const menuItems = [
     { name: "Collection", path: "/" },
@@ -67,6 +70,14 @@ const Navbar = () => {
 
           {/* Tombol Aksi & Hamburger */}
           <div className="flex items-center gap-4">
+            <Link to="/cart" className="relative p-2 text-gray-800 hover:text-red-600 transition">
+              <ShoppingBag size={24} />
+              {getTotalItems() > 0 && (
+                <span className="absolute top-0 right-0 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">
+                  {getTotalItems()}
+                </span>
+              )}
+            </Link>
             <button
                 onClick={() => navigate('/katalog')}
                 className="hidden md:block bg-[#f8d7d0] text-red-500 font-bold px-6 py-2 rounded-full hover:bg-red-400 transition-all duration-300 transform hover:scale-105"

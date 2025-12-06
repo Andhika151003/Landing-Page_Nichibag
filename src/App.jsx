@@ -2,6 +2,7 @@
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route,  } from "react-router-dom";
+import { CartProvider } from "./context/CartContext";
 
 // Komponen Layout
 import AdminLayout from "./Admin-frontend/AdminLayout.jsx";
@@ -15,6 +16,7 @@ import Services from "./frontend/Services.jsx";
 import Contact from "./frontend/contact.jsx";
 import Katalog from "./frontend/Katalog.jsx";
 import ProductDetail from "./frontend/ProdukDetail.jsx";
+import CartPage from "./frontend/CartPage.jsx";
 
 // Komponen Halaman Admin
 import LoginPage from "./Admin-frontend/Login.jsx";
@@ -35,6 +37,7 @@ const UserPages = ({ children }) => (
 
 const App = () => {
   return (
+   <CartProvider>
     <Router>
       <Routes>
         {/* Halaman Login Admin (Tanpa Layout) */}
@@ -54,8 +57,10 @@ const App = () => {
         <Route path="/contact" element={<UserPages><Contact /></UserPages>} />
         <Route path="/katalog" element={<UserPages><Katalog /></UserPages>} />
         <Route path="/product/:id" element={<UserPages><ProductDetail /></UserPages>} />
+        <Route path="/cart" element={<UserPages><CartPage /></UserPages>} />
       </Routes>
     </Router>
+    </CartProvider> 
   );
 };
 
