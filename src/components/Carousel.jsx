@@ -14,7 +14,7 @@ function Carousel() {
   useEffect(() => {
     const fetchCarouselImages = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/home/carousel");
+        const response = await axios.get("http://127.0.0.1:5000/home/carousel");
         setSlides(response.data);
       } catch (error) {
         console.error("Gagal mengambil gambar carousel:", error);
@@ -53,7 +53,7 @@ function Carousel() {
             <div className="relative w-full h-full">
               {/* ===== PERUBAHAN DI SINI: Tambahkan alamat server ===== */}
               <img
-                src={`http://localhost:5000${slide.url}`}
+                src={`http://127.0.0.1:5000${slide.url}`}
                 alt={`Slide ${index + 1}`}
                 className="w-full h-full object-cover"
               />

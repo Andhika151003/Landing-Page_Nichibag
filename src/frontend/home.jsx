@@ -62,7 +62,7 @@ const Product = ({ products }) => {
               <Link to={product.link || "/katalog"} className="group block overflow-hidden">
                 <div className="relative">
                   <img
-                    src={`http://localhost:5000${product.url}`}
+                    src={`http://127.0.0.1:5000${product.url}`}
                     alt={product.nama}
                     className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px] rounded-md"
                   />
@@ -142,7 +142,7 @@ const Category = ({ categories }) => {
             >
               <Link to={category.link || "/katalog"} className="group block overflow-hidden">
                 <img
-                  src={`http://localhost:5000${category.url}`}
+                  src={`http://127.0.0.1:5000${category.url}`}
                   alt={category.nama}
                   className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px] rounded-md"
                 />
@@ -168,8 +168,8 @@ const Home = () => {
     const fetchHomeData = async () => {
       try {
         const [featuredRes, categoryRes] = await Promise.all([
-          axios.get("http://localhost:5000/home/featured-products"),
-          axios.get("http://localhost:5000/home/categories")
+          axios.get("http://127.0.0.1:5000/home/featured-products"),
+          axios.get("http://127.0.0.1:5000/home/categories")
         ]);
         setFeaturedProducts(featuredRes.data);
         setCategories(categoryRes.data);

@@ -6,7 +6,7 @@ import { Plus, Trash2, Upload, Link2, Save, X, Percent } from "lucide-react";
 import Swal from "sweetalert2";
 
 // Set default baseURL untuk axios biar gak tulis localhost panjang-panjang
-axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "http://127.0.0.1:5000";
 
 // ================== VALIDASI GAMBAR ==================
 const validateImageRatio = (file) => {
@@ -157,7 +157,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, limit }) => {
         {items.map((item) => (
           <div key={item._id} className="relative group">
             <img
-              src={`http://localhost:5000${item.url}`}
+              src={`http://127.0.0.1:5000${item.url}`}
               alt={item.nama || "item"}
               className="rounded-lg w-full h-32 object-cover"
             />

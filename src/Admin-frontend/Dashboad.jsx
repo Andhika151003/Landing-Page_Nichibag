@@ -35,7 +35,7 @@ const Dashboard = () => {
 
   const fetchLogs = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/logs"); // ambil log dari backend
+      const res = await axios.get("http://127.0.0.1:5000/logs"); // ambil log dari backend
       const data = res.data;
 
       // Hitung statistik
@@ -68,7 +68,7 @@ const Dashboard = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete("http://localhost:5000/logs/reset");
+          await axios.delete("http://127.0.0.1:5000/logs/reset");
           Swal.fire(
             'Terhapus!',
             'Log aktivitas berhasil direset.',

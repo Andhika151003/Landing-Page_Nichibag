@@ -51,7 +51,7 @@ const Services = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/service");
+        const res = await axios.get("http://127.0.0.1:5000/api/service");
         if (res.data && typeof res.data === "object") {
           setPageData(res.data);
         } else {
@@ -163,7 +163,7 @@ const Services = () => {
                   <img
                     src={
                       card.imageUrl
-                        ? `http://localhost:5000${card.imageUrl}`
+                        ? `http://127.0.0.1:5000${card.imageUrl}`
                         : "https://via.placeholder.com/400x300"
                     }
                     alt={card.title || "Layanan"}

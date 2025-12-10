@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin dapat Gambar Carousel di Halaman Utama', () => {
 
   test.beforeEach(async ({ page }) => {
-    const response = await page.request.post('http://localhost:5000/home/testing/reset');
+    const response = await page.request.post('http://127.0.0.1:5000/home/testing/reset');
     expect(response.ok()).toBeTruthy();
   });
 

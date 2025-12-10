@@ -13,6 +13,21 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './nichibag-tests',
+  
+  // --- BAGIAN INI YANG DITAMBAHKAN UNTUK MENGATASI TIMEOUT ---
+  // Batas waktu maksimal untuk SATU tes (misal: 60 detik)
+  timeout: 60 * 1000, 
+
+  // Batas waktu TOTAL untuk SEMUA tes (misal: 15 menit)
+  // Ini penting agar tidak langsung cancel jika tes berjalan lambat di CI
+  globalTimeout: 15 * 60 * 1000,
+
+  expect: {
+    // Batas waktu untuk assertion (expect) misal: expect(locator).toBeVisible()
+    timeout: 10 * 1000,
+  },
+  // -----------------------------------------------------------
+
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -26,9 +41,9 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   // Jalankan global setup sebelum semua tes
   globalSetup: './global-setup.ts',
-  use: {
-    // URL dasar untuk aplikasi Anda
-    baseURL: 'http://localhost:5173/',
+ use: {
+  // Ganti localhost:5173 menjadi 127.0.0.1:5173
+    baseURL: 'http://127.0.0.1:5173/',
 
     // File tempat menyimpan sesi login
     storageState: '.auth/user.json',
@@ -38,24 +53,30 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    
+    // Tambahan: Timeout untuk aksi seperti click/fill
+    actionTimeout: 15 * 1000,
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'Google Chrome', 
+      use: { 
+        ...devices['Desktop Chrome'],
+        // UBAH 2: Tambahkan channel 'chrome' untuk menggunakan Google Chrome asli
+        channel: 'chrome',}
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {
@@ -84,4 +105,20 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+
+  /* Run your local dev server before starting the tests */
+  webServer: [
+    {
+      command: 'cd Server && npm start', // Perintah untuk start Backend
+      url: 'http://127.0.0.1:5000',      // Tunggu sampai URL ini siap
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+    {
+      command: 'npm run dev',            // Perintah untuk start Frontend
+      url: 'http://127.0.0.1:5173',      // Tunggu sampai URL ini siap
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    }
+  ],
 });

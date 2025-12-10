@@ -61,7 +61,7 @@ const ProductDetail = () => {
         setLoading(true);
         setError(null);
         const response = await axios.get(
-          `http://localhost:5000/products/${id}`
+          `http://127.0.0.1:5000/products/${id}`
         );
         const productData = response.data;
         setProduct(productData);
@@ -190,7 +190,7 @@ const ProductDetail = () => {
                 <div className="relative mb-4 border rounded-lg overflow-hidden shadow-lg bg-white">
                   <div className="aspect-square w-full">
                     <img
-                      src={`http://localhost:5000${productImages[currentIndex]}`}
+                      src={`http://127.0.0.1:5000${productImages[currentIndex]}`}
                       alt={product.name}
                       className="w-full h-full object-cover"
                     />
@@ -224,7 +224,7 @@ const ProductDetail = () => {
                       }`}
                     >
                       <img
-                        src={`http://localhost:5000${img}`}
+                        src={`http://127.0.0.1:5000${img}`}
                         alt={`Thumbnail ${index + 1}`}
                         className="w-full h-auto object-cover aspect-square"
                       />

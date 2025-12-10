@@ -11,7 +11,7 @@ const ManageServices = () => {
     try {
       setLoading(true);
       // Perbaikan: Menggunakan URL endpoint yang benar
-      const res = await axios.get("http://localhost:5000/api/service");
+      const res = await axios.get("http://127.0.0.1:5000/api/service");
       const fetchedData = res.data || {};
       if (!fetchedData.cards || fetchedData.cards.length !== 3) {
         fetchedData.cards = [{}, {}, {}].map((item, index) => fetchedData.cards?.[index] || item);
@@ -44,7 +44,7 @@ const ManageServices = () => {
     const formData = new FormData();
     formData.append('images', file);
     try {
-      const res = await axios.post("http://localhost:5000/api/upload", formData);
+      const res = await axios.post("http://127.0.0.1:5000/api/upload", formData);
       // Perbaikan: Mengambil URL dari array imageUrls
       if (res.data.imageUrls && res.data.imageUrls.length > 0) {
         handleCardChange(index, 'imageUrl', res.data.imageUrls[0]);
@@ -60,7 +60,7 @@ const ManageServices = () => {
   const handleSave = async () => {
     try {
       // Perbaikan: Menghapus garis miring ganda pada URL
-      await axios.put("http://localhost:5000/api/service", data);
+      await axios.put("http://127.0.0.1:5000/api/service", data);
       Swal.fire("Sukses!", "Data halaman layanan berhasil diperbarui.", "success");
     } catch (error) {
       console.error("Gagal menyimpan data:", error);
@@ -90,7 +90,7 @@ const ManageServices = () => {
               <h3 className="font-bold text-gray-700">Kartu Layanan #{index + 1}</h3>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Gambar</label>
-                {card.imageUrl && <img src={`http://localhost:5000${card.imageUrl}`} alt="preview" className="w-full h-32 object-cover rounded-md mb-2"/>}
+                {card.imageUrl && <img src={`http://127.0.0.1:5000${card.imageUrl}`} alt="preview" className="w-full h-32 object-cover rounded-md mb-2"/>}
                 <div className="flex items-center gap-2">
                   <label className="flex-1 cursor-pointer w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-pink-500 text-sm">
                     <Upload size={16} />

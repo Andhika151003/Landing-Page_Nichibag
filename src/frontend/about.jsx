@@ -70,7 +70,7 @@ const About = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/about")
+      .get("http://127.0.0.1:5000/api/about")
       .then((res) => {
         if (res.data) setAboutData(res.data);
       })
@@ -126,7 +126,7 @@ const About = () => {
           <img
             src={
               aboutData.imageUrl
-                ? `http://localhost:5000${aboutData.imageUrl}`
+                ? `http://127.0.0.1:5000${aboutData.imageUrl}`
                 : Gambar
             }
             alt="Tentang Kami"

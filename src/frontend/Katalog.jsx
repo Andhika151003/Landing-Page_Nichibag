@@ -38,7 +38,7 @@ const Katalog = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/products");
+        const response = await axios.get("http://127.0.0.1:5000/products");
         setProducts(response.data);
       } catch (error) {
         console.error("Gagal mengambil data produk:", error);
@@ -138,7 +138,7 @@ const Katalog = () => {
                   <div className="relative w-full aspect-square overflow-hidden bg-gray-200">
                     {product.colors && product.colors.length > 0 ? (
                       <img
-                        src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
+                        src={`http://127.0.0.1:5000${product.colors[0].imageUrls[0]}`}
                         alt={product.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 border-b-2 border-red-800"
                       />

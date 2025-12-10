@@ -88,7 +88,7 @@ const CartPage = () => {
                 className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-4 items-center"
               >
                 <img 
-                  src={`http://localhost:5000${item.selectedColor?.imageUrls?.[0] || item.colors?.[0]?.imageUrls?.[0]}`} 
+                  src={`http://127.0.0.1:5000${item.selectedColor?.imageUrls?.[0] || item.colors?.[0]?.imageUrls?.[0]}`} 
                   alt={item.name} 
                   className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                 />

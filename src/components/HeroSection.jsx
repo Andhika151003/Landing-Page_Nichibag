@@ -8,7 +8,7 @@ const HeroSection = () => {
   useEffect(() => {
       const fetchButtonData = async () => {
           try {
-              const res = await axios.get("http://localhost:5000/home/hero-button");
+              const res = await axios.get("http://127.0.0.1:5000/home/hero-button");
               setButtonLink(res.data.buttonLink);
           } catch (error) {
               console.error("Gagal mengambil data tombol hero:", error);

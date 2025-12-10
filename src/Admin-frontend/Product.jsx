@@ -84,7 +84,7 @@ const KelolaProduk = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/products");
+      const res = await axios.get("http://127.0.0.1:5000/products");
       setProducts(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       Swal.fire("Error", "Gagal memuat data produk.", "error");
@@ -169,7 +169,7 @@ const KelolaProduk = () => {
     }
     try {
       const uploadRes = await axios.post(
-        "http://localhost:5000/api/upload",
+        "http://127.0.0.1:5000/api/upload",
         formData
       );
       setCurrentProduct((prev) => ({
@@ -212,8 +212,8 @@ const KelolaProduk = () => {
     console.log("Data yang akan dikirim ke backend:", productData);
 
     const url = isEditing
-      ? `http://localhost:5000/products/${productData._id}`
-      : "http://localhost:5000/products";
+      ? `http://127.0.0.1:5000/products/${productData._id}`
+      : "http://127.0.0.1:5000/products";
     const method = isEditing ? "put" : "post";
     try {
       await axios[method](url, productData);
@@ -241,7 +241,7 @@ const KelolaProduk = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5000/products/${id}`);
+          await axios.delete(`http://127.0.0.1:5000/products/${id}`);
           Swal.fire("Terhapus!", "Produk berhasil dihapus.", "success");
           fetchProducts();
         } catch (error) {
@@ -293,7 +293,7 @@ const KelolaProduk = () => {
                 <td className="p-4">
                   {product.colors?.[0]?.imageUrls?.[0] ? (
                     <img
-                      src={`http://localhost:5000${product.colors[0].imageUrls[0]}`}
+                      src={`http://127.0.0.1:5000${product.colors[0].imageUrls[0]}`}
                       alt={product.name}
                       className="w-16 h-16 object-cover rounded-md"
                     />
@@ -757,7 +757,7 @@ const KelolaProduk = () => {
                           {color.imageUrls.map((url, imgIndex) => (
                             <img
                               key={`${color.name}-${imgIndex}`} // Buat key yang lebih unik
-                              src={`http://localhost:5000${url}`}
+                              src={`http://127.0.0.1:5000${url}`}
                               alt={`${color.name}-${imgIndex}`}
                               className="w-16 h-16 object-cover rounded-md border"
                             />

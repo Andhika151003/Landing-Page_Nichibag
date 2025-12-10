@@ -10,12 +10,14 @@ const AboutAdmin = () => {
 
   // Mengambil data yang ada dari server
   const fetchAboutData = () => {
-    axios.get("http://localhost:5000/api/about")
+    // PERBAIKAN: Gunakan 127.0.0.1
+    axios.get("http://127.0.0.1:5000/api/about")
       .then(res => {
         const data = res.data || { imageUrl: '', buttonUrl: '' };
         setAboutData(data);
         if (data.imageUrl) {
-          setPreview(`http://localhost:5000${data.imageUrl}`);
+          // PERBAIKAN: Gunakan 127.0.0.1 untuk preview gambar
+          setPreview(`http://127.0.0.1:5000${data.imageUrl}`);
         } else {
           setPreview(null);
         }
@@ -58,7 +60,8 @@ const AboutAdmin = () => {
       const formData = new FormData();
       formData.append("images", file);
       try {
-        const uploadRes = await axios.post("http://localhost:5000/api/upload", formData);
+        // PERBAIKAN: Gunakan 127.0.0.1 untuk upload
+        const uploadRes = await axios.post("http://127.0.0.1:5000/api/upload", formData);
         imageUrl = uploadRes.data.imageUrls[0];
       } catch (err) {
         console.error(err);
@@ -68,7 +71,8 @@ const AboutAdmin = () => {
     }
 
     try {
-      await axios.put("http://localhost:5000/api/about", {
+      // PERBAIKAN: Gunakan 127.0.0.1 untuk update data
+      await axios.put("http://127.0.0.1:5000/api/about", {
         imageUrl,
         buttonUrl: aboutData.buttonUrl
       });

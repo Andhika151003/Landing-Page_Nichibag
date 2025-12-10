@@ -22,7 +22,7 @@ const LoginPage = () => {
     console.log("Data yang akan dikirim ke server:", form);
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", form);
+      const res = await axios.post("http://127.0.0.1:5000/auth/login", form);
 
       await MySwal.fire({
         title: "Login Berhasil 🎉",

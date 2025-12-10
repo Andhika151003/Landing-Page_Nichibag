@@ -3,9 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin dapat mengelola Produk', () => {
 
   test.beforeEach(async ({ page }) => {
-    const response = await page.request.post('http://localhost:5000/products/testing/reset');
-    expect(response.ok()).toBeTruthy();
-  });
+  // Ubah menjadi 127.0.0.1
+  const response = await page.request.post('http://127.0.0.1:5000/products/testing/reset');
+  expect(response.ok()).toBeTruthy();
+});
 
   test('dapat menambah produk baru dengan satu varian warna', async ({ page }) => {
     
