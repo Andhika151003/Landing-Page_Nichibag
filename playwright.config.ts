@@ -109,15 +109,15 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      command: 'cd Server && npm start', // Perintah untuk start Backend
-      url: 'http://127.0.0.1:5000',      // Tunggu sampai URL ini siap
-      reuseExistingServer: !process.env.CI,
+      command: 'cd Server && npm start',
+      url: 'http://127.0.0.1:5000',
+      reuseExistingServer: true, // <--- UBAH INI JADI TRUE
       timeout: 120 * 1000,
     },
     {
-      command: 'npm run dev',            // Perintah untuk start Frontend
-      url: 'http://127.0.0.1:5173',      // Tunggu sampai URL ini siap
-      reuseExistingServer: !process.env.CI,
+      command: 'npm run dev',
+      url: 'http://127.0.0.1:5173',
+      reuseExistingServer: true, // <--- UBAH INI JADI TRUE JUGA
       timeout: 120 * 1000,
     }
   ],
