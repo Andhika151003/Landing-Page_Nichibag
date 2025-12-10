@@ -4,9 +4,9 @@ name: Playwright CI/CD
 # Pemicu (trigger) untuk menjalankan alur kerja
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 # Daftar pekerjaan (jobs) yang akan dijalankan
 jobs:
@@ -30,151 +30,158 @@ jobs:
           --health-retries 10
 
     steps:
-    # 1. Mengunduh kode dari repositori
-    - name: Check out repository
-      uses: actions/checkout@v4
+      # 1. Mengunduh kode dari repositori
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-    # 2. Menyiapkan lingkungan Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-        cache: 'npm'
+      # 2. Menyiapkan lingkungan Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "npm"
 
-    # 3. Instal dependensi untuk direktori root (frontend)
-    - name: Install root dependencies
-      run: npm ci
+      # 3. Instal dependensi untuk direktori root (frontend)
+      - name: Install root dependencies
+        run: npm ci
 
-    # 4. Instal dependensi untuk server (backend)
-    - name: Install backend dependencies
-      run: npm ci --prefix Server
+      # 4. Instal dependensi untuk server (backend)
+      - name: Install backend dependencies
+        run: npm ci --prefix Server
 
-    # 5. Instal browser yang dibutuhkan oleh Playwright
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps
+      # 5. Instal browser yang dibutuhkan oleh Playwright
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
 
-    # 6. Tunggu MongoDB siap
-    - name: Wait for MongoDB
-      run: |
-        timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
-        echo "MongoDB is ready"
+      # 6. Tunggu MongoDB siap
+      - name: Wait for MongoDB
+        run: |
+          timeout 60 bash -c 'until nc -z localhost 27017; do sleep 1; done'
+          echo "MongoDB is ready"
 
-    # 7. Debug backend setup dan test MongoDB
-    - name: Debug backend setup
-      run: |
-        echo "=== Checking Server directory ==="
-        ls -la Server/
-        echo "=== Checking package.json ==="
-        cat Server/package.json
-        echo "=== Testing MongoDB connection ==="
-        nc -z localhost 27017 && echo "MongoDB is accessible" || echo "MongoDB connection failed"
-        mongosh --eval "db.runCommand('ping')" mongodb://localhost:27017/test_database || echo "MongoDB ping failed"
+      # 7. Debug backend setup dan test MongoDB
+      - name: Debug backend setup
+        run: |
+          echo "=== Checking Server directory ==="
+          ls -la Server/
+          echo "=== Checking package.json ==="
+          cat Server/package.json
+          echo "=== Testing MongoDB connection ==="
+          nc -z localhost 27017 && echo "MongoDB is accessible" || echo "MongoDB connection failed"
+          mongosh --eval "db.runCommand('ping')" mongodb://localhost:27017/test_database || echo "MongoDB ping failed"
 
-    # 8. Start backend with proper ES Module support
+      # 8. Start backend with proper ES Module support
     - name: Run backend in background
       env:
-        MONGO_URI: mongodb://localhost:27017/test_database
+        # Ganti localhost dengan 127.0.0.1
+        MONGO_URI: mongodb://127.0.0.1:27017/test_database
         PORT: 5000
         NODE_ENV: test
         JWT_SECRET: test-jwt-secret-key
         SESSION_SECRET: test-session-secret
       run: |
-        echo "=== Environment Variables ==="
-        echo "MONGO_URI: $MONGO_URI"
-        echo "PORT: $PORT"
-        echo "NODE_ENV: $NODE_ENV"
-        echo "=== Starting backend with ES Modules ==="
-        cd Server
-        # Start backend and capture output
-        node index.js > ../backend.log 2>&1 &
-        BACKEND_PID=$!
-        echo $BACKEND_PID > ../backend.pid
-        echo "Backend started with PID: $BACKEND_PID"
-        sleep 10
-        # Check if process is still running
-        if kill -0 $BACKEND_PID 2>/dev/null; then
-          echo "Backend process is running successfully"
-        else
-          echo "Backend process died, checking logs:"
-          cat ../backend.log
-          exit 1
-        fi
+          echo "=== Environment Variables ==="
+          echo "MONGO_URI: $MONGO_URI"
+          echo "PORT: $PORT"
+          echo "NODE_ENV: $NODE_ENV"
+          echo "=== Starting backend with ES Modules ==="
+          cd Server
+          # Start backend and capture output
+          node index.js > ../backend.log 2>&1 &
+          BACKEND_PID=$!
+          echo $BACKEND_PID > ../backend.pid
+          echo "Backend started with PID: $BACKEND_PID"
+          sleep 10
+          # Check if process is still running
+          if kill -0 $BACKEND_PID 2>/dev/null; then
+            echo "Backend process is running successfully"
+          else
+            echo "Backend process died, checking logs:"
+            cat ../backend.log
+            exit 1
+          fi
 
-    # 9. Menjalankan server frontend di background  
-    - name: Run frontend in background
-      run: |
-        npm run dev > frontend.log 2>&1 &
-        echo $! > frontend.pid
-        sleep 5
+      # 9. Menjalankan server frontend di background
+      - name: Run frontend in background
+        run: |
+          npm run dev > frontend.log 2>&1 &
+          echo $! > frontend.pid
+          sleep 5
 
-    # 10. Menunggu hingga kedua server siap menerima koneksi dengan timeout
-    - name: Wait for servers to be ready
-      run: |
-        echo "Checking if backend process is running..."
-        if [ -f backend.pid ] && kill -0 $(cat backend.pid) 2>/dev/null; then
-          echo "Backend process is running, checking connection..."
-          npx wait-on http://localhost:5000 --timeout 60000 --interval 2000
-          echo "Backend is ready!"
-        else
-          echo "Backend process is not running!"
-          exit 1
-        fi
-        
-        echo "Checking if frontend process is running..."
-        if [ -f frontend.pid ] && kill -0 $(cat frontend.pid) 2>/dev/null; then
-          echo "Frontend process is running, checking connection..."
-          npx wait-on http://localhost:5173 --timeout 60000 --interval 2000
-          echo "Frontend is ready!"
-        else
-          echo "Frontend process is not running!"
-          exit 1
-        fi
+      # 10. Menunggu hingga kedua server siap menerima koneksi dengan timeout
+      - name: Wait for servers to be ready
+        run: |
+          echo "Checking if backend process is running..."
+          if [ -f backend.pid ] && kill -0 $(cat backend.pid) 2>/dev/null; then
+            echo "Backend process is running, checking connection..."
+            # GANTI: localhost -> 127.0.0.1 untuk menghindari masalah IPv6
+            # TAMBAH: Logika untuk menampilkan log jika wait-on gagal
+            npx wait-on http://127.0.0.1:5000 --timeout 60000 --interval 2000 || (echo "❌ Wait-on FAILED! Menampilkan log backend:" && cat backend.log && exit 1)
+            
+            echo "Backend is ready!"
+          else
+            echo "❌ Backend process is not running!"
+            echo "Backend logs:"
+            cat backend.log
+            exit 1
+          fi
 
-    # 10. Debug: Cek status server dan log
-    - name: Check servers status
-      run: |
-        echo "=== Backend Log (last 20 lines) ==="
-        tail -20 backend.log || echo "No backend log found"
-        echo "=== Frontend Log (last 10 lines) ==="
-        tail -10 frontend.log || echo "No frontend log found"
-        echo "=== Backend Status ==="
-        curl -I http://localhost:5000 || echo "Backend check failed"
-        echo "=== Frontend Status ==="
-        curl -I http://localhost:5173 || echo "Frontend check failed"
-        echo "=== Running Processes ==="
-        ps aux | grep -E "(node|npm)" | grep -v grep
+          echo "Checking if frontend process is running..."
+          if [ -f frontend.pid ] && kill -0 $(cat frontend.pid) 2>/dev/null; then
+            echo "Frontend process is running, checking connection..."
+            # GANTI: localhost -> 127.0.0.1 di sini juga
+            npx wait-on http://127.0.0.1:5173 --timeout 60000 --interval 2000 || (echo "❌ Frontend wait failed! Menampilkan log frontend:" && cat frontend.log && exit 1)
+            echo "Frontend is ready!"
+          else
+            echo "❌ Frontend process is not running!"
+            exit 1
+          fi
 
-    # 11. Menjalankan tes Playwright
-    - name: Run Playwright tests
-      run: npx playwright test
+      # 10. Debug: Cek status server dan log
+      - name: Check servers status
+        run: |
+          echo "=== Backend Log (last 20 lines) ==="
+          tail -20 backend.log || echo "No backend log found"
+          echo "=== Frontend Log (last 10 lines) ==="
+          tail -10 frontend.log || echo "No frontend log found"
+          echo "=== Backend Status ==="
+          curl -I http://localhost:5000 || echo "Backend check failed"
+          echo "=== Frontend Status ==="
+          curl -I http://localhost:5173 || echo "Frontend check failed"
+          echo "=== Running Processes ==="
+          ps aux | grep -E "(node|npm)" | grep -v grep
 
-    # 12. Upload logs jika ada kegagalan
-    - name: Upload logs on failure
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: server-logs
-        path: |
-          backend.log
-          frontend.log
-        retention-days: 3
+      # 11. Menjalankan tes Playwright
+      - name: Run Playwright tests
+        run: npx playwright test
 
-    # 13. Upload test report jika terjadi kegagalan
-    - name: Upload test report on failure
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 7
+      # 12. Upload logs jika ada kegagalan
+      - name: Upload logs on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: server-logs
+          path: |
+            backend.log
+            frontend.log
+          retention-days: 3
 
-    # 14. Cleanup: Stop servers
-    - name: Stop servers
-      if: always()
-      run: |
-        if [ -f backend.pid ]; then
-          kill $(cat backend.pid) || true
-        fi
-        if [ -f frontend.pid ]; then
-          kill $(cat frontend.pid) || true
-        fi
+      # 13. Upload test report jika terjadi kegagalan
+      - name: Upload test report on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      # 14. Cleanup: Stop servers
+      - name: Stop servers
+        if: always()
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+          fi
+          if [ -f frontend.pid ]; then
+            kill $(cat frontend.pid) || true
+          fi
