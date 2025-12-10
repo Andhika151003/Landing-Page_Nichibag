@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [main, master]
 
-# Daftar pekerjaan (jobs) yang akan dijalankan
+# Daftar pekerjaan (jobs) yang akan dijalankan1
 jobs:
   test:
     # Mengatur batas waktu eksekusi job menjadi 20 menit
