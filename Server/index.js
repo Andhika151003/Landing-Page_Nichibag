@@ -59,4 +59,8 @@ app.use("/api/dashboard", DashboardRoute);
 app.use("/api/kelola", KelolaRoute);
 app.use("/logs", LogRoute);
 
-app.listen(PORT, () => console.log(`🚀 Server berjalan di port ${PORT}`));
+app.get('/', (req, res) => {
+  res.status(200).send('Backend is running');
+});
+// MODIFIKASI: Tambahkan '0.0.0.0' agar server bisa diakses via 127.0.0.1 dengan pasti
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server berjalan di port ${PORT}`));
