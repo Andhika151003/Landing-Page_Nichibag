@@ -3,7 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
-import fs from 'fs'; // TAMBAHAN: Import fs untuk cek folder
+import fs from 'fs'; // Import fs untuk cek folder
 import { fileURLToPath } from 'url';
 import uploadRoute from './routes/uploadRoute.js'; 
 import UserRoute from './routes/LoginRoute.js';
@@ -22,14 +22,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ============================================================
-// PERBAIKAN: Pastikan folder 'uploads' tersedia sebelum server jalan
+// 1. FIX: Buat folder 'uploads' otomatis jika belum ada
 // ============================================================
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)){
     console.log("📂 Folder 'uploads' tidak ditemukan. Membuat folder baru...");
     fs.mkdirSync(uploadDir, { recursive: true });
 }
-// ============================================================
 
 // Menyalakan logging query Mongoose untuk debugging
 mongoose.set('debug', true);
@@ -38,14 +37,12 @@ mongoose.connect(process.env.MONGO_URI);
 
 const db = mongoose.connection;
 
-// Notifikasi jika koneksi GAGAL
 db.on("error", (error) => {
   console.error("==============================================");
   console.error("❌ KONEKSI DATABASE GAGAL:", error.message);
   console.error("==============================================");
 });
 
-// Notifikasi jika koneksi BERHASIL
 db.once("open", async () => {
   console.log("==============================================");
   console.log("✅ Berhasil terhubung ke database MongoDB.");
@@ -60,7 +57,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static('public'));
 app.use('/api/upload', uploadRoute);
 
-//Route Backend Intergrasi ke Frontend
+// Route Backend Intergrasi ke Frontend
 app.use("/auth", UserRoute);
 app.use("/products", ProductRoute);
 app.use("/home", HomeRoute);
@@ -70,4 +67,14 @@ app.use("/api/dashboard", DashboardRoute);
 app.use("/api/kelola", KelolaRoute);
 app.use("/logs", LogRoute);
 
+// ============================================================
+// 2. FIX: Route Health Check agar 'wait-on' berhasil (Status 200)
+// ============================================================
+app.get('/', (req, res) => {
+  res.status(200).send('Backend is running');
+});
+
+// ============================================================
+// 3. FIX: Binding ke '0.0.0.0' agar bisa diakses via 127.0.0.1
+// ============================================================
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server berjalan di port ${PORT}`));
