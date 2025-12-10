@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs'; // TAMBAHAN: Import fs untuk cek folder
 import { fileURLToPath } from 'url';
 import uploadRoute from './routes/uploadRoute.js'; 
 import UserRoute from './routes/LoginRoute.js';
@@ -19,6 +20,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// ============================================================
+// PERBAIKAN: Pastikan folder 'uploads' tersedia sebelum server jalan
+// ============================================================
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)){
+    console.log("📂 Folder 'uploads' tidak ditemukan. Membuat folder baru...");
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+// ============================================================
 
 // Menyalakan logging query Mongoose untuk debugging
 mongoose.set('debug', true);
@@ -59,8 +70,4 @@ app.use("/api/dashboard", DashboardRoute);
 app.use("/api/kelola", KelolaRoute);
 app.use("/logs", LogRoute);
 
-app.get('/', (req, res) => {
-  res.status(200).send('Backend is running');
-});
-// MODIFIKASI: Tambahkan '0.0.0.0' agar server bisa diakses via 127.0.0.1 dengan pasti
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server berjalan di port ${PORT}`));
