@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion as Motion } from "framer-motion";
 import Button from "../components/ButtonServices.jsx";
-import Layananjadi from "../assets/Layananjadi.png";
-import LayananCustom from "../assets/LayananCustom.png";
+import Layananjadi from "../assets/layanansiappakai.png";
+import LayananCustom from "../assets/layanancustompackaging.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
@@ -160,7 +160,7 @@ const Services = () => {
               <img
                 src={Layananjadi}
                 alt="Produk Jadi"
-                className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover border-4 border-red-700"
+                className="w-full rounded-lg shadow-sm mb-4 h-58 object-cover border-4 border-red-700"
               />
               <h3 className="text-lg font-semibold mb-2 text-red-700">
                 Kemasan Siap Pakai Premium
@@ -181,7 +181,7 @@ const Services = () => {
               <img
                 src={LayananCustom}
                 alt="Layanan Custom"
-                className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover border-4 border-red-700"
+                className="w-full rounded-lg shadow-sm mb-4 h-58 object-cover border-4 border-red-700"
               />
               <h3 className="text-lg font-semibold mb-2 text-red-700">
                 Layanan Custom
