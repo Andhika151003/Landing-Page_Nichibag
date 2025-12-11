@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import Logo from "../assets/Logo1.png";
+import Logo from "../assets/logoss.png";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "../context/CartContext";
 
