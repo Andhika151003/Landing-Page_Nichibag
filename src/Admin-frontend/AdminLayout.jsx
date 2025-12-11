@@ -43,9 +43,14 @@ const AdminLayout = ({ children }) => {
 
   const handleLogout = () => {
     MySwal.fire({
-      title: "Anda Yakin?", text: "Anda akan keluar dari sesi admin.",
-      icon: "warning", showCancelButton: true, confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6", confirmButtonText: "Ya, logout!", cancelButtonText: "Batal",
+      title: "Anda Yakin?",
+      text: "Anda akan keluar dari sesi admin.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Ya, logout!",
+      cancelButtonText: "Batal",
     }).then((result) => {
       if (result.isConfirmed) {
         navigate("/Admin");
@@ -57,9 +62,8 @@ const AdminLayout = ({ children }) => {
     { href: "/Dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/kelola-home", icon: Home, label: "Kelola Halaman Utama" },
     { href: "/kelola-Produk", icon: Package, label: "Kelola Produk" },
-    { href: "/kelola-services", icon: FileText, label: "Kelola Services" },
+    // { href: "/kelola-services", icon: FileText, label: "Kelola Services" }, ga perlu karena sudah di hardCode di frontend
     { href: "/kelola-about", icon: CircleUser, label: "Kelola About" },
-    
   ];
 
   return (
@@ -71,15 +75,33 @@ const AdminLayout = ({ children }) => {
           isSidebarOpen ? "w-64" : "w-20"
         }`}
       >
-        <div className={`h-[68px] flex items-center border-b px-4 ${isSidebarOpen ? "justify-between" : "justify-center"}`}>
-          <div className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ${isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"}`}>
+        <div
+          className={`h-[68px] flex items-center border-b px-4 ${
+            isSidebarOpen ? "justify-between" : "justify-center"
+          }`}
+        >
+          <div
+            className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ${
+              isSidebarOpen ? "w-auto opacity-100" : "w-0 opacity-0"
+            }`}
+          >
             <div className="w-8 h-8 flex items-center justify-center bg-rose-100 text-rose-700 rounded-lg">
               <Box className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold text-rose-700 whitespace-nowrap">AdminPanel</h2>
+            <h2 className="text-xl font-bold text-rose-700 whitespace-nowrap">
+              AdminPanel
+            </h2>
           </div>
-          <button ref={toggleButtonRef} onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 rounded-lg hover:bg-gray-100">
-            <PanelLeft className={`w-6 h-6 text-gray-700 transition-transform duration-300 ${!isSidebarOpen && "rotate-180"}`} />
+          <button
+            ref={toggleButtonRef}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100"
+          >
+            <PanelLeft
+              className={`w-6 h-6 text-gray-700 transition-transform duration-300 ${
+                !isSidebarOpen && "rotate-180"
+              }`}
+            />
           </button>
         </div>
 
@@ -96,16 +118,29 @@ const AdminLayout = ({ children }) => {
                 } ${isSidebarOpen ? "px-4" : "justify-center"}`}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${isSidebarOpen ? "w-full ml-3" : "w-0"}`}>
+                <span
+                  className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
+                    isSidebarOpen ? "w-full ml-3" : "w-0"
+                  }`}
+                >
                   {item.label}
                 </span>
               </Link>
             ))}
           </div>
           <div>
-            <button onClick={handleLogout} className={`flex items-center w-full py-2.5 rounded-lg transition-colors text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-800 ${isSidebarOpen ? "px-4" : "justify-center"}`}>
+            <button
+              onClick={handleLogout}
+              className={`flex items-center w-full py-2.5 rounded-lg transition-colors text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-800 ${
+                isSidebarOpen ? "px-4" : "justify-center"
+              }`}
+            >
               <LogOut className="w-5 h-5 flex-shrink-0" />
-              <span className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${isSidebarOpen ? "w-full ml-3" : "w-0"}`}>
+              <span
+                className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
+                  isSidebarOpen ? "w-full ml-3" : "w-0"
+                }`}
+              >
                 Logout
               </span>
             </button>
@@ -114,9 +149,7 @@ const AdminLayout = ({ children }) => {
       </aside>
 
       {/* Main Content (Konten Halaman Akan Muncul di Sini) */}
-      <main className="flex-1 p-8 overflow-auto">
-        {children}
-      </main>
+      <main className="flex-1 p-8 overflow-auto">{children}</main>
     </div>
   );
 };

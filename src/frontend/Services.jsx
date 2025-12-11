@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion as Motion } from "framer-motion";
 import Button from "../components/ButtonServices.jsx";
+import Layananjadi from "../assets/Layananjadi.png";
+import LayananCustom from "../assets/LayananCustom.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 
@@ -140,46 +142,57 @@ const Services = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4 text-white">Layanan Kami</h2>
           <p className="text-white max-w-xl mx-auto">
-            Menerima Segala Jenis Kemasan Apapun itu
+            Menerima Segala Jenis Kemasan Sesuai Kebutuhan Anda
           </p>
         </div>
 
-        {loading ? (
-          <div className="text-center text-white">Memuat layanan...</div>
-        ) : (
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {pageData.cards &&
-              pageData.cards.map((card, i) => (
-                <Motion.div
-                  key={i}
-                  custom={i}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  // PERBAIKAN: Menggunakan 'fadeInUp' karena 'zoomIn' tidak ada
-                  variants={fadeInUp}
-                  className="text-center bg-[#F9F6EE] p-4 rounded-lg backdrop-blur-sm"
-                >
-                  <img
-                    src={
-                      card.imageUrl
-                        ? `http://127.0.0.1:5000${card.imageUrl}`
-                        : "https://via.placeholder.com/400x300"
-                    }
-                    alt={card.title || "Layanan"}
-                    className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover border-4 border-red-700"
-                  />
-                  <h3 className="text-lg font-semibold mb-2 text-red-700">
-                    {card.title || "Judul Layanan"}
-                  </h3>
-                  <p className="text-red-700 text-sm">
-                    {card.description ||
-                      "Deskripsi layanan akan muncul di sini."}
-                  </p>
-                </Motion.div>
-              ))}
+        {/* === Layanan Produk Langsung Jadi === */}
+        <div className="mb-16">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Card 1 */}
+            <Motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              className="text-center bg-[#F9F6EE] p-4 rounded-lg backdrop-blur-sm"
+            >
+              <img
+                src={Layananjadi}
+                alt="Produk Jadi"
+                className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover border-4 border-red-700"
+              />
+              <h3 className="text-lg font-semibold mb-2 text-red-700">
+                Kemasan Siap Pakai Premium
+              </h3>
+              <p className="text-red-700 text-sm">
+                Pilihan kemasan siap digunakan untuk kebutuhan bisnis Anda tanpa
+                menunggu proses custom.
+              </p>
+            </Motion.div>
+            {/* Card 2 */}
+            <Motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInUp}
+              className="text-center bg-[#F9F6EE] p-4 rounded-lg backdrop-blur-sm"
+            >
+              <img
+                src={LayananCustom}
+                alt="Layanan Custom"
+                className="w-full rounded-lg shadow-sm mb-4 h-48 object-cover border-4 border-red-700"
+              />
+              <h3 className="text-lg font-semibold mb-2 text-red-700">
+                Layanan Custom
+              </h3>
+              <p className="text-red-700 text-sm">
+                Pilihan kemasan siap digunakan untuk kebutuhan bisnis Anda tanpa
+                menunggu proses custom.
+              </p>
+            </Motion.div>
           </div>
-        )}
+        </div>
       </section>
 
       {/* CTA & MAP */}
