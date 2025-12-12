@@ -49,16 +49,19 @@ function Carousel() {
         className="w-full h-[60vh] sm:h-[450px] md:h-[550px] lg:h-[650px]"
       >
         {slides.map((slide, index) => (
-          <SwiperSlide key={slide._id || index}>
-            <div className="relative w-full h-full">
-              {/* ===== PERUBAHAN DI SINI: Tambahkan alamat server ===== */}
-              <img
-                src={`http://127.0.0.1:5000${slide.url}`}
-                alt={`Slide ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </SwiperSlide>
+  <SwiperSlide key={slide._id || index}>
+  <div
+    className="relative w-full h-full cursor-pointer"
+    onClick={() => window.open(slide.link, "_blank")}
+  >
+    <img
+      src={`http://127.0.0.1:5000${slide.url}`}
+      alt={`Slide ${index + 1}`}
+      className="w-full h-full object-cover"
+    />
+  </div>
+</SwiperSlide>
+
         ))}
       </Swiper>
 
