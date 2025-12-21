@@ -16,7 +16,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('nichibag_cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Fungsi Tambah ke Keranjang
+  // Fungsi Tambah ke Keranjang (FIXED)
   const addToCart = (product, selectedColor, quantity) => {
     setCart((prevCart) => {
       // Cek apakah produk dengan warna yang sama sudah ada
@@ -27,7 +27,15 @@ export const CartProvider = ({ children }) => {
       if (existingItemIndex > -1) {
         // Jika ada, update quantity-nya
         const newCart = [...prevCart];
-        newCart[existingItemIndex].quantity += quantity;
+
+        // PERBAIKAN:
+        // Jangan lakukan: newCart[existingItemIndex].quantity += quantity;
+        // Lakukan ini (buat object baru untuk item tersebut):
+        newCart[existingItemIndex] = {
+          ...newCart[existingItemIndex],
+          quantity: newCart[existingItemIndex].quantity + quantity
+        };
+
         return newCart;
       } else {
         // Jika belum, tambahkan item baru

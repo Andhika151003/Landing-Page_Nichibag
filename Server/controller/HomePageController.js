@@ -1,5 +1,10 @@
-import { Carousel, FeaturedProduct, Category, HeroButton } from '../models/kelola.js';
-import { saveLog } from '../utils/logger.js';
+import {
+  Carousel,
+  FeaturedProduct,
+  Category,
+  HeroButton,
+} from "../models/kelola.js";
+import { saveLog } from "../utils/logger.js";
 
 const LIMITS = {
   Carousel: 4,
@@ -20,14 +25,23 @@ const genericAdd = (model, modelName) => async (req, res) => {
   try {
     const count = await model.countDocuments();
     if (count >= LIMITS[modelName]) {
-      return res.status(400).json({ message: `Batas maksimum untuk ${modelName} adalah ${LIMITS[modelName]}.` });
+      return res
+        .status(400)
+        .json({
+          message: `Batas maksimum untuk ${modelName} adalah ${LIMITS[modelName]}.`,
+        });
     }
 
     // ===== PERUBAHAN DI SINI: Cek duplikat nama =====
-    if (req.body.nama && (modelName === 'FeaturedProduct' || modelName === 'Category')) {
+    if (
+      req.body.nama &&
+      (modelName === "FeaturedProduct" || modelName === "Category")
+    ) {
       const existingItem = await model.findOne({ nama: req.body.nama });
       if (existingItem) {
-        return res.status(400).json({ message: `Item dengan nama "${req.body.nama}" sudah ada.` });
+        return res
+          .status(400)
+          .json({ message: `Item dengan nama "${req.body.nama}" sudah ada.` });
       }
     }
 
@@ -41,11 +55,37 @@ const genericAdd = (model, modelName) => async (req, res) => {
   }
 };
 
+const genericUpdate = (model, modelName) => async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nama } = req.body;
+
+    // Validasi Duplikat Nama (Kecuali item itu sendiri)
+    if (nama && (modelName === 'FeaturedProduct' || modelName === 'Category')) {
+      const existingItem = await model.findOne({ nama: nama, _id: { $ne: id } });
+      if (existingItem) {
+        return res.status(400).json({ message: `Item dengan nama "${nama}" sudah ada.` });
+      }
+    }
+
+    const updatedItem = await model.findByIdAndUpdate(id, req.body, { new: true });
+    
+    if (!updatedItem) return res.status(404).json({ message: 'Item tidak ditemukan' });
+
+    await saveLog(req.user?.username || "Admin", "update", modelName);
+    res.status(200).json(updatedItem);
+  } catch (err) {
+    await saveLog(req.user?.username || "Admin", "update", modelName, "failed");
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const genericDelete = (model, modelName) => async (req, res) => {
   try {
     const deletedItem = await model.findByIdAndDelete(req.params.id);
-    if (!deletedItem) return res.status(404).json({ message: 'Item tidak ditemukan' });
-    res.status(200).json({ message: 'Item berhasil dihapus' });
+    if (!deletedItem)
+      return res.status(404).json({ message: "Item tidak ditemukan" });
+    res.status(200).json({ message: "Item berhasil dihapus" });
     await saveLog(req.user?.username || "Admin", "delete", modelName);
   } catch (err) {
     await saveLog(req.user?.username || "Admin", "delete", modelName, "failed");
@@ -70,32 +110,44 @@ const heroButtonController = {
   update: async (req, res) => {
     try {
       const { buttonText, buttonLink } = req.body;
-      const updatedButton = await HeroButton.findOneAndUpdate({}, { buttonText, buttonLink }, { new: true, upsert: true });
+      const updatedButton = await HeroButton.findOneAndUpdate(
+        {},
+        { buttonText, buttonLink },
+        { new: true, upsert: true }
+      );
       await saveLog(req.user?.username || "Admin", "update", "HeroButton");
       res.status(200).json(updatedButton);
     } catch (err) {
-      await saveLog(req.user?.username || "Admin", "update", "HeroButton", "failed");
+      await saveLog(
+        req.user?.username || "Admin",
+        "update",
+        "HeroButton",
+        "failed"
+      );
       res.status(400).json({ message: err.message });
     }
-  }
+  },
 };
 
 export const carouselController = {
-    getAll: genericGetAll(Carousel),
-    add: genericAdd(Carousel, 'Carousel'),
-    delete: genericDelete(Carousel, 'Carousel'),
+  getAll: genericGetAll(Carousel),
+  add: genericAdd(Carousel, "Carousel"),
+  delete: genericDelete(Carousel, "Carousel"),
+  update: genericUpdate(Carousel, 'Carousel'),
 };
 
 export const featuredProductController = {
-    getAll: genericGetAll(FeaturedProduct),
-    add: genericAdd(FeaturedProduct, 'FeaturedProduct'),
-    delete: genericDelete(FeaturedProduct, 'FeaturedProduct'),
+  getAll: genericGetAll(FeaturedProduct),
+  add: genericAdd(FeaturedProduct, "FeaturedProduct"),
+  delete: genericDelete(FeaturedProduct, "FeaturedProduct"),
+  update: genericUpdate(FeaturedProduct, 'FeaturedProduct'),
 };
 
 export const categoryController = {
-    getAll: genericGetAll(Category),
-    add: genericAdd(Category, 'Category'),
-    delete: genericDelete(Category, 'Category'),
+  getAll: genericGetAll(Category),
+  add: genericAdd(Category, "Category"),
+  delete: genericDelete(Category, "Category"),
+  update: genericUpdate(Category, 'Category'),
 };
 
 export { heroButtonController };

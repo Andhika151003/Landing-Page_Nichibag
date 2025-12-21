@@ -13,16 +13,19 @@ router.put('/hero-button', heroButtonController.update);
 // Carousel Routes
 router.get('/carousel', carouselController.getAll);
 router.post('/carousel', carouselController.add);
+router.put('/carousel/:id', carouselController.update);
 router.delete('/carousel/:id', carouselController.delete);
 
 // Featured Products Routes
 router.get('/featured-products', featuredProductController.getAll);
 router.post('/featured-products', featuredProductController.add);
+router.put('/featured-products/:id', featuredProductController.update);
 router.delete('/featured-products/:id', featuredProductController.delete);
 
 // Categories Routes
 router.get('/categories', categoryController.getAll);
 router.post('/categories', categoryController.add);
+router.put('/categories/:id', categoryController.update);
 router.delete('/categories/:id', categoryController.delete);
 
 // ROUTE KHUSUS UNTUK TESTING -- HAPUS SEMUA DATA KONTEN HOME

@@ -129,7 +129,7 @@ const AboutAdmin = () => {
           </div>
         </div>
 
-        {/* --- Card untuk Tombol --- */}
+        {/* --- Card untuk Tombol ---
         <div className="bg-white p-6 rounded-xl shadow-md mb-8">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Tombol "Kontak Kami"</h2>
           <label htmlFor="buttonUrl" className="block text-sm font-medium text-gray-700 mb-2">
@@ -143,7 +143,7 @@ const AboutAdmin = () => {
             className="w-full border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
             placeholder="Contoh: https://wa.me/628123456789"
           />
-        </div>
+        </div> */}
 
         {/* --- Tombol Simpan --- */}
         <div className="flex justify-end">
