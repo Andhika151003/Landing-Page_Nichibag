@@ -76,7 +76,7 @@ const StyledWrapper = styled.div`
   }
 
   .btn-53 .original {
-    background: Maroon;
+    background: #BF1A1A;
     color: white;
     display: grid;
     inset: 0;

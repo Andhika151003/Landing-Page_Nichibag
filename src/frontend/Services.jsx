@@ -74,13 +74,13 @@ const Services = () => {
   return (
     <div className="bg-white text-black">
       {/* HERO */}
-      <section className="text-center py-20 px-4 bg-gradient-to-r from-[#5C1717] to-[#99666E]">
-        <h1 className="text-2xl md:text-xl font-bold mb-4 py-10 text-white">
+      <section className="text-center py-20 px-4 bg-gradient-to-br from-[#fff8f2] via-[#f8d7d0] to-[#a94442]/30">
+        <h1 className="text-2xl md:text-xl font-bold mb-4 py-10 text-red-700">
           {/* PERBAIKAN: Menggunakan teks langsung karena komponen HeroTitle tidak ada */}
           Temukan Solusi Kemasan Terbaik untuk Brand Anda
         </h1>
         <Motion.p
-          className="max-w-2xl mx-auto mb-6 text-white"
+          className="max-w-2xl mx-auto mb-6 text-red-700"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -105,7 +105,7 @@ const Services = () => {
       </section>
 
       {/* SERVICES */}
-      <section className="py-20 px-4 md:px-16 bg-[#F9F6EE] text-black">
+      <section className="py-20 px-4 md:px-16 bg-[#F9F6EE] text-red-700">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-4">Nichibag.id</h2>
           <p className="max-w-xl mx-auto">
@@ -127,7 +127,7 @@ const Services = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="border rounded-xl p-6 shadow-sm hover:shadow-md transition duration-300 bg-red-800 text-white/90"
+              className="border rounded-xl p-6 shadow-sm hover:shadow-md transition duration-300 bg-[#f8d7d0] text-red-700"
             >
               <div className="text-3xl mb-4">{s.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{s.title}</h3>
@@ -138,10 +138,10 @@ const Services = () => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="layanan" className="py-20 px-4 md:px-16 bg-red-800">
+      <section id="layanan" className="py-20 px-4 md:px-16 bg-[#f8d7d0]">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4 text-white">Layanan Kami</h2>
-          <p className="text-white max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold mb-4 text-red-700">Layanan Kami</h2>
+          <p className="text-red-700 max-w-xl mx-auto">
             Menerima Segala Jenis Kemasan Sesuai Kebutuhan Anda
           </p>
         </div>
@@ -155,7 +155,7 @@ const Services = () => {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
-              className="text-center bg-[#F9F6EE] p-4 rounded-lg backdrop-blur-sm"
+              className="text-center bg-[#f9efee] p-4 rounded-lg backdrop-blur-sm"
             >
               <img
                 src={Layananjadi}
@@ -199,10 +199,10 @@ const Services = () => {
       <section className="w-full bg-[#F9F6EE] py-20 px-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8 md:gap-16 items-center">
           <div className="text-center md:text-left">
-            <h2 className="text-2xl md:text-3xl text-black font-bold mb-4">
+            <h2 className="text-2xl md:text-3xl text-red-700 font-bold mb-4">
               Siap Membuat Sesuatu yang Spesial?
             </h2>
-            <p className="text-gray-600 max-w-md mb-6 mx-auto md:mx-0">
+            <p className="text-red-600 max-w-md mb-6 mx-auto md:mx-0">
               Hubungi kami hari ini untuk mendiskusikan kebutuhan kemasan Anda
               dan biarkan kami membantu menciptakan pengalaman yang berkesan.
             </p>

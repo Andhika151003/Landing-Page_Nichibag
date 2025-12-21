@@ -74,25 +74,25 @@ _(Pesan ini otomatis terkirim dari formulir nichibag.id)_
           animate="visible"
           className="space-y-6"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-maroon">
+          <h2 className="text-4xl md:text-5xl font-bold text-red-700">
             Hubungi Kami
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-red-700 text-lg">
             Kami siap membantu Anda! Silakan isi formulir atau hubungi kontak di
             bawah ini.
           </p>
           <div className="space-y-4 text-base">
             <div className="flex items-center gap-4">
-              <Phone className="text-maroon" />
-              <span>+62 877 8826 1298</span>
+              <Phone className="text-red-700" />
+              <span className="text-red-700">+62 877 8826 1298</span>
             </div>
             <div className="flex items-center gap-4">
-              <Mail className="text-maroon" />
-              <span>nichibag.id@gmail.com</span>
+              <Mail className="text-red-700" />
+              <span className="text-red-700">nichibag.id@gmail.com</span>
             </div>
             <div className="flex items-center gap-4">
-              <MapPin className="text-maroon" />
-              <span>Surabaya, Indonesia</span>
+              <MapPin className="text-red-700" />
+              <span className="text-red-700">Surabaya, Indonesia</span>
             </div>
           </div>
         </Motion.div>
@@ -104,7 +104,7 @@ _(Pesan ini otomatis terkirim dari formulir nichibag.id)_
           initial="hidden"
           animate="visible"
           transition={{ delay: 0.2 }}
-          className="bg-red-800 text-white p-8 rounded-xl shadow-lg space-y-6 w-full"
+          className="bg-[#F7A5A5] text-red-700 p-8 rounded-xl shadow-lg space-y-6 w-full border-2 border-red-700"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
@@ -113,7 +113,7 @@ _(Pesan ini otomatis terkirim dari formulir nichibag.id)_
               placeholder="Nama Depan"
               value={formData.firstName}
               onChange={handleChange}
-              className="px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon w-full"
+              className="px-4 py-3 rounded-md border-2 border-red-700 bg-transparant text-red-700 placeholder-red-700 focus:outline-none focus:ring-2 focus:ring-maroon w-full"
               required
             />
             <input
@@ -122,7 +122,7 @@ _(Pesan ini otomatis terkirim dari formulir nichibag.id)_
               placeholder="Nama Belakang"
               value={formData.lastName}
               onChange={handleChange}
-              className="px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon w-full"
+              className="px-4 py-3 rounded-md border-2 border-red-700 bg-transparant text-red-700 placeholder-red-700 focus:outline-none focus:ring-2 focus:ring-maroon w-full"
             />
           </div>
 
@@ -131,7 +131,7 @@ _(Pesan ini otomatis terkirim dari formulir nichibag.id)_
             name="subject"
             value={formData.subject}
             onChange={handleChange}
-            className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white focus:outline-none focus:ring-2 focus:ring-maroon"
+            className="w-full px-4 py-3 rounded-md border-2 border-red-700 bg-transparant text-red-700 focus:outline-none focus:ring-2 focus:ring-maroon"
             required
           >
             <option>Tanya Produk</option>
@@ -147,12 +147,12 @@ _(Pesan ini otomatis terkirim dari formulir nichibag.id)_
             placeholder="Tulis pesan Anda di sini..."
             value={formData.message}
             onChange={handleChange}
-            className="w-full px-4 py-3 rounded-md border border-white bg-red-800 text-white placeholder-white focus:outline-none focus:ring-2 focus:ring-maroon"
+            className="w-full px-4 py-3 rounded-md border-2 border-red-700 bg-transparant text-red-700 placeholder-red-700 focus:outline-none focus:ring-2 focus:ring-maroon"
             required
           ></textarea>
           <button
             type="submit"
-            className="w-full bg-[#F9F6EE] text-red-700 py-3 rounded-md font-semibold hover:bg-maroon/90 transition flex items-center justify-center gap-2"
+            className="w-full bg-transparant border-2 border-red-700 hover:bg-[#f8d7d0] text-red-700 py-3 rounded-md font-semibold hover:bg-maroon/90 transition flex items-center justify-center gap-2"
           >
             Kirim via WhatsApp <Send size={18} />
           </button>

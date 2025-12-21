@@ -73,7 +73,7 @@ const Katalog = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#F9F6EE] pt-24">
-        <p className="text-lg text-gray-600">Memuat data produk...</p>
+        <p className="text-lg text-red-700">Memuat data produk...</p>
       </div>
     );
   }
@@ -84,7 +84,7 @@ const Katalog = () => {
         <div className="mb-6">
           <Link
             to="/"
-            className="text-gray-600 hover:text-red-500 flex items-center gap-2 font-semibold w-max"
+            className="text-red-700 hover:text-red-500 flex items-center gap-2 font-semibold w-max"
           >
             <ArrowLeft size={18} />
             Kembali ke Halaman Utama
@@ -96,10 +96,10 @@ const Katalog = () => {
           animate="visible"
           variants={fadeInUp}
         >
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-red-700 tracking-tight">
             Katalog Produk
           </h1>
-          <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="mt-4 text-lg text-red-700 max-w-2xl mx-auto">
             Temukan semua produk terbaik kami dalam satu tempat.
           </p>
         </Motion.header>
@@ -111,7 +111,7 @@ const Katalog = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 ${
                 selectedCategory === cat
-                  ? "bg-[#f8d7d0] text-red-500 shadow-lg scale-105"
+                  ? "bg-[#f8d7d0] text-red-700 shadow-lg scale-105"
                   : "bg-white text-gray-700 hover:bg-gray-200 shadow-sm"
               }`}
             >
@@ -155,7 +155,7 @@ const Katalog = () => {
                     )}
                   </div>
                   <div className="p-4 flex flex-col flex-grow">
-                    <p className="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition-colors flex-grow min-h-[40px]">
+                    <p className="text-sm font-semibold text-red-700 group-hover:text-red-600 transition-colors flex-grow min-h-[40px]">
                       {product.name}
                     </p>
                     {/* --- PENAMBAHAN: Logika untuk harga diskon --- */}

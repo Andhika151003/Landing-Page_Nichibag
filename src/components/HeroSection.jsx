@@ -31,11 +31,11 @@ const HeroSection = () => {
         {/* Left Content */}
         <div className="flex-1 min-w-[300px] max-w-lg">
           <div className="space-y-4 mb-8">
-            <h2 className="text-5xl font-bold text-gray-800 leading-tight">Brand New</h2>
-            <h2 className="text-5xl font-bold text-gray-800 leading-tight">Paper Craft</h2>
-            <h2 className="text-5xl font-bold text-gray-800 leading-tight">Eco Friendly</h2>
+            <h2 className="text-5xl font-bold text-red-700 leading-tight">Brand New</h2>
+            <h2 className="text-5xl font-bold text-red-700 leading-tight">Paper Craft</h2>
+            <h2 className="text-5xl font-bold text-red-700 leading-tight">Eco Friendly</h2>
           </div>
-          <p className="text-gray-600 text-lg leading-relaxed mb-8 max-w-md">
+          <p className="text-red-800 text-lg leading-relaxed mb-8 max-w-md">
             NichiBag.id tidak hanya menawarkan produk yang estetik dan fungsional, tetapi juga mendukung gaya hidup eco-friendly dengan mengurangi limbah dan memanfaatkan bahan yang dapat diperbaharui.
           </p>
           <div className="flex items-center space-x-3 px-1 py-2">
@@ -49,9 +49,9 @@ const HeroSection = () => {
           {/* Badge */}
           <div className="absolute top-[5%] right-[5%] bg-white rounded-2xl shadow-lg px-6 py-4 z-20">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-800">20+</div>
-              <div className="text-sm text-gray-500">Bag Type</div>
-              <div className="text-sm text-gray-500">Available</div>
+              <div className="text-3xl font-bold text-red-800">20+</div>
+              <div className="text-sm text-red-500">Bag Type</div>
+              <div className="text-sm text-red-500">Available</div>
             </div>
           </div>
 

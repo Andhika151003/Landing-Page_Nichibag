@@ -94,7 +94,7 @@ const About = () => {
         >
           NICHIBAG.ID
         </Motion.h1>
-        <p className="text-lg text-black">Bukan Sekadar Tas, Ini Identitas</p>
+        <p className="text-lg text-red-700">Bukan Sekadar Tas, Ini Identitas</p>
       </Motion.section>
 
       {/* Siapa Kami */}
@@ -106,13 +106,15 @@ const About = () => {
         viewport={{ once: true }}
       >
         <div className="md:w-1/2">
-          <h2 className="text-2xl text-black font-semibold mb-4">Siapa Kami</h2>
-          <p className="text-black mb-4">
+          <h2 className="text-2xl text-red-700 font-semibold mb-4">
+            Siapa Kami
+          </h2>
+          <p className="text-red-700 mb-4">
             Didirikan sejak tahun 2022, Nichibag.id hadir sebagai solusi kemasan
             modern yang mengutamakan kualitas, estetika, dan kepedulian terhadap
             lingkungan.
           </p>
-          <p className="text-red-800 font-semibold text-lg">
+          <p className="text-red-500 font-semibold text-lg">
             500K+ Klien yang puas
           </p>
         </div>
@@ -142,7 +144,7 @@ const About = () => {
         whileInView="visible"
         viewport={{ once: true }}
       >
-        <h2 className="text-2xl font-semibold text-center text-black mb-10">
+        <h2 className="text-2xl font-semibold text-center text-red-700 mb-10">
           Kami Pernah Bekerja Sama Dengan
         </h2>
 
@@ -202,8 +204,10 @@ const About = () => {
                 <p className="text-red-800 font-bold text-lg mb-1">
                   {item.year}
                 </p>
-                <h4 className="text-black font-semibold mb-2">{item.title}</h4>
-                <p className="text-gray-700">{item.desc}</p>
+                <h4 className="text-red-700 font-semibold mb-2">
+                  {item.title}
+                </h4>
+                <p className="text-red-700">{item.desc}</p>
               </div>
               <span className="absolute top-6 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-[#F9F6EE] border-4 border-red-800 rounded-full z-20" />
             </Motion.div>
@@ -213,7 +217,7 @@ const About = () => {
 
       {/* CTA */}
       <Motion.section
-        className="text-black text-center py-12 px-6 bg-[#F9F6EE]"
+        className="text-red-700 text-center py-12 px-6 bg-[#F9F6EE]"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -228,12 +232,13 @@ const About = () => {
         </p>
         <div className="flex justify-center mt-6">
           <a
-            href={aboutData.buttonUrl}
+            href="https://wa.me/6287788261298"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white font-semibold px-6 py-2 rounded"
           >
-            <Button text="Kontak Kami" />
+              <Button text="Kontak Kami" />
+           
           </a>
         </div>
       </Motion.section>

@@ -64,7 +64,7 @@ const StyledWrapper = styled.div`
 
   .hover-underline-animation {
     position: relative;
-    color: black;
+    color: red;
     padding-bottom: 20px;
   }
 
@@ -76,7 +76,7 @@ const StyledWrapper = styled.div`
     height: 2px;
     bottom: 0;
     left: 0;
-    background-color: #000000;
+    background-color: red;
     transform-origin: bottom right;
     transition: transform 0.25s ease-out;
   }

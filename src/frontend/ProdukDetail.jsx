@@ -134,7 +134,7 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 pt-24">
-        <p className="text-lg text-gray-600">Memuat data produk...</p>
+        <p className="text-lg text-red-700">Memuat data produk...</p>
       </div>
     );
   }
@@ -142,7 +142,7 @@ const ProductDetail = () => {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 pt-24 text-center px-4">
-        <p className="text-xl text-red-600 font-semibold mb-4">{error}</p>
+        <p className="text-xl text-red-700 font-semibold mb-4">{error}</p>
         <Link
           to="/katalog"
           className="bg-red-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700 transition"
@@ -176,7 +176,7 @@ const ProductDetail = () => {
         <div className="mb-6">
           <Link
             to="/katalog"
-            className="text-gray-600 hover:text-red-700 flex items-center gap-2 font-semibold"
+            className="text-red-600 hover:text-red-700 flex items-center gap-2 font-semibold w-max"
           >
             <ArrowLeft size={18} />
             Kembali ke Katalog
@@ -247,15 +247,15 @@ const ProductDetail = () => {
             animate="visible"
             transition={{ delay: 0.2, duration: 0.6, ease: "easeInOut" }}
           >
-            <p className="text-sm font-semibold text-red-600 mb-1">
+            <p className="text-sm font-semibold text-red-700 mb-1">
               {product.category}
             </p>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold text-red-600 leading-tight">
               {product.name}
             </h1>
 
             {productCode && (
-              <p className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+              <p className="flex items-center gap-2 mt-2 text-sm text-red-700">
                 <Package size={16} />
                 Kode: {productCode}
               </p>
@@ -287,9 +287,9 @@ const ProductDetail = () => {
 
             {product.colors && product.colors.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-sm font-bold text-gray-800 mb-2">
+                <h3 className="text-sm font-bold text-red-700 mb-2">
                   WARNA:{" "}
-                  <span className="font-medium text-gray-600">
+                  <span className="font-medium text-red-700">
                     {selectedColor?.name}
                   </span>
                 </h3>
@@ -311,31 +311,31 @@ const ProductDetail = () => {
               </div>
             )}
 
-            <div className="prose prose-sm max-w-none text-gray-600 mt-8">
-              <h3 className="font-bold text-gray-800">Deskripsi Produk:</h3>
+            <div className="prose prose-sm max-w-none text-red-600 mt-8">
+              <h3 className="font-bold text-red-700">Deskripsi Produk:</h3>
               <p>
                 {product.description || "Tidak ada deskripsi untuk produk ini."}
               </p>
 
               {(material || weight > 0 || hasDimensions) && (
                 <>
-                  <h3 className="font-bold text-gray-800 mt-6">Spesifikasi:</h3>
+                  <h3 className="font-bold text-red-700 mt-6">Spesifikasi:</h3>
                   <ul className="list-none p-0 space-y-2">
                     {material && (
                       <li className="flex items-center gap-2">
-                        <Package size={16} className="text-gray-500" />
+                        <Package size={16} className="text-red-600" />
                         <strong>Bahan:</strong> {material}
                       </li>
                     )}
                     {weight > 0 && (
                       <li className="flex items-center gap-2">
-                        <Weight size={16} className="text-gray-500" />
+                        <Weight size={16} className="text-red-600" />
                         <strong>Berat:</strong> {weight} gram
                       </li>
                     )}
                     {hasDimensions && (
                       <li className="flex items-center gap-2">
-                        <Ruler size={16} className="text-gray-500" />
+                        <Ruler size={16} className="text-red-600" />
                         <strong>Ukuran:</strong> {dimensions.length || 0} x{" "}
                         {dimensions.width || 0} x {dimensions.height || 0} cm
                       </li>
@@ -349,7 +349,7 @@ const ProductDetail = () => {
             <div className="mt-8 border-t pt-6">
               {/* Input Jumlah */}
               <div className="flex items-center gap-4 mb-6">
-                <span className="font-bold text-gray-800">Jumlah:</span>
+                <span className="font-bold text-red-700">Jumlah:</span>
 
                 {/* Container: Tanpa Border, Pakai Shadow, dan Rounded Full (Kapsul) */}
                 <div className="flex items-center bg-[#f8d7d0] shadow-md rounded-full px-1">

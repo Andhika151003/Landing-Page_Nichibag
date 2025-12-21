@@ -16,7 +16,7 @@ const Button = ({ link = '/katalog' }) => {
   };
 
   return (
-    <button onClick={handleClick} className="cursor-pointer group relative bg-white hover:bg-zinc-300 text-black font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 ease-in-out shadow hover:shadow-lg w-40 h-12 border-2 border-black">
+    <button onClick={handleClick} className="cursor-pointer group relative bg-[#f8d7d0] hover:bg-red-300 text-red-700 font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 ease-in-out shadow hover:shadow-lg w-40 h-12 border-2 border-red-700">
       <div className="relative flex items-center justify-center gap-2">
         <span className="relative inline-block overflow-hidden">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full">

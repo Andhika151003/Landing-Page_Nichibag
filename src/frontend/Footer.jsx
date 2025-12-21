@@ -34,7 +34,7 @@ const Footer = () => {
             <h2 className="text-3xl font-bold text-red-700 mb-4">
               Nichibag.id
             </h2>
-            <p className="text-sm text-black">
+            <p className="text-sm text-red-700">
               Solusi kemasan modern yang mengutamakan kualitas, estetika, dan
               kepedulian terhadap lingkungan.
             </p>
@@ -42,7 +42,7 @@ const Footer = () => {
 
           {/* Kolom 2: Quick Links */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-black">
+            <h3 className="font-bold text-lg mb-4 text-red-700">
               Quick Links
             </h3>
             <ul className="space-y-3">
@@ -50,7 +50,7 @@ const Footer = () => {
                 <li key={index}>
                   <a
                     href={item.path}
-                    className="text-black hover:text-yellow-200 transition-colors"
+                    className="text-red-700 hover:text-red-300 transition-colors"
                   >
                     {item.name}
                   </a>
@@ -61,10 +61,10 @@ const Footer = () => {
 
           {/* Kolom 3: Hubungi Kami */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-black">
+            <h3 className="font-bold text-lg mb-4 text-red-700">
               Hubungi Kami
             </h3>
-            <ul className="space-y-3 text-black">
+            <ul className="space-y-3 text-red-700">
               <li>nichibag.id@gmail.com</li>
               <li>+62 877 8826 1298</li>
               <li>Surabaya, Indonesia</li>
@@ -73,7 +73,7 @@ const Footer = () => {
 
           {/* Kolom 4: Follow Us */}
           <div>
-            <h3 className="font-bold text-lg mb-4 text-black">Follow Us</h3>
+            <h3 className="font-bold text-lg mb-4 text-red-700">Follow Us</h3>
             {/* 👇 BAGIAN INI YANG DIPERBARUI */}
             <div className="flex flex-wrap gap-6">
               {socialLinks.map((social) => (
@@ -83,7 +83,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="flex flex-col items-center gap-2 text-black hover:text-yellow-200 transition-all duration-300 transform hover:scale-110 w-16"
+                  className="flex flex-col items-center gap-2 text-red-700 hover:text-red-300 transition-all duration-300 transform hover:scale-110 w-16"
                 >
                   <FontAwesomeIcon icon={social.icon} className="h-6 w-6" />
                   <span className="text-xs font-semibold">{social.label}</span>
@@ -94,7 +94,7 @@ const Footer = () => {
         </div>
 
         {/* Garis Pemisah & Copyright */}
-        <div className="border-t border-gray-200 mt-12 pt-8 text-center text-sm text-black">
+        <div className="border-t border-gray-200 mt-12 pt-8 text-center text-sm text-red-700">
           <p>© {new Date().getFullYear()} Nichibag.id. All Rights Reserved.</p>
         </div>
       </div>

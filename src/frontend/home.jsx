@@ -41,10 +41,10 @@ const Product = ({ products }) => {
           viewport={{ once: true, amount: 0.5 }}
           variants={fadeInUp}
         >
-          <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
+          <h2 className="text-xl font-bold text-red-700 sm:text-3xl">
             Produk Terlaris yang Wajib Dimiliki
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-gray-500">
+          <p className="mx-auto mt-4 max-w-md text-red-500">
             Dipesan ratusan kali setiap bulan, inilah pilihan yang tak pernah mengecewakan.
           </p>
         </Motion.header>
@@ -73,7 +73,7 @@ const Product = ({ products }) => {
                   )}
                 </div>
                 <div className="relative pt-3">
-                  <h3 className="text-base text-gray-700 group-hover:underline group-hover:underline-offset-4 text-center h-12">
+                  <h3 className="text-base text-red-500 group-hover:underline group-hover:underline-offset-4 text-center h-12">
                     {product.nama}
                   </h3>
                   <div className="mt-2 flex flex-col items-center justify-center">
@@ -122,10 +122,10 @@ const Category = ({ categories }) => {
           viewport={{ once: true, amount: 0.5 }}
           variants={fadeInUp}
         >
-          <h2 className="text-xl font-bold text-gray-900 sm:text-3xl">
+          <h2 className="text-xl font-bold text-red-700 sm:text-3xl">
             Temukan Kategori Produk Favorit Semua Orang!
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-gray-500">
+          <p className="mx-auto mt-4 max-w-md text-red-500">
              Dari ratusan pilihan, inilah kategori yang selalu jadi incaran — siap temukan yang cocok untuk Anda?
           </p>
         </Motion.header>

@@ -80,7 +80,7 @@ const Navbar = () => {
             </Link>
             <button
                 onClick={() => navigate('/katalog')}
-                className="hidden md:block bg-[#f8d7d0] text-red-500 font-bold px-6 py-2 rounded-full hover:bg-red-400 transition-all duration-300 transform hover:scale-105"
+                className="hidden md:block bg-[#f8d7d0] text-red-700 font-bold px-6 py-2 rounded-full hover:bg-red-400 transition-all duration-300 transform hover:scale-105"
             >
                 Shop Now
             </button>
