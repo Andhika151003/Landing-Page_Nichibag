@@ -9,9 +9,7 @@ import {
   Link2,
   Save,
   X,
-  Percent,
   Pencil,
-  RotateCcw,
   ShoppingBag,
   CheckCircle,
 } from "lucide-react";
@@ -65,7 +63,27 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     };
   }, [preview, file]);
 
-  // --- FUNGSI PILIH DARI KATALOG (Full Auto) ---
+  // --- LOGIC SINKRONISASI DROPDOWN (PENTING UNTUK EDIT) ---
+  // Berjalan otomatis saat mode edit aktif atau itemLink berubah
+  useEffect(() => {
+    if (editingId && itemLink && catalogProducts.length > 0) {
+        // Cek apakah link mengandung format /product/ID
+        if (itemLink.includes("/product/")) {
+            const parts = itemLink.split("/product/");
+            // Ambil bagian terakhir (ID) dan bersihkan dari whitespace
+            const idFromLink = parts[parts.length - 1].trim(); 
+            
+            // Validasi: Pastikan ID ini ada di katalog kita
+            const exists = catalogProducts.find(p => p._id === idFromLink);
+            if (exists) {
+                setSelectedCatalogId(idFromLink);
+            }
+        }
+    }
+  }, [editingId, itemLink, catalogProducts]);
+
+
+  // --- FUNGSI PILIH DARI KATALOG ---
   const handleCatalogSelect = (e) => {
     const prodId = e.target.value;
     setSelectedCatalogId(prodId);
@@ -73,15 +91,25 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     if (prodId) {
         const product = catalogProducts.find(p => p._id === prodId);
         if (product) {
-            setItemName(product.name || "");
+            // FIX: Gunakan fallback 'nama' atau 'name' (menangani perbedaan database)
+            setItemName(product.nama || product.name || "");
+            
+            // FIX: Pastikan Harga Angka
             setPrice(product.price || 0);
+            
+            // Set Link Otomatis
             setItemLink(`/product/${product._id}`);
             
             // Ambil diskon dari produk jika ada
             setDiscountPercentage(product.discountPercentage || 0);
 
-            // Ambil Gambar
-            if (product.colors && product.colors.length > 0 && product.colors[0].imageUrls.length > 0) {
+            // FIX: Safety Check Gambar (Mencegah Crash jika array kosong)
+            const hasImage = product.colors && 
+                             product.colors.length > 0 && 
+                             product.colors[0].imageUrls && 
+                             product.colors[0].imageUrls.length > 0;
+
+            if (hasImage) {
                 const imgPath = product.colors[0].imageUrls[0];
                 setCurrentImageUrl(imgPath);
                 setPreview(`http://127.0.0.1:5000${imgPath}`);
@@ -89,10 +117,12 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                 setCurrentImageUrl("");
                 setPreview(null);
             }
-            setFile(null); // Reset file upload manual
+            setFile(null); // Reset file upload manual karena pakai gambar produk
         }
     } else {
-        resetForm();
+        // Jika user membatalkan pilihan (pilih --Klik Disini--), 
+        // kita kosongkan ID terpilih tapi JANGAN reset form agar data manual tidak hilang.
+        setSelectedCatalogId("");
     }
   };
 
@@ -138,25 +168,25 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     setItemName(item.nama || "");
     setItemLink(item.link || "");
     
-    if (item.price) setPrice(item.price);
+    // FIX: Pastikan price jadi string kosong jika null/undefined
+    if (item.price !== undefined && item.price !== null) setPrice(item.price);
     else setPrice("");
 
     if (item.discountPercentage) setDiscountPercentage(item.discountPercentage);
     else setDiscountPercentage("");
 
-    // Cek koneksi katalog
-    if (item.link && item.link.startsWith("/product/")) {
-        const idFromLink = item.link.split("/product/")[1];
-        const exists = catalogProducts.find(p => p._id === idFromLink);
-        if (exists) setSelectedCatalogId(idFromLink);
+    // Set Preview Gambar
+    if (item.url) {
+        setPreview(`http://127.0.0.1:5000${item.url}`);
+        setCurrentImageUrl(item.url);
     } else {
-        setSelectedCatalogId("");
+        setPreview(null);
+        setCurrentImageUrl("");
     }
-
-    setPreview(`http://127.0.0.1:5000${item.url}`);
-    setCurrentImageUrl(item.url);
+    
     setFile(null); 
 
+    // Scroll ke form
     setTimeout(() => {
         if (formRef.current) {
             formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -165,7 +195,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
   };
 
   const handleSubmit = async () => {
-    // Validasi
+    // Validasi Dasar
     if (!editingId && !file && !currentImageUrl) {
       return Swal.fire("Peringatan", "Data produk belum dipilih atau gambar kosong.", "warning");
     }
@@ -183,7 +213,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
         },
       });
 
-      // Upload gambar (hanya untuk Carousel/Kategori yang pakai manual upload)
+      // 1. Upload gambar (jika ada file baru)
       if (file) {
         const formData = new FormData();
         formData.append("images", file);
@@ -191,27 +221,32 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
         finalImageUrl = uploadRes.data.imageUrls[0];
       }
 
+      // 2. Persiapan Data (SANITASI KETAT)
+      // Kita pastikan tipe datanya benar agar Backend tidak Error/Crash
       const itemData = {
-        nama: itemName || (editingId ? itemName : "Item Baru"),
-        url: finalImageUrl,
-        link: itemLink,
+        nama: String(itemName || (editingId ? itemName : "Item Baru")),
+        url: String(finalImageUrl || ""),
+        link: String(itemLink || ""),
       };
 
       if (isProductSection) {
+        // Konversi ke Float dan Handle NaN (Not a Number)
         const normalPrice = parseFloat(price);
         const discount = parseFloat(discountPercentage);
 
+        // Pastikan dikirim sebagai Number, default 0 jika error parse
         itemData.price = !isNaN(normalPrice) ? normalPrice : 0;
 
         if (!isNaN(normalPrice) && !isNaN(discount) && discount > 0) {
           itemData.discountPrice = normalPrice - normalPrice * (discount / 100);
           itemData.discountPercentage = discount;
         } else {
-          itemData.discountPrice = null;
-          itemData.discountPercentage = null;
+          itemData.discountPrice = null; // atau 0 tergantung backend
+          itemData.discountPercentage = 0; 
         }
       }
 
+      // 3. Kirim ke Server
       if (editingId) {
         await onEdit(editingId, itemData);
         Swal.fire("Sukses!", "Data berhasil diperbarui.", "success");
@@ -223,16 +258,13 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
       resetForm();
     } catch (error) {
       console.error("Error submit:", error);
-      Swal.fire("Error", error.response?.data?.message || "Gagal memproses data.", "error");
+      Swal.fire("Error", error.response?.data?.message || "Gagal memproses data. Cek Console.", "error");
     }
   };
 
   const isLimitReached = !editingId && items.length >= limit;
   const isProductSection = title === "Produk Terlaris";
   
-  // Logic untuk menampilkan form manual atau tidak
-  const showManualForm = !isProductSection; 
-
   return (
     <section
       className={`mb-10 p-6 rounded-lg shadow-md transition-colors ${
@@ -298,7 +330,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
           </div>
         )}
 
-        {/* --- KHUSUS PRODUK TERLARIS: HANYA DROPDOWN --- */}
+        {/* --- KHUSUS PRODUK TERLARIS: TAMPILAN DROPDOWN --- */}
         {isProductSection ? (
             <div className="space-y-4">
                 <div className="bg-white p-4 rounded-lg border shadow-sm">
@@ -315,7 +347,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                         <option value="">-- Klik Disini untuk Memilih Produk --</option>
                         {catalogProducts.map((prod) => (
                             <option key={prod._id} value={prod._id}>
-                                {prod.name} — Rp {(prod.price || 0).toLocaleString('id-ID')}
+                                {prod.nama || prod.name} — Rp {(prod.price || 0).toLocaleString('id-ID')}
                             </option>
                         ))}
                     </select>
@@ -333,7 +365,8 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                         <div className="flex-1">
                             <h4 className="text-sm font-bold text-gray-800">{itemName}</h4>
                             <p className="text-sm text-pink-600 font-semibold">
-                                Rp {parseFloat(price).toLocaleString('id-ID')}
+                                {/* FIX: Tampilkan 0 jika parsing gagal */}
+                                Rp {(!isNaN(parseFloat(price)) ? parseFloat(price) : 0).toLocaleString('id-ID')}
                             </p>
                             {(parseFloat(discountPercentage) > 0) && (
                                 <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded mt-1 inline-block">
@@ -443,82 +476,41 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
   );
 };
 
-// ================== HERO BUTTON MANAGER ==================
-const HeroButtonManager = ({ buttonData, onSave }) => {
-  const [link, setLink] = useState(buttonData ? buttonData.buttonLink : "");
-
-  useEffect(() => {
-    if (buttonData) setLink(buttonData.buttonLink);
-  }, [buttonData]);
-
-  const handleSave = () => {
-    onSave({ buttonLink: link });
-    Swal.fire("Tersimpan!", "Link tombol berhasil diperbarui.", "success");
-  };
-
-  return (
-    <section className="mb-10 p-6 bg-white rounded-lg shadow-md">
-      <h3 className="text-xl font-semibold mb-4 text-gray-800">
-        Kelola Tombol "Order Now" di Hero Section
-      </h3>
-      <div className="flex flex-col md:flex-row items-end gap-4">
-        <div className="w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            URL Tujuan
-          </label>
-          <div className="relative">
-            <Link2
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              size={18}
-            />
-            <input
-              type="text"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              className="w-full p-2 pl-10 border rounded-md"
-              placeholder="Contoh : https://shopee.co.id/nichibag.id"
-            />
-          </div>
-        </div>
-        <button
-          onClick={handleSave}
-          className="w-full md:w-auto bg-blue-500 text-white px-6 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-blue-600 transition"
-        >
-          <Save size={16} /> Simpan
-        </button>
-      </div>
-    </section>
-  );
-};
-
 // ================== MAIN COMPONENT ==================
 const KelolaHome = (props) => {
   const [carouselImages, setCarouselImages] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [heroButton, setHeroButton] = useState({ buttonLink: "" });
   
   // Data Katalog
   const [catalogProducts, setCatalogProducts] = useState([]);
 
+  // FIX: Pisahkan Fetching agar lebih Robust & Debuggable
   const fetchData = async () => {
+    // 1. Ambil Data Layout Home
     try {
-      const [carouselRes, featuredRes, categoryRes, buttonRes, productRes] =
+      const [carouselRes, featuredRes, categoryRes] =
         await Promise.all([
           axios.get("/home/carousel"),
           axios.get("/home/featured-products"),
           axios.get("/home/categories"),
-          axios.get("/home/hero-button"),
-          axios.get("/products"), 
         ]);
       
       setCarouselImages(carouselRes.data);
       setFeaturedProducts(featuredRes.data);
       setCategories(categoryRes.data);
-      setHeroButton(buttonRes.data);
-      setCatalogProducts(productRes.data);
     } catch (error) {
-      console.error("Gagal memuat data halaman utama:", error);
+      console.error("Gagal memuat data layout Home:", error);
+      // Optional: Swal.fire if needed, tapi biasanya silent log cukup
+    }
+
+    // 2. Ambil Data Produk (Terpisah agar jika home error, produk tetap jalan)
+    try {
+        const productRes = await axios.get("/products");
+        setCatalogProducts(productRes.data);
+    } catch (error) {
+        console.error("Gagal memuat katalog produk:", error);
+        Swal.fire("Error Koneksi", "Gagal mengambil data katalog produk dari server.", "error");
     }
   };
 
@@ -539,7 +531,8 @@ const KelolaHome = (props) => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`/home/${type}/${id}`);
-          fetchData();
+          // FIX: Await fetchData agar UI update dengan data terbaru
+          await fetchData();
           Swal.fire("Terhapus!", "Item berhasil dihapus.", "success");
         } catch (error) {
           Swal.fire("Error", "Gagal menghapus item.", "error");
@@ -551,7 +544,7 @@ const KelolaHome = (props) => {
   const handleAdd = async (type, data) => {
     try {
       await axios.post(`/home/${type}`, data);
-      fetchData();
+      await fetchData(); // Refresh data
     } catch (error) {
       throw error;
     }
@@ -560,18 +553,9 @@ const KelolaHome = (props) => {
   const handleEdit = async (type, id, data) => {
     try {
       await axios.put(`/home/${type}/${id}`, data);
-      fetchData();
+      await fetchData(); // Refresh data agar dropdown ter-sync ulang
     } catch (error) {
       throw error;
-    }
-  };
-
-  const handleSaveButton = async (data) => {
-    try {
-      await axios.put(`/home/hero-button`, data);
-      fetchData();
-    } catch (error) {
-      Swal.fire("Error", "Gagal menyimpan perubahan tombol.", "error");
     }
   };
 
@@ -580,8 +564,6 @@ const KelolaHome = (props) => {
       <h2 className="text-3xl font-bold mb-8 text-gray-900">
         Kelola Halaman Utama
       </h2>
-
-      <HeroButtonManager buttonData={heroButton} onSave={handleSaveButton} />
 
       <SectionManager
         title="Gambar Carousel"

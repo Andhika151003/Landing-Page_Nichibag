@@ -23,7 +23,7 @@ const AdminLayout = ({ children }) => {
   const sidebarRef = useRef(null);
   const toggleButtonRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation(); // Untuk menandai link aktif
+  const location = useLocation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -62,21 +62,25 @@ const AdminLayout = ({ children }) => {
     { href: "/Dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/kelola-home", icon: Home, label: "Kelola Halaman Utama" },
     { href: "/kelola-Produk", icon: Package, label: "Kelola Produk" },
-    // { href: "/kelola-services", icon: FileText, label: "Kelola Services" }, ga perlu karena sudah di hardCode di frontend
     { href: "/kelola-about", icon: CircleUser, label: "Kelola About" },
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-800">
+    // UBAH 1: Ganti min-h-screen menjadi h-screen dan tambah overflow-hidden
+    // Ini mengunci tinggi aplikasi setinggi layar browser saja
+    <div className="flex h-screen overflow-hidden bg-gray-50 font-sans text-gray-800">
+      
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`bg-white border-r flex flex-col transition-all duration-300 ease-in-out ${
+        // UBAH 2: Pastikan sidebar h-full (mengikuti tinggi parent yaitu h-screen)
+        // Tambahkan overflow-y-auto supaya jika menu sangat panjang, sidebar bisa discroll sendiri
+        className={`bg-white border-r flex flex-col transition-all duration-300 ease-in-out h-full overflow-y-auto ${
           isSidebarOpen ? "w-64" : "w-20"
         }`}
       >
         <div
-          className={`h-[68px] flex items-center border-b px-4 ${
+          className={`h-[68px] flex-shrink-0 flex items-center border-b px-4 ${
             isSidebarOpen ? "justify-between" : "justify-center"
           }`}
         >
@@ -128,7 +132,9 @@ const AdminLayout = ({ children }) => {
               </Link>
             ))}
           </div>
-          <div>
+          
+          {/* Bagian Logout akan selalu menempel di bawah viewport (layar) */}
+          <div className="mt-auto pt-4"> 
             <button
               onClick={handleLogout}
               className={`flex items-center w-full py-2.5 rounded-lg transition-colors text-sm font-medium text-red-600 hover:bg-red-100 hover:text-red-800 ${
@@ -148,8 +154,12 @@ const AdminLayout = ({ children }) => {
         </nav>
       </aside>
 
-      {/* Main Content (Konten Halaman Akan Muncul di Sini) */}
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      {/* Main Content */}
+      {/* UBAH 3: Tambahkan overflow-y-auto di sini */}
+      {/* Ini membuat HANYA area konten ini yang bisa di-scroll, bukan seluruh halaman */}
+      <main className="flex-1 p-8 overflow-y-auto h-full">
+        {children}
+      </main>
     </div>
   );
 };

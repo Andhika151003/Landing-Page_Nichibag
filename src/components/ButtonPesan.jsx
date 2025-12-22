@@ -1,22 +1,27 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Default link kita set ke '/katalog'
 const Button = ({ link = '/katalog' }) => {
   const navigate = useNavigate();
-  const isExternal = link.startsWith('http');
+  // Cek apakah link adalah eksternal (http/https)
+  const isExternal = link && link.startsWith('http');
 
   const handleClick = () => {
     if (isExternal) {
-      // Buka link eksternal di tab baru
+      // Buka link eksternal (Shopee/WA) di tab baru
       window.open(link, '_blank', 'noopener,noreferrer');
     } else {
-      // Gunakan navigate untuk link internal
+      // Buka link internal (Halaman Website)
       navigate(link);
     }
   };
 
   return (
-    <button onClick={handleClick} className="cursor-pointer group relative bg-[#f8d7d0] hover:bg-red-300 text-red-700 font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 ease-in-out shadow hover:shadow-lg w-40 h-12 border-2 border-red-700">
+    <button 
+      onClick={handleClick} // PERBAIKAN: Panggil fungsi handleClick, bukan nama komponen Button
+      className="cursor-pointer group relative bg-[#f8d7d0] hover:bg-red-300 text-red-700 font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 ease-in-out shadow hover:shadow-lg w-40 h-12 border-2 border-red-700"
+    >
       <div className="relative flex items-center justify-center gap-2">
         <span className="relative inline-block overflow-hidden">
           <span className="block transition-transform duration-300 group-hover:-translate-y-full">
