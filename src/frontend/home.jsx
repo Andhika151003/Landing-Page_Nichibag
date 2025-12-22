@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { motion as Motion } from "framer-motion";
+
+// Import Komponen Pendukung
 import Carousel from "../components/Carousel";
 import Button from "../components/ButtonProduct";
 import HeroSection from "../components/HeroSection";
-import { motion as Motion } from "framer-motion"; // Import motion
 
-// Definisikan varian animasi
+// Konfigurasi Animasi
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: {
@@ -21,6 +23,7 @@ const fadeInUp = {
   },
 };
 
+// --- KOMPONEN PRODUK TERLARIS ---
 const Product = ({ products }) => {
   const formatRupiah = (number) => {
     const validNumber = typeof number === 'number' ? number : 0;
@@ -48,6 +51,7 @@ const Product = ({ products }) => {
             Dipesan ratusan kali setiap bulan, inilah pilihan yang tak pernah mengecewakan.
           </p>
         </Motion.header>
+
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product, index) => (
             <Motion.li
@@ -59,6 +63,7 @@ const Product = ({ products }) => {
               variants={fadeInUp}
               transition={{ delay: index * 0.1 }}
             >
+              {/* Link dinamis: Mengarah ke detail produk atau katalog */}
               <Link to={product.link || "/katalog"} className="group block overflow-hidden">
                 <div className="relative">
                   <img
@@ -66,16 +71,19 @@ const Product = ({ products }) => {
                     alt={product.nama}
                     className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px] rounded-md"
                   />
+                  {/* Badge Diskon */}
                   {(product.discountPercentage || 0) > 0 && (
                     <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md">
                       -{product.discountPercentage}%
                     </span>
                   )}
                 </div>
+
                 <div className="relative pt-3">
-                  <h3 className="text-base text-red-500 group-hover:underline group-hover:underline-offset-4 text-center h-12">
+                  <h3 className="text-base text-red-500 group-hover:underline group-hover:underline-offset-4 text-center h-12 flex items-center justify-center">
                     {product.nama}
                   </h3>
+
                   <div className="mt-2 flex flex-col items-center justify-center">
                     {(product.discountPrice || 0) > 0 ? (
                       <>
@@ -97,20 +105,22 @@ const Product = ({ products }) => {
             </Motion.li>
           ))}
         </ul>
+
+        <Motion.div
+          className="mt-6 flex justify-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.5 }}
+          variants={fadeInUp}
+        >
+          <Button />
+        </Motion.div>
       </div>
-      <Motion.div
-        className="mt-6 flex justify-center"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.5 }}
-        variants={fadeInUp}
-      >
-        <Button />
-      </Motion.div>
     </section>
   );
 };
 
+// --- KOMPONEN KATEGORI UNGGULAN ---
 const Category = ({ categories }) => {
   return (
     <section>
@@ -126,9 +136,10 @@ const Category = ({ categories }) => {
             Temukan Kategori Produk Favorit Semua Orang!
           </h2>
           <p className="mx-auto mt-4 max-w-md text-red-500">
-             Dari ratusan pilihan, inilah kategori yang selalu jadi incaran — siap temukan yang cocok untuk Anda?
+             Dari ratusan pilihan, inilah kategori yang selalu jadi incaran.
           </p>
         </Motion.header>
+
         <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category, index) => (
             <Motion.li
@@ -140,6 +151,9 @@ const Category = ({ categories }) => {
               variants={fadeInUp}
               transition={{ delay: index * 0.1 }}
             >
+              {/* Link ini sekarang berisi filter kategori otomatis. 
+                  Contoh: /katalog?category=PaperBag
+              */}
               <Link to={category.link || "/katalog"} className="group block overflow-hidden">
                 <img
                   src={`http://127.0.0.1:5000${category.url}`}
@@ -147,7 +161,7 @@ const Category = ({ categories }) => {
                   className="h-[200px] w-full object-cover transition duration-500 group-hover:scale-105 sm:h-[250px] rounded-md"
                 />
                 <div className="relative pt-3">
-                  <h3 className="text-base text-gray-700 group-hover:underline group-hover:underline-offset-4 text-center">
+                  <h3 className="text-lg font-bold text-gray-700 group-hover:text-red-600 transition-colors text-center">
                     {category.nama}
                   </h3>
                 </div>
@@ -160,6 +174,7 @@ const Category = ({ categories }) => {
   );
 };
 
+// --- HALAMAN UTAMA (MAIN HOME) ---
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -181,15 +196,22 @@ const Home = () => {
   }, []);
   
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#F9F6EE]">
+      {/* Carousel Section */}
       <Carousel />
-      <div className="px-8 py-16 bg-[#F9F6EE]">
+
+      {/* Produk Terlaris Section */}
+      <div className="px-0 sm:px-8 py-8 sm:py-16">
         <Product products={featuredProducts} />
       </div>
-      <div className="bg-[#F9F6EE]">
+
+      {/* Hero Section */}
+      <div>
         <HeroSection /> 
       </div>
-      <div className="bg-[#F9F6EE]">
+
+      {/* Kategori Unggulan Section */}
+      <div className="px-0 sm:px-8 py-8 pb-16">
         <Category categories={categories} />
       </div>
     </div>

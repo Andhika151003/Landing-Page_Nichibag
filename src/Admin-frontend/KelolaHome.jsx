@@ -6,12 +6,12 @@ import {
   Plus,
   Trash2,
   Upload,
-  Link2,
   Save,
   X,
   Pencil,
   ShoppingBag,
   CheckCircle,
+  Layers, // Icon untuk kategori
 } from "lucide-react";
 import Swal from "sweetalert2";
 
@@ -47,8 +47,9 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
   const [price, setPrice] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
   
-  // State Pilihan Katalog
-  const [selectedCatalogId, setSelectedCatalogId] = useState("");
+  // State Pilihan
+  const [selectedCatalogId, setSelectedCatalogId] = useState(""); // Untuk Produk Terlaris
+  const [selectedCategoryName, setSelectedCategoryName] = useState(""); // Untuk Kategori Unggulan
 
   // State Edit Mode
   const [editingId, setEditingId] = useState(null); 
@@ -57,33 +58,45 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
   const fileInputRef = useRef(null);
   const formRef = useRef(null);
 
+  // Flag Helper
+  const isProductSection = title === "Produk Terlaris";
+  const isCategorySection = title === "Kategori Unggulan"; // Flag Baru
+
+  // --- LOGIC EKSTRAK KATEGORI UNIK ---
+  // Mengambil list kategori unik dari seluruh produk yang ada
+  const uniqueCategories = React.useMemo(() => {
+    if (!catalogProducts || catalogProducts.length === 0) return [];
+    // Ambil field 'category', filter yg kosong, dan buat unique via Set
+    const cats = catalogProducts.map(p => p.category).filter(c => c);
+    return [...new Set(cats)];
+  }, [catalogProducts]);
+
   useEffect(() => {
     return () => {
       if (preview && file) URL.revokeObjectURL(preview);
     };
   }, [preview, file]);
 
-  // --- LOGIC SINKRONISASI DROPDOWN (PENTING UNTUK EDIT) ---
-  // Berjalan otomatis saat mode edit aktif atau itemLink berubah
+  // --- LOGIC SINKRONISASI DROPDOWN SAAT EDIT ---
   useEffect(() => {
-    if (editingId && itemLink && catalogProducts.length > 0) {
-        // Cek apakah link mengandung format /product/ID
-        if (itemLink.includes("/product/")) {
+    if (editingId && catalogProducts.length > 0) {
+        if (isProductSection && itemLink.includes("/product/")) {
             const parts = itemLink.split("/product/");
-            // Ambil bagian terakhir (ID) dan bersihkan dari whitespace
             const idFromLink = parts[parts.length - 1].trim(); 
-            
-            // Validasi: Pastikan ID ini ada di katalog kita
             const exists = catalogProducts.find(p => p._id === idFromLink);
-            if (exists) {
-                setSelectedCatalogId(idFromLink);
-            }
+            if (exists) setSelectedCatalogId(idFromLink);
+        }
+        // Sinkronisasi Edit Kategori
+        else if (isCategorySection) {
+            // Kita asumsikan itemName adalah nama kategorinya
+            const exists = uniqueCategories.find(c => c === itemName);
+            if (exists) setSelectedCategoryName(itemName);
         }
     }
-  }, [editingId, itemLink, catalogProducts]);
+  }, [editingId, itemLink, catalogProducts, isProductSection, isCategorySection, itemName, uniqueCategories]);
 
 
-  // --- FUNGSI PILIH DARI KATALOG ---
+  // --- HANDLER PILIH PRODUK (UNTUK PRODUK TERLARIS) ---
   const handleCatalogSelect = (e) => {
     const prodId = e.target.value;
     setSelectedCatalogId(prodId);
@@ -91,23 +104,12 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     if (prodId) {
         const product = catalogProducts.find(p => p._id === prodId);
         if (product) {
-            // FIX: Gunakan fallback 'nama' atau 'name' (menangani perbedaan database)
             setItemName(product.nama || product.name || "");
-            
-            // FIX: Pastikan Harga Angka
             setPrice(product.price || 0);
-            
-            // Set Link Otomatis
             setItemLink(`/product/${product._id}`);
-            
-            // Ambil diskon dari produk jika ada
             setDiscountPercentage(product.discountPercentage || 0);
 
-            // FIX: Safety Check Gambar (Mencegah Crash jika array kosong)
-            const hasImage = product.colors && 
-                             product.colors.length > 0 && 
-                             product.colors[0].imageUrls && 
-                             product.colors[0].imageUrls.length > 0;
+            const hasImage = product.colors && product.colors.length > 0 && product.colors[0].imageUrls?.[0];
 
             if (hasImage) {
                 const imgPath = product.colors[0].imageUrls[0];
@@ -117,12 +119,45 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                 setCurrentImageUrl("");
                 setPreview(null);
             }
-            setFile(null); // Reset file upload manual karena pakai gambar produk
+            setFile(null);
         }
     } else {
-        // Jika user membatalkan pilihan (pilih --Klik Disini--), 
-        // kita kosongkan ID terpilih tapi JANGAN reset form agar data manual tidak hilang.
         setSelectedCatalogId("");
+    }
+  };
+
+  // --- HANDLER PILIH KATEGORI (BARU) ---
+  const handleCategorySelect = (e) => {
+    const catName = e.target.value;
+    setSelectedCategoryName(catName);
+
+    if (catName) {
+        // 1. Set Nama Item sesuai Kategori
+        setItemName(catName);
+
+        // 2. Set Link otomatis ke halaman filter kategori (sesuaikan dengan routing frontend user anda)
+        // Contoh: /katalog?category=PaperBag
+        setItemLink(`/katalog?category=${encodeURIComponent(catName)}`);
+
+        // 3. Cari satu produk di kategori ini untuk diambil gambarnya
+        const productRepresentative = catalogProducts.find(
+            p => p.category === catName && 
+            p.colors && p.colors.length > 0 && 
+            p.colors[0].imageUrls?.[0]
+        );
+
+        if (productRepresentative) {
+            const imgPath = productRepresentative.colors[0].imageUrls[0];
+            setCurrentImageUrl(imgPath);
+            setPreview(`http://127.0.0.1:5000${imgPath}`);
+        } else {
+            // Jika kategori ada tapi tidak ada produk yang punya gambar
+            setCurrentImageUrl("");
+            setPreview(null);
+        }
+        setFile(null); // Reset upload manual
+    } else {
+        setSelectedCategoryName("");
     }
   };
 
@@ -160,6 +195,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     setEditingId(null);
     setCurrentImageUrl("");
     setSelectedCatalogId("");
+    setSelectedCategoryName(""); // Reset pilihan kategori
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -168,14 +204,12 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     setItemName(item.nama || "");
     setItemLink(item.link || "");
     
-    // FIX: Pastikan price jadi string kosong jika null/undefined
     if (item.price !== undefined && item.price !== null) setPrice(item.price);
     else setPrice("");
 
     if (item.discountPercentage) setDiscountPercentage(item.discountPercentage);
     else setDiscountPercentage("");
 
-    // Set Preview Gambar
     if (item.url) {
         setPreview(`http://127.0.0.1:5000${item.url}`);
         setCurrentImageUrl(item.url);
@@ -186,7 +220,6 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
     
     setFile(null); 
 
-    // Scroll ke form
     setTimeout(() => {
         if (formRef.current) {
             formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -195,12 +228,10 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
   };
 
   const handleSubmit = async () => {
-    // Validasi Dasar
     if (!editingId && !file && !currentImageUrl) {
-      return Swal.fire("Peringatan", "Data produk belum dipilih atau gambar kosong.", "warning");
+      return Swal.fire("Peringatan", "Data belum lengkap atau gambar kosong.", "warning");
     }
 
-    const isProductSection = title === "Produk Terlaris";
     let finalImageUrl = currentImageUrl; 
 
     try {
@@ -213,7 +244,6 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
         },
       });
 
-      // 1. Upload gambar (jika ada file baru)
       if (file) {
         const formData = new FormData();
         formData.append("images", file);
@@ -221,8 +251,6 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
         finalImageUrl = uploadRes.data.imageUrls[0];
       }
 
-      // 2. Persiapan Data (SANITASI KETAT)
-      // Kita pastikan tipe datanya benar agar Backend tidak Error/Crash
       const itemData = {
         nama: String(itemName || (editingId ? itemName : "Item Baru")),
         url: String(finalImageUrl || ""),
@@ -230,25 +258,23 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
       };
 
       if (isProductSection) {
-        // Konversi ke Float dan Handle NaN (Not a Number)
         const normalPrice = parseFloat(price);
         const discount = parseFloat(discountPercentage);
 
-        // Pastikan dikirim sebagai Number, default 0 jika error parse
         itemData.price = !isNaN(normalPrice) ? normalPrice : 0;
 
         if (!isNaN(normalPrice) && !isNaN(discount) && discount > 0) {
           itemData.discountPrice = normalPrice - normalPrice * (discount / 100);
           itemData.discountPercentage = discount;
         } else {
-          itemData.discountPrice = null; // atau 0 tergantung backend
+          itemData.discountPrice = null;
           itemData.discountPercentage = 0; 
         }
       }
 
-      // 3. Kirim ke Server
       if (editingId) {
-        await onEdit(editingId, itemData);
+        // FIX: Pastikan props onEdit dipanggil
+        if (onEdit) await onEdit(editingId, itemData);
         Swal.fire("Sukses!", "Data berhasil diperbarui.", "success");
       } else {
         await onAdd(itemData);
@@ -258,12 +284,11 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
       resetForm();
     } catch (error) {
       console.error("Error submit:", error);
-      Swal.fire("Error", error.response?.data?.message || "Gagal memproses data. Cek Console.", "error");
+      Swal.fire("Error", error.response?.data?.message || "Gagal memproses data.", "error");
     }
   };
 
   const isLimitReached = !editingId && items.length >= limit;
-  const isProductSection = title === "Produk Terlaris";
   
   return (
     <section
@@ -330,7 +355,9 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
           </div>
         )}
 
-        {/* --- KHUSUS PRODUK TERLARIS: TAMPILAN DROPDOWN --- */}
+        {/* ================= FORM INPUT AREA ================= */}
+
+        {/* KASUS 1: PRODUK TERLARIS (DROPDOWN PRODUK) */}
         {isProductSection ? (
             <div className="space-y-4">
                 <div className="bg-white p-4 rounded-lg border shadow-sm">
@@ -351,40 +378,40 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                             </option>
                         ))}
                     </select>
+                </div>
+            </div>
+        ) 
+        
+        /* KASUS 2: KATEGORI UNGGULAN (DROPDOWN KATEGORI) */
+        : isCategorySection ? (
+            <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                    <label className="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                        <Layers size={18} className="text-purple-600"/> 
+                        Pilih Kategori Produk
+                    </label>
+                    <select
+                        value={selectedCategoryName}
+                        onChange={handleCategorySelect}
+                        className="w-full p-2.5 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-purple-300 outline-none transition"
+                        disabled={isLimitReached && !editingId}
+                    >
+                        <option value="">-- Pilih Kategori yang Tersedia --</option>
+                        {uniqueCategories.map((cat, index) => (
+                            <option key={index} value={cat}>
+                                {cat}
+                            </option>
+                        ))}
+                    </select>
                     <p className="text-xs text-gray-500 mt-2">
-                        *Data Nama, Harga, Diskon, Gambar dan Link akan otomatis diambil dari produk yang dipilih.
+                        *Gambar akan diambil secara otomatis dari salah satu produk dalam kategori tersebut.
                     </p>
                 </div>
-
-                {/* Preview Produk Terpilih */}
-                {(selectedCatalogId || editingId) && preview && (
-                    <div className="bg-white p-4 rounded-lg border border-green-200 shadow-sm flex items-start gap-4">
-                        <div className="w-20 h-20 flex-shrink-0 border rounded-md overflow-hidden bg-gray-100">
-                            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1">
-                            <h4 className="text-sm font-bold text-gray-800">{itemName}</h4>
-                            <p className="text-sm text-pink-600 font-semibold">
-                                {/* FIX: Tampilkan 0 jika parsing gagal */}
-                                Rp {(!isNaN(parseFloat(price)) ? parseFloat(price) : 0).toLocaleString('id-ID')}
-                            </p>
-                            {(parseFloat(discountPercentage) > 0) && (
-                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded mt-1 inline-block">
-                                    Diskon {discountPercentage}%
-                                </span>
-                            )}
-                            <div className="mt-2 text-xs text-green-700 flex items-center gap-1">
-                                <CheckCircle size={12}/> Siap ditampilkan
-                            </div>
-                        </div>
-                        <button onClick={resetForm} className="text-gray-400 hover:text-red-500 p-1">
-                            <X size={18}/>
-                        </button>
-                    </div>
-                )}
             </div>
-        ) : (
-            /* --- UNTUK CAROUSEL & KATEGORI: FORM MANUAL BIASA --- */
+        )
+
+        /* KASUS 3: CAROUSEL / MANUAL */
+        : (
             <div className="flex flex-col gap-4">
                 {title !== "Gambar Carousel" && (
                     <div className="w-full">
@@ -393,7 +420,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                             type="text"
                             value={itemName}
                             onChange={(e) => setItemName(e.target.value)}
-                            placeholder="Nama Kategori"
+                            placeholder="Nama Kategori/Item"
                             className="w-full p-2 border rounded-md bg-white"
                             disabled={isLimitReached && !editingId}
                         />
@@ -431,24 +458,51 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogP
                         />
                     </label>
                 </div>
-                
-                {preview && (
-                    <div className="mt-2 relative w-24 h-24 group">
-                        <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-lg border" />
-                        <button
-                            onClick={() => {
-                                setFile(null);
-                                setPreview(editingId ? `http://127.0.0.1:5000${currentImageUrl}` : null);
-                            }}
-                            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1"
-                        >
-                            <X size={12} />
-                        </button>
-                    </div>
-                )}
             </div>
         )}
 
+        {/* PREVIEW UMUM UNTUK SEMUA TIPE (JIKA SUDAH DIPILIH) */}
+        {(isProductSection || isCategorySection) && (selectedCatalogId || selectedCategoryName || editingId) && preview && (
+            <div className="mt-4 bg-white p-4 rounded-lg border border-green-200 shadow-sm flex items-start gap-4">
+                <div className="w-20 h-20 flex-shrink-0 border rounded-md overflow-hidden bg-gray-100">
+                    <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1">
+                    <h4 className="text-sm font-bold text-gray-800">{itemName || "Nama Item"}</h4>
+                    
+                    {/* Info Tambahan Khusus Produk */}
+                    {isProductSection && (
+                        <>
+                            <p className="text-sm text-pink-600 font-semibold">
+                                Rp {(!isNaN(parseFloat(price)) ? parseFloat(price) : 0).toLocaleString('id-ID')}
+                            </p>
+                            {(parseFloat(discountPercentage) > 0) && (
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded mt-1 inline-block">
+                                    Diskon {discountPercentage}%
+                                </span>
+                            )}
+                        </>
+                    )}
+
+                    {/* Info Tambahan Khusus Kategori */}
+                    {isCategorySection && (
+                        <p className="text-xs text-gray-500 mt-1">
+                            Link: {itemLink}
+                        </p>
+                    )}
+
+                    <div className="mt-2 text-xs text-green-700 flex items-center gap-1">
+                        <CheckCircle size={12}/> Siap ditampilkan
+                    </div>
+                </div>
+                {/* Tombol Reset hanya menghapus pilihan form, bukan menghapus data di DB */}
+                <button onClick={resetForm} className="text-gray-400 hover:text-red-500 p-1">
+                    <X size={18}/>
+                </button>
+            </div>
+        )}
+
+        {/* TOMBOL SIMPAN */}
         <div className="flex gap-2 mt-6">
           <button
             onClick={handleSubmit}
@@ -485,7 +539,6 @@ const KelolaHome = (props) => {
   // Data Katalog
   const [catalogProducts, setCatalogProducts] = useState([]);
 
-  // FIX: Pisahkan Fetching agar lebih Robust & Debuggable
   const fetchData = async () => {
     // 1. Ambil Data Layout Home
     try {
@@ -501,16 +554,14 @@ const KelolaHome = (props) => {
       setCategories(categoryRes.data);
     } catch (error) {
       console.error("Gagal memuat data layout Home:", error);
-      // Optional: Swal.fire if needed, tapi biasanya silent log cukup
     }
 
-    // 2. Ambil Data Produk (Terpisah agar jika home error, produk tetap jalan)
+    // 2. Ambil Data Produk (Terpisah)
     try {
         const productRes = await axios.get("/products");
         setCatalogProducts(productRes.data);
     } catch (error) {
         console.error("Gagal memuat katalog produk:", error);
-        Swal.fire("Error Koneksi", "Gagal mengambil data katalog produk dari server.", "error");
     }
   };
 
@@ -531,7 +582,6 @@ const KelolaHome = (props) => {
       if (result.isConfirmed) {
         try {
           await axios.delete(`/home/${type}/${id}`);
-          // FIX: Await fetchData agar UI update dengan data terbaru
           await fetchData();
           Swal.fire("Terhapus!", "Item berhasil dihapus.", "success");
         } catch (error) {
@@ -544,7 +594,7 @@ const KelolaHome = (props) => {
   const handleAdd = async (type, data) => {
     try {
       await axios.post(`/home/${type}`, data);
-      await fetchData(); // Refresh data
+      await fetchData(); 
     } catch (error) {
       throw error;
     }
@@ -553,7 +603,7 @@ const KelolaHome = (props) => {
   const handleEdit = async (type, id, data) => {
     try {
       await axios.put(`/home/${type}/${id}`, data);
-      await fetchData(); // Refresh data agar dropdown ter-sync ulang
+      await fetchData(); 
     } catch (error) {
       throw error;
     }
@@ -579,7 +629,7 @@ const KelolaHome = (props) => {
         items={featuredProducts}
         onDelete={(id) => handleDelete("featured-products", id)}
         onAdd={(data) => handleAdd("featured-products", data)}
-        // onEdit={(id, data) => handleEdit("featured-products", id, data)} 
+        onEdit={(id, data) => handleEdit("featured-products", id, data)} 
         limit={6}
         catalogProducts={catalogProducts}
       />
@@ -591,6 +641,8 @@ const KelolaHome = (props) => {
         onAdd={(data) => handleAdd("categories", data)}
         onEdit={(id, data) => handleEdit("categories", id, data)} 
         limit={6}
+        // Kita oper juga catalogProducts ke sini agar bisa mendeteksi kategori unik
+        catalogProducts={catalogProducts}
       />
     </div>
   );

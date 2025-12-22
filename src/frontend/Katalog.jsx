@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+// src/frontend/Katalog.jsx
+
+import React, { useEffect, useState, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { motion as Motion } from "framer-motion";
@@ -20,20 +22,16 @@ const fadeInUp = {
 const Katalog = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const categories = [
-    "All",
-    "Paper bag",
-    "Gift box",
-    "Gift card",
-    "Ribbon",
-    "Kotak sepatu",
-  ];
-  const [selectedCategory, setSelectedCategory] = useState("All");
-
+  
+  // Ambil parameter dari URL (search & category)
   const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
   const searchQuery = searchParams.get("search") || "";
 
+  // State untuk kategori yang dipilih (default: All)
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  // 1. Fetch Data Produk
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -50,14 +48,32 @@ const Katalog = () => {
     fetchProducts();
   }, []);
 
+  // 2. Sinkronisasi URL dengan State SelectedCategory
+  // Jika URL punya ?category=PaperBag, maka state otomatis berubah
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    } else {
+      setSelectedCategory("All");
+    }
+  }, [categoryParam]);
+
+  // 3. Generate Kategori Secara Dinamis dari Data Produk
+  // Mengambil semua nama kategori unik dari produk yang tersedia
+  const categories = useMemo(() => {
+    const uniqueCats = [...new Set(products.map((p) => p.category).filter(Boolean))];
+    return ["All", ...uniqueCats];
+  }, [products]);
+
+  // 4. Logic Filter Produk (Gabungan Kategori & Search)
   const filteredProducts = products
     .filter((product) => {
-      if (selectedCategory === "All") {
-        return true;
-      }
+      // Filter Kategori
+      if (selectedCategory === "All") return true;
       return product.category === selectedCategory;
     })
     .filter((product) => {
+      // Filter Search Query
       return product.name.toLowerCase().includes(searchQuery.toLowerCase());
     });
     
@@ -79,7 +95,7 @@ const Katalog = () => {
   }
 
   return (
-    <div className="bg-[#F9F6EE]  min-h-screen pt-24">
+    <div className="bg-[#F9F6EE] min-h-screen pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Link
@@ -90,6 +106,7 @@ const Katalog = () => {
             Kembali ke Halaman Utama
           </Link>
         </div>
+        
         <Motion.header
           className="text-center pb-8"
           initial="hidden"
@@ -104,15 +121,16 @@ const Katalog = () => {
           </p>
         </Motion.header>
 
-        <div className="flex gap-2 sm:gap-4 p-4 justify-center flex-wrap sticky top-[80px] bg-[#F9F6EE]  backdrop-blur-sm z-40 mb-8">
+        {/* --- DAFTAR KATEGORI (DINAMIS) --- */}
+        <div className="flex gap-2 sm:gap-4 p-4 justify-center flex-wrap sticky top-[80px] bg-[#F9F6EE] backdrop-blur-sm z-40 mb-8">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 ${
                 selectedCategory === cat
-                  ? "bg-[#f8d7d0] text-red-700 shadow-lg scale-105"
-                  : "bg-white text-gray-700 hover:bg-gray-200 shadow-sm"
+                  ? "bg-[#f8d7d0] text-red-700 shadow-lg scale-105" // Style Aktif
+                  : "bg-white text-gray-700 hover:bg-gray-200 shadow-sm" // Style Non-Aktif
               }`}
             >
               {cat}
@@ -120,6 +138,7 @@ const Katalog = () => {
           ))}
         </div>
 
+        {/* --- GRID PRODUK --- */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 pb-12">
           {filteredProducts.length > 0 ? (
             filteredProducts.map((product, index) => (
@@ -147,18 +166,20 @@ const Katalog = () => {
                         No Image
                       </div>
                     )}
-                    {/* --- PENAMBAHAN: Label Diskon --- */}
+                    
+                    {/* Badge Diskon */}
                     {product.discountPercentage > 0 && (
-                      <div className="absolute top-2 left-2 bg-red-100 text-white text-xs font-bold px-2 py-1 rounded-full">
+                      <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
                         -{product.discountPercentage}%
                       </div>
                     )}
                   </div>
+
                   <div className="p-4 flex flex-col flex-grow">
-                    <p className="text-sm font-semibold text-red-700 group-hover:text-red-600 transition-colors flex-grow min-h-[40px]">
+                    <p className="text-sm font-semibold text-red-700 group-hover:text-red-600 transition-colors flex-grow min-h-[40px] line-clamp-2">
                       {product.name}
                     </p>
-                    {/* --- PENAMBAHAN: Logika untuk harga diskon --- */}
+                    
                     <div className="mt-2">
                       {product.discountPrice && product.discountPercentage > 0 ? (
                         <>
@@ -181,10 +202,12 @@ const Katalog = () => {
             ))
           ) : (
              <div className="col-span-full text-center py-16">
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 text-lg font-semibold">
                 Produk tidak ditemukan.
               </p>
-              <p className="text-gray-500">Coba pilih kategori yang lain.</p>
+              <p className="text-gray-500 mt-2">
+                Coba cari dengan kata kunci lain atau pilih kategori berbeda.
+              </p>
             </div>
           )}
         </div>
