@@ -12,6 +12,8 @@ import {
   Percent,
   Pencil,
   RotateCcw,
+  ShoppingBag,
+  CheckCircle,
 } from "lucide-react";
 import Swal from "sweetalert2";
 
@@ -36,8 +38,8 @@ const validateImageRatio = (file) => {
   });
 };
 
-// ================== SECTION MANAGER (UPDATED) ==================
-const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
+// ================== SECTION MANAGER ==================
+const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit, catalogProducts = [] }) => {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -46,10 +48,13 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
   const [itemLink, setItemLink] = useState("");
   const [price, setPrice] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState("");
+  
+  // State Pilihan Katalog
+  const [selectedCatalogId, setSelectedCatalogId] = useState("");
 
   // State Edit Mode
-  const [editingId, setEditingId] = useState(null); // NULL = Mode Tambah, ID = Mode Edit
-  const [currentImageUrl, setCurrentImageUrl] = useState(""); // URL gambar lama saat edit
+  const [editingId, setEditingId] = useState(null); 
+  const [currentImageUrl, setCurrentImageUrl] = useState(""); 
 
   const fileInputRef = useRef(null);
   const formRef = useRef(null);
@@ -59,6 +64,37 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
       if (preview && file) URL.revokeObjectURL(preview);
     };
   }, [preview, file]);
+
+  // --- FUNGSI PILIH DARI KATALOG (Full Auto) ---
+  const handleCatalogSelect = (e) => {
+    const prodId = e.target.value;
+    setSelectedCatalogId(prodId);
+
+    if (prodId) {
+        const product = catalogProducts.find(p => p._id === prodId);
+        if (product) {
+            setItemName(product.name || "");
+            setPrice(product.price || 0);
+            setItemLink(`/product/${product._id}`);
+            
+            // Ambil diskon dari produk jika ada
+            setDiscountPercentage(product.discountPercentage || 0);
+
+            // Ambil Gambar
+            if (product.colors && product.colors.length > 0 && product.colors[0].imageUrls.length > 0) {
+                const imgPath = product.colors[0].imageUrls[0];
+                setCurrentImageUrl(imgPath);
+                setPreview(`http://127.0.0.1:5000${imgPath}`);
+            } else {
+                setCurrentImageUrl("");
+                setPreview(null);
+            }
+            setFile(null); // Reset file upload manual
+        }
+    } else {
+        resetForm();
+    }
+  };
 
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
@@ -79,6 +115,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
 
     setFile(selectedFile);
     setPreview(URL.createObjectURL(selectedFile));
+    setCurrentImageUrl("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -92,10 +129,10 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
     setDiscountPercentage("");
     setEditingId(null);
     setCurrentImageUrl("");
+    setSelectedCatalogId("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // Fungsi Masuk Mode Edit
   const startEditing = (item) => {
     setEditingId(item._id);
     setItemName(item.nama || "");
@@ -107,12 +144,19 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
     if (item.discountPercentage) setDiscountPercentage(item.discountPercentage);
     else setDiscountPercentage("");
 
+    // Cek koneksi katalog
+    if (item.link && item.link.startsWith("/product/")) {
+        const idFromLink = item.link.split("/product/")[1];
+        const exists = catalogProducts.find(p => p._id === idFromLink);
+        if (exists) setSelectedCatalogId(idFromLink);
+    } else {
+        setSelectedCatalogId("");
+    }
+
     setPreview(`http://127.0.0.1:5000${item.url}`);
     setCurrentImageUrl(item.url);
-    setFile(null); // Reset file upload baru
+    setFile(null); 
 
-    // Scroll ke form input
-    // window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     setTimeout(() => {
         if (formRef.current) {
             formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -121,31 +165,25 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
   };
 
   const handleSubmit = async () => {
-    // Validasi Dasar
-    if (!editingId && !file) {
-      return Swal.fire(
-        "Peringatan",
-        "Pilih gambar terlebih dahulu.",
-        "warning"
-      );
+    // Validasi
+    if (!editingId && !file && !currentImageUrl) {
+      return Swal.fire("Peringatan", "Data produk belum dipilih atau gambar kosong.", "warning");
     }
 
     const isProductSection = title === "Produk Terlaris";
-
-    // Siapkan object data
-    let finalImageUrl = currentImageUrl; // Default ke gambar lama (jika edit)
+    let finalImageUrl = currentImageUrl; 
 
     try {
       Swal.fire({
         title: editingId ? "Menyimpan Perubahan..." : "Menyimpan...",
-        text: "Tunggu sebentar, data sedang diproses.",
+        text: "Sedang memproses data...",
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
         },
       });
 
-      // 1. Upload Gambar Baru (Jika ada file baru dipilih)
+      // Upload gambar (hanya untuk Carousel/Kategori yang pakai manual upload)
       if (file) {
         const formData = new FormData();
         formData.append("images", file);
@@ -153,7 +191,6 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
         finalImageUrl = uploadRes.data.imageUrls[0];
       }
 
-      // 2. Siapkan Payload Data
       const itemData = {
         nama: itemName || (editingId ? itemName : "Item Baru"),
         url: finalImageUrl,
@@ -175,33 +212,26 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
         }
       }
 
-      // 3. Kirim ke API (Add atau Update)
       if (editingId) {
-        // Mode UPDATE
         await onEdit(editingId, itemData);
         Swal.fire("Sukses!", "Data berhasil diperbarui.", "success");
       } else {
-        // Mode ADD
         await onAdd(itemData);
         Swal.fire("Sukses!", "Data berhasil disimpan.", "success");
       }
 
-      // 4. Reset Form
       resetForm();
     } catch (error) {
       console.error("Error submit:", error);
-      Swal.fire(
-        "Error",
-        error.response?.data?.message || "Gagal memproses data.",
-        "error"
-      );
+      Swal.fire("Error", error.response?.data?.message || "Gagal memproses data.", "error");
     }
   };
 
-  const isLimitReached = !editingId && items.length >= limit; // Limit cuma berlaku kalau nambah baru
+  const isLimitReached = !editingId && items.length >= limit;
   const isProductSection = title === "Produk Terlaris";
-  const isNameNeeded =
-    title === "Produk Terlaris" || title === "Kategori Unggulan";
+  
+  // Logic untuk menampilkan form manual atau tidak
+  const showManualForm = !isProductSection; 
 
   return (
     <section
@@ -212,24 +242,19 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-semibold text-gray-800">
           {title}{" "}
-          {editingId && (
-            <span className="text-blue-600 text-sm">(Mode Edit)</span>
-          )}
+          {editingId && <span className="text-blue-600 text-sm">(Mode Edit)</span>}
         </h3>
-        <span
-          className={`text-sm font-medium ${
-            isLimitReached ? "text-red-500" : "text-gray-500"
-          }`}
-        >
+        <span className={`text-sm font-medium ${isLimitReached ? "text-red-500" : "text-gray-500"}`}>
           {items.length}/{limit}
         </span>
       </div>
 
+      {/* Grid List Item */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
         {items.map((item) => (
           <div
             key={item._id}
-            className={`relative group border rounded-lg overflow-hidden ${
+            className={`relative group border rounded-lg overflow-hidden bg-gray-50 ${
               editingId === item._id ? "ring-4 ring-blue-400" : ""
             }`}
           >
@@ -238,7 +263,6 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
               alt={item.nama || "item"}
               className="w-full h-32 object-cover"
             />
-            {/* Group Button Actions */}
             <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => startEditing(item)}
@@ -256,7 +280,7 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
               </button>
             </div>
             {item.nama && (
-              <p className="text-center text-sm mt-2 font-medium p-1 truncate">
+              <p className="text-center text-xs mt-2 font-medium p-1 truncate text-gray-700">
                 {item.nama}
               </p>
             )}
@@ -264,184 +288,154 @@ const SectionManager = ({ title, items, onDelete, onAdd, onEdit, limit }) => {
         ))}
       </div>
 
-      <div ref={formRef} className="p-4 border-t">
+      <div ref={formRef} className="p-4 border-t relative bg-gray-50 rounded-md">
         {editingId && (
           <div className="mb-4 bg-blue-100 text-blue-800 px-4 py-2 rounded flex justify-between items-center">
-            <span>Sedang mengedit item.</span>
-            <button
-              onClick={resetForm}
-              className="text-sm underline hover:text-blue-900"
-            >
-              Batalkan Edit
+            <span className="text-sm font-semibold">Mode Edit Aktif</span>
+            <button onClick={resetForm} className="text-sm underline hover:text-blue-900">
+              Batalkan
             </button>
           </div>
         )}
 
-        <div className="flex flex-col gap-4">
-          {isNameNeeded && (
-            <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Nama Item
-              </label>
-              <input
-                type="text"
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
-                placeholder={isProductSection ? "Nama Produk" : "Nama Kategori"}
-                className="w-full p-2 border rounded-md"
-                disabled={isLimitReached && !editingId}
-              />
-            </div>
-          )}
-
-          <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Link
-            </label>
-            <div className="relative">
-              <Link2
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                size={16}
-              />
-              <input
-                type="text"
-                value={itemLink}
-                onChange={(e) => setItemLink(e.target.value)}
-                placeholder="Contoh: https://shopee.co.id/PAPER-BAG-PREMIUM...."
-                className="w-full p-2 pl-10 border rounded-md"
-                disabled={isLimitReached && !editingId}
-              />
-            </div>
-          </div>
-
-          {isProductSection && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="w-full">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Harga Normal (Rp)
-                </label>
-                <input
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="Contoh: 50000"
-                  className="w-full p-2 border rounded-md"
-                  disabled={isLimitReached && !editingId}
-                />
-              </div>
-              <div className="w-full">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Diskon (%)
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={discountPercentage}
-                    onChange={(e) => setDiscountPercentage(e.target.value)}
-                    placeholder="Contoh: 15"
-                    className="w-full p-2 border rounded-md pr-8"
-                    disabled={isLimitReached && !editingId}
-                  />
-                  <Percent
-                    size={16}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  />
+        {/* --- KHUSUS PRODUK TERLARIS: HANYA DROPDOWN --- */}
+        {isProductSection ? (
+            <div className="space-y-4">
+                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                    <label className="block text-sm font-bold text-gray-800 mb-2 flex items-center gap-2">
+                        <ShoppingBag size={18} className="text-pink-600"/> 
+                        Pilih Produk dari Katalog
+                    </label>
+                    <select
+                        value={selectedCatalogId}
+                        onChange={handleCatalogSelect}
+                        className="w-full p-2.5 border border-gray-300 rounded-md bg-white focus:ring-2 focus:ring-pink-300 outline-none transition"
+                        disabled={isLimitReached && !editingId}
+                    >
+                        <option value="">-- Klik Disini untuk Memilih Produk --</option>
+                        {catalogProducts.map((prod) => (
+                            <option key={prod._id} value={prod._id}>
+                                {prod.name} — Rp {(prod.price || 0).toLocaleString('id-ID')}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-2">
+                        *Data Nama, Harga, Diskon, Gambar dan Link akan otomatis diambil dari produk yang dipilih.
+                    </p>
                 </div>
-              </div>
-            </div>
-          )}
 
-          <div className="w-full">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {editingId ? "Ganti Gambar (Opsional)" : "Pilih Gambar"}
-            </label>
-            <label
-              className={`flex items-center justify-center gap-2 w-full px-4 py-2 bg-white border-2 border-dashed rounded-md h-[42px] ${
-                isLimitReached && !editingId
-                  ? "cursor-not-allowed bg-gray-100"
-                  : "cursor-pointer hover:border-pink-500 hover:bg-pink-50"
-              }`}
-            >
-              <Upload size={20} className="text-gray-600" />
-              <span className="text-sm font-medium text-gray-600">
-                {file
-                  ? file.name
-                  : editingId
-                  ? "Klik untuk ganti gambar"
-                  : "Pilih Gambar"}
-              </span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*"
-                disabled={isLimitReached && !editingId}
-              />
-            </label>
-          </div>
-        </div>
-
-        {preview && (
-          <div className="mt-4">
-            <p className="text-xs text-gray-500 mb-1">Preview:</p>
-            <div className="relative w-24 h-24">
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full h-full object-cover rounded-lg"
-              />
-              {/* Tombol X hanya muncul jika ini file upload baru, bukan gambar lama dari edit */}
-              {file && (
-                <button
-                  onClick={() => {
-                    setFile(null);
-                    setPreview(
-                      editingId
-                        ? `http://127.0.0.1:5000${currentImageUrl}`
-                        : null
-                    );
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-md flex items-center justify-center"
-                >
-                  <X size={14} />
-                </button>
-              )}
+                {/* Preview Produk Terpilih */}
+                {(selectedCatalogId || editingId) && preview && (
+                    <div className="bg-white p-4 rounded-lg border border-green-200 shadow-sm flex items-start gap-4">
+                        <div className="w-20 h-20 flex-shrink-0 border rounded-md overflow-hidden bg-gray-100">
+                            <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="text-sm font-bold text-gray-800">{itemName}</h4>
+                            <p className="text-sm text-pink-600 font-semibold">
+                                Rp {parseFloat(price).toLocaleString('id-ID')}
+                            </p>
+                            {(parseFloat(discountPercentage) > 0) && (
+                                <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded mt-1 inline-block">
+                                    Diskon {discountPercentage}%
+                                </span>
+                            )}
+                            <div className="mt-2 text-xs text-green-700 flex items-center gap-1">
+                                <CheckCircle size={12}/> Siap ditampilkan
+                            </div>
+                        </div>
+                        <button onClick={resetForm} className="text-gray-400 hover:text-red-500 p-1">
+                            <X size={18}/>
+                        </button>
+                    </div>
+                )}
             </div>
-          </div>
+        ) : (
+            /* --- UNTUK CAROUSEL & KATEGORI: FORM MANUAL BIASA --- */
+            <div className="flex flex-col gap-4">
+                {title !== "Gambar Carousel" && (
+                    <div className="w-full">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nama Item</label>
+                        <input
+                            type="text"
+                            value={itemName}
+                            onChange={(e) => setItemName(e.target.value)}
+                            placeholder="Nama Kategori"
+                            className="w-full p-2 border rounded-md bg-white"
+                            disabled={isLimitReached && !editingId}
+                        />
+                    </div>
+                )}
+                
+                <div className="w-full">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Link Tujuan (Opsional)</label>
+                    <input
+                        type="text"
+                        value={itemLink}
+                        onChange={(e) => setItemLink(e.target.value)}
+                        placeholder="Contoh: /katalog"
+                        className="w-full p-2 border rounded-md bg-white"
+                        disabled={isLimitReached && !editingId}
+                    />
+                </div>
+
+                <div className="w-full">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {editingId ? "Ganti Gambar" : "Upload Gambar"}
+                    </label>
+                    <label className={`flex items-center justify-center gap-2 w-full px-4 py-2 bg-white border-2 border-dashed rounded-md h-[42px] cursor-pointer hover:border-pink-500`}>
+                        <Upload size={20} className="text-gray-600" />
+                        <span className="text-sm font-medium text-gray-600">
+                            {file ? file.name : "Pilih File Gambar"}
+                        </span>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/*"
+                            disabled={isLimitReached && !editingId}
+                        />
+                    </label>
+                </div>
+                
+                {preview && (
+                    <div className="mt-2 relative w-24 h-24 group">
+                        <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-lg border" />
+                        <button
+                            onClick={() => {
+                                setFile(null);
+                                setPreview(editingId ? `http://127.0.0.1:5000${currentImageUrl}` : null);
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1"
+                        >
+                            <X size={12} />
+                        </button>
+                    </div>
+                )}
+            </div>
         )}
 
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-6">
           <button
             onClick={handleSubmit}
-            disabled={(isLimitReached && !editingId) || (!file && !editingId)}
-            className={`w-auto px-6 py-2 rounded-md flex items-center justify-center gap-2 text-white transition
+            disabled={(isLimitReached && !editingId) || (!file && !currentImageUrl && !editingId)}
+            className={`w-auto px-6 py-2 rounded-md flex items-center justify-center gap-2 text-white transition shadow-md
                 ${
                   editingId
                     ? "bg-blue-600 hover:bg-blue-700"
                     : "bg-pink-500 hover:bg-pink-600"
                 }
-                disabled:bg-gray-400 disabled:cursor-not-allowed`}
+                disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed`}
           >
             {editingId ? <Save size={16} /> : <Plus size={16} />}
-            {editingId ? "Simpan Perubahan" : "Tambah"}
+            {editingId ? "Simpan Perubahan" : "Simpan ke Home"}
           </button>
-
-          {editingId && (
-            <button
-              onClick={resetForm}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-            >
-              <RotateCcw size={16} /> Batal
-            </button>
-          )}
         </div>
 
         {title === "Gambar Carousel" && (
           <p className="text-xs text-gray-500 mt-2 text-left">
-            *Hanya gambar dengan rasio 16:9 (misal: 1920x1080 pixels) yang akan
-            diterima.
+            *Rekomendasi rasio gambar 16:9.
           </p>
         )}
       </div>
@@ -488,7 +482,7 @@ const HeroButtonManager = ({ buttonData, onSave }) => {
         </div>
         <button
           onClick={handleSave}
-          className="w-full md:w-auto bg-blue-500 text-white px-6 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-blue-600"
+          className="w-full md:w-auto bg-blue-500 text-white px-6 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-blue-600 transition"
         >
           <Save size={16} /> Simpan
         </button>
@@ -497,26 +491,32 @@ const HeroButtonManager = ({ buttonData, onSave }) => {
   );
 };
 
-// ================== MAIN COMPONENT (UPDATED) ==================
+// ================== MAIN COMPONENT ==================
 const KelolaHome = (props) => {
   const [carouselImages, setCarouselImages] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [heroButton, setHeroButton] = useState({ buttonLink: "" });
+  
+  // Data Katalog
+  const [catalogProducts, setCatalogProducts] = useState([]);
 
   const fetchData = async () => {
     try {
-      const [carouselRes, featuredRes, categoryRes, buttonRes] =
+      const [carouselRes, featuredRes, categoryRes, buttonRes, productRes] =
         await Promise.all([
           axios.get("/home/carousel"),
           axios.get("/home/featured-products"),
           axios.get("/home/categories"),
           axios.get("/home/hero-button"),
+          axios.get("/products"), 
         ]);
+      
       setCarouselImages(carouselRes.data);
       setFeaturedProducts(featuredRes.data);
       setCategories(categoryRes.data);
       setHeroButton(buttonRes.data);
+      setCatalogProducts(productRes.data);
     } catch (error) {
       console.error("Gagal memuat data halaman utama:", error);
     }
@@ -553,12 +553,10 @@ const KelolaHome = (props) => {
       await axios.post(`/home/${type}`, data);
       fetchData();
     } catch (error) {
-      // Error akan ditangkap di SectionManager, ini backup
       throw error;
     }
   };
 
-  // === FUNGSI BARU: HANDLE EDIT ===
   const handleEdit = async (type, id, data) => {
     try {
       await axios.put(`/home/${type}/${id}`, data);
@@ -590,7 +588,7 @@ const KelolaHome = (props) => {
         items={carouselImages}
         onDelete={(id) => handleDelete("carousel", id)}
         onAdd={(data) => handleAdd("carousel", data)}
-        onEdit={(id, data) => handleEdit("carousel", id, data)} // Pass prop onEdit
+        onEdit={(id, data) => handleEdit("carousel", id, data)} 
         limit={4}
       />
 
@@ -599,8 +597,9 @@ const KelolaHome = (props) => {
         items={featuredProducts}
         onDelete={(id) => handleDelete("featured-products", id)}
         onAdd={(data) => handleAdd("featured-products", data)}
-        onEdit={(id, data) => handleEdit("featured-products", id, data)} // Pass prop onEdit
+        // onEdit={(id, data) => handleEdit("featured-products", id, data)} 
         limit={6}
+        catalogProducts={catalogProducts}
       />
 
       <SectionManager
@@ -608,7 +607,7 @@ const KelolaHome = (props) => {
         items={categories}
         onDelete={(id) => handleDelete("categories", id)}
         onAdd={(data) => handleAdd("categories", data)}
-        onEdit={(id, data) => handleEdit("categories", id, data)} // Pass prop onEdit
+        onEdit={(id, data) => handleEdit("categories", id, data)} 
         limit={6}
       />
     </div>

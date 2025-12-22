@@ -604,7 +604,7 @@ const KelolaProduk = () => {
               </div>
 
               {/* LINK ORDER */}
-              <div>
+              {/* <div>
                 <label
                   htmlFor="orderLink"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -626,7 +626,7 @@ const KelolaProduk = () => {
                     className="w-full p-3 pl-10 border rounded-lg"
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* KELOLA WARNA & GAMBAR VARIASI */}
               <div className="space-y-4 pt-4 border-t">
