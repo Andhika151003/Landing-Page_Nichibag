@@ -30,48 +30,119 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// CREATE (Diperbaiki untuk keamanan)
+// --- FUNGSI HELPER: Membersihkan Data Sebelum Disimpan ---
+const cleanProductData = (data) => {
+  const cleanData = { ...data };
+
+  // 1. Handle productCode:
+  // Jika string kosong ("") atau hanya spasi, HAPUS field ini dari object.
+  // Ini penting agar fitur 'sparse: true' di MongoDB bekerja (mengizinkan banyak produk tanpa kode).
+  if (!cleanData.productCode || cleanData.productCode.trim() === "") {
+    delete cleanData.productCode;
+  } else {
+    // Jika ada isinya, pastikan di-trim
+    cleanData.productCode = cleanData.productCode.trim();
+  }
+
+  // 1b. Handle productID (TAMBAHAN FIX):
+  // Hapus field productID jika kosong/null untuk menghindari duplicate key error
+  if (!cleanData.productID || cleanData.productID === "" || cleanData.productID === null) {
+    delete cleanData.productID;
+  }
+
+  // 2. Handle Angka: Ubah string kosong "" menjadi 0 agar tidak Error Casting
+  const numberFields = ['price', 'weight', 'discountPercentage'];
+  numberFields.forEach(field => {
+    if (cleanData[field] === "" || cleanData[field] === null || cleanData[field] === undefined) {
+      cleanData[field] = 0;
+    }
+  });
+
+  // 3. Handle Dimensions (Nested Object)
+  // Pastikan object dimensions ada sebelum mengakses propertinya
+  if (cleanData.dimensions) {
+    if (cleanData.dimensions.length === "") cleanData.dimensions.length = 0;
+    if (cleanData.dimensions.width === "") cleanData.dimensions.width = 0;
+    if (cleanData.dimensions.height === "") cleanData.dimensions.height = 0;
+  }
+
+  return cleanData;
+};
+
+// CREATE (Diperbaiki untuk Error 400 & 500)
 export const createProduct = async (req, res) => {
-  const user = req.body?.user || "Admin"; // 🔹 Akses req.body dengan aman
+  const user = req.body?.user || "Admin"; 
+  
   try {
-    const product = await Product.create(req.body);
+    // Bersihkan data sebelum disimpan
+    const productData = cleanProductData(req.body);
+
+    const product = await Product.create(productData);
+    
     await Log.create({
       user,
       action: "create",
       type: "Product",
       status: "success",
     });
-    res.status(201).json(product);
+    // Menggunakan 'msg' agar terbaca di Frontend
+    res.status(201).json({ msg: "Produk berhasil dibuat", data: product });
+
   } catch (err) {
-    await Log.create({
-      user,
-      action: "create",
-      type: "Product",
-      status: "failed",
-    });
-    res.status(500).json({ message: err.message });
+    console.error("Create Product Error:", err); // Cek terminal VScode untuk detail error
+
+    // Log ke database (dibungkus try-catch agar aman)
+    try {
+        await Log.create({ user, action: "create", type: "Product", status: "failed" });
+    } catch (e) { console.error("Log failed:", e); }
+
+    // --- PENANGANAN ERROR SPESIFIK ---
+    
+    // 1. Error Duplikat (Kode Produk Sudah Ada atau productID null)
+    if (err.code === 11000) {
+        // Cek field mana yang duplikat
+        const field = Object.keys(err.keyPattern)[0];
+        
+        // Handle error productID null khusus
+        if (field === 'productID' && err.keyValue.productID === null) {
+            return res.status(400).json({ 
+                msg: "Error: Field productID menyebabkan konflik. Silakan hapus index productID_1 dari MongoDB atau kosongkan field ini." 
+            });
+        }
+        
+        const errorMsg = field === 'productCode' 
+            ? `Kode Produk "${err.keyValue.productCode}" sudah digunakan. Ganti kode lain atau kosongkan.`
+            : `Data duplikat pada field: ${field}`;
+            
+        return res.status(400).json({ msg: errorMsg });
+    }
+
+    // 2. Error Validasi (Misal ada data wajib yang kosong)
+    if (err.name === 'ValidationError') {
+        const messages = Object.values(err.errors).map(val => val.message);
+        return res.status(400).json({ msg: `Validasi Gagal: ${messages.join(', ')}` });
+    }
+
+    // 3. Error Lainnya (Server Error)
+    res.status(500).json({ msg: err.message });
   }
 };
 
-// UPDATE (Diperbaiki untuk keamanan)
+// UPDATE (Diperbaiki untuk Error 400 & 500)
 export const updateProduct = async (req, res) => {
-  const user = req.body?.user || "Admin"; // 🔹 Akses req.body dengan aman
+  const user = req.body?.user || "Admin";
+  
   try {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    // Bersihkan data sebelum update
+    const productData = cleanProductData(req.body);
+
+    const updated = await Product.findByIdAndUpdate(req.params.id, productData, {
       new: true,
+      runValidators: true // Pastikan validasi schema berjalan saat update
     });
 
-    // 🔹 Cek jika produk ada
     if (!updated) {
-      await Log.create({
-        user,
-        action: "update",
-        type: "Product",
-        status: "failed",
-      });
-      return res
-        .status(404)
-        .json({ message: "Produk tidak ditemukan untuk diupdate." });
+      return res.status(404).json({ msg: "Produk tidak ditemukan untuk diupdate." });
     }
 
     await Log.create({
@@ -81,24 +152,43 @@ export const updateProduct = async (req, res) => {
       status: "success",
     });
     res.json(updated);
+
   } catch (err) {
-    await Log.create({
-      user,
-      action: "update",
-      type: "Product",
-      status: "failed",
-    });
-    res.status(500).json({ message: err.message });
+    console.error("Update Product Error:", err);
+    
+    try {
+        await Log.create({ user, action: "update", type: "Product", status: "failed" });
+    } catch (e) { console.error("Log failed:", e); }
+
+    // 1. Error Duplikat
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyPattern)[0];
+        
+        // Handle error productID null khusus
+        if (field === 'productID' && err.keyValue.productID === null) {
+            return res.status(400).json({ 
+                msg: "Error: Field productID menyebabkan konflik. Silakan hapus index productID_1 dari MongoDB." 
+            });
+        }
+        
+        return res.status(400).json({ msg: "Kode Produk sudah digunakan oleh produk lain." });
+    }
+
+    // 2. Error Validasi
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({ msg: err.message });
+    }
+
+    res.status(500).json({ msg: err.message });
   }
 };
 
-// DELETE (Diperbaiki untuk keamanan)
+// DELETE (Tetap, hanya sesuaikan msg)
 export const deleteProduct = async (req, res) => {
-  const user = "Admin"; // 🔹 Langsung gunakan "Admin" karena DELETE tidak punya body
+  const user = "Admin"; 
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
 
-    // 🔹 Cek jika produk ada
     if (!deleted) {
       await Log.create({
         user,
@@ -106,9 +196,7 @@ export const deleteProduct = async (req, res) => {
         type: "Product",
         status: "failed",
       });
-      return res
-        .status(404)
-        .json({ message: "Produk tidak ditemukan untuk dihapus." });
+      return res.status(404).json({ msg: "Produk tidak ditemukan untuk dihapus." });
     }
 
     await Log.create({
@@ -117,7 +205,7 @@ export const deleteProduct = async (req, res) => {
       type: "Product",
       status: "success",
     });
-    res.json({ message: "Product deleted" });
+    res.json({ msg: "Product deleted" });
   } catch (err) {
     await Log.create({
       user,
@@ -125,6 +213,6 @@ export const deleteProduct = async (req, res) => {
       type: "Product",
       status: "failed",
     });
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ msg: err.message });
   }
 };

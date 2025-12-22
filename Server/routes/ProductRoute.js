@@ -27,4 +27,22 @@ router.post('/testing/reset', async (req, res) => {
   }
 });
 
+router.get('/fix/reset-indexes', async (req, res) => {
+  try {
+    // 1. Ambil collection langsung dari Mongoose
+    const collection = Product.collection;
+
+    // 2. Hapus semua Indexes (kecuali _id yang wajib)
+    await collection.dropIndexes();
+    
+    console.log("✅ Semua Index berhasil direset!");
+    
+    // 3. Mongoose akan otomatis membuat ulang index yang BENAR sesuai Schema saat server restart nanti
+    res.status(200).send("<h1>Sukses! Index database sudah direset. Silakan Restart Server Anda sekarang.</h1>");
+  } catch (error) {
+    console.error("Gagal reset index:", error);
+    res.status(500).send("Gagal reset index: " + error.message);
+  }
+});
+
 export default router;
