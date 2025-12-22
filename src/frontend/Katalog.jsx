@@ -31,8 +31,13 @@ const Katalog = () => {
   // State untuk kategori yang dipilih (default: All)
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  // 1. Fetch Data Produk
+  // 1. Fetch Data Produk & Atur Posisi Scroll
   useEffect(() => {
+    // --- PERBAIKAN DI SINI ---
+    // Memastikan halaman selalu dimulai dari paling atas dengan transisi smooth
+    // Gunakan 'instant' jika ingin langsung di atas tanpa animasi scroll
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+
     const fetchProducts = async () => {
       try {
         setLoading(true);

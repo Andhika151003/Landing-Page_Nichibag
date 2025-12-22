@@ -1,21 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
+// axios, useState, dan useEffect tidak lagi dibutuhkan karena link di-hardcode
 import Button from "./ButtonPesan";
 
 const HeroSection = () => {
-  const [buttonLink, setButtonLink] = useState('/katalog');
-
-  useEffect(() => {
-      const fetchButtonData = async () => {
-          try {
-              const res = await axios.get("http://127.0.0.1:5000/home/hero-button");
-              setButtonLink(res.data.buttonLink);
-          } catch (error) {
-              console.error("Gagal mengambil data tombol hero:", error);
-          }
-      };
-      fetchButtonData();
-  }, []);
+  // Link langsung di-set ke '/katalog'
+  const buttonLink = '/katalog';
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-[#fff8f2] via-[#f8d7d0] to-[#a94442]/30 overflow-hidden flex items-center">
@@ -39,7 +28,7 @@ const HeroSection = () => {
             NichiBag.id tidak hanya menawarkan produk yang estetik dan fungsional, tetapi juga mendukung gaya hidup eco-friendly dengan mengurangi limbah dan memanfaatkan bahan yang dapat diperbaharui.
           </p>
           <div className="flex items-center space-x-3 px-1 py-2">
-            {/* Teruskan link ke komponen Button */}
+            {/* Link hardcode diteruskan ke komponen Button */}
             <Button link={buttonLink} />
           </div>
         </div>
