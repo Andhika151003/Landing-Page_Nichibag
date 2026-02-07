@@ -23,6 +23,7 @@
     "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",
     "lucide-react": "^0.535.0",
+    "mongodb": "^7.1.0",
     "mongoos": "^0.0.1-security",
     "mongoose": "^8.17.1",
     "nodemailer": "^7.0.11",
