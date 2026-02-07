@@ -14,6 +14,10 @@ test.describe('Admin dapat Gambar Carousel di Halaman Utama', () => {
     await page.getByRole('link', { name: 'Kelola Halaman Utama' }).click();
     await expect(page).toHaveURL(/.*kelola-home/);
 
+    // Tunggu sampai semua request selesai dan konten dinamis ter-render
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Gambar Carousel')).toBeVisible({ timeout: 30000 });
+
     // LANGKAH 2: Menambah Item Carousel
     const carouselSection = page.locator('section', { hasText: 'Gambar Carousel' });
     const imagePath = 'fixtures/test-image.png';

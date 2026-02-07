@@ -11,6 +11,8 @@ test.describe('Admin dapat mengelola Halaman Layanan', () => {
     
     // LANGKAH 1: Navigasi
     await page.goto('/Dashboard');
+    // Tunggu sampai semua request selesai dan konten dinamis ter-render
+    await page.waitForLoadState('networkidle');
     // Pastikan link terlihat sebelum klik untuk menghindari timeout
     await expect(page.getByRole('link', { name: 'Kelola Services' })).toBeVisible({ timeout: 30000 });
     await page.getByRole('link', { name: 'Kelola Services' }).click();

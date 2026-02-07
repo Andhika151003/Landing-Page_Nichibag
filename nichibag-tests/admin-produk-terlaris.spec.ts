@@ -12,8 +12,10 @@ test.describe('Admin dapat mengelola Produk Terlaris', () => {
     await page.goto('/Dashboard');
     await page.getByRole('link', { name: 'Kelola Halaman Utama' }).click();
     await expect(page).toHaveURL(/.*kelola-home/);
-
     // LANGKAH 2: Fokus pada seksi "Produk Terlaris" dan siapkan data
+    // Tunggu sampai semua request selesai dan konten dinamis ter-render
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Produk Terlaris')).toBeVisible({ timeout: 30000 });
     const productSection = page.locator('section', { hasText: 'Produk Terlaris' });
     const imagePath = 'fixtures/test-image.png'; // Pastikan gambar ini ada
     const tambahButton = productSection.getByText('Tambah');

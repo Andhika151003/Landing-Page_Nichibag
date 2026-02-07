@@ -11,8 +11,10 @@ test.describe('Admin dapat mengelola Kategori Unggulan', () => {
     await page.goto('/Dashboard');
     await page.getByRole('link', { name: 'Kelola Halaman Utama' }).click();
     await expect(page).toHaveURL(/.*kelola-home/);
-
     // LANGKAH 2: Fokus pada seksi "Kategori Unggulan" dan siapkan data
+    // Tunggu sampai semua request selesai dan konten dinamis ter-render
+    await page.waitForLoadState('networkidle');
+    await expect(page.getByText('Kategori Unggulan')).toBeVisible({ timeout: 30000 });
     const categorySection = page.locator('section', { hasText: 'Kategori Unggulan' });
     const imagePath = 'fixtures/test-image.png'; // Pastikan gambar ini ada
     const tambahButton = categorySection.getByText('Tambah');
