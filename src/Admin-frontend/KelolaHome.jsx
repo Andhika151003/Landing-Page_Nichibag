@@ -504,65 +504,51 @@ const SectionManager = ({
         )}
 
         {/* PREVIEW UMUM UNTUK SEMUA TIPE (JIKA SUDAH DIPILIH) */}
-        {(isProductSection || isCategorySection) &&
+        {/* {(isProductSection || isCategorySection) &&
           (selectedCatalogId || selectedCategoryName || editingId) &&
-          preview && (
-            <div className="mt-4 bg-white p-4 rounded-lg border border-green-200 shadow-sm flex items-start gap-4">
-              <div className="w-20 h-20 flex-shrink-0 border rounded-md overflow-hidden bg-gray-100">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-sm font-bold text-gray-800">
-                  {itemName || "Nama Item"}
-                </h4>
+          preview && ( */}
+        <div className="mt-4 bg-white p-4 rounded-lg border border-green-200 shadow-sm flex items-start gap-4">
+          <div className="w-20 h-20 flex-shrink-0 border rounded-md overflow-hidden bg-gray-100">
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1">
+            <h4 className="text-sm font-bold text-gray-800">
+              {itemName || "Nama Item"}
+            </h4>
 
-                {/* Info Tambahan Khusus Produk */}
-                {isProductSection && (
-                  <>
-                    <p className="text-sm text-pink-600 font-semibold">
-                      Rp{" "}
-                      {(!isNaN(parseFloat(price))
-                        ? parseFloat(price)
-                        : 0
-                      ).toLocaleString("id-ID")}
-                    </p>
-                    {parseFloat(discountPercentage) > 0 && (
-                      <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded mt-1 inline-block">
-                        Diskon {discountPercentage}%
-                      </span>
-                    )}
-                  </>
+            {/* Logika Label Harga/Diskon (Khusus Produk) */}
+            {isProductSection && (
+              <>
+                <p className="text-sm text-pink-600 font-semibold">
+                  Rp{" "}
+                  {(!isNaN(parseFloat(price))
+                    ? parseFloat(price)
+                    : 0
+                  ).toLocaleString("id-ID")}
+                </p>
+                {parseFloat(discountPercentage) > 0 && (
+                  <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded mt-1 inline-block">
+                    Diskon {discountPercentage}%
+                  </span>
                 )}
+              </>
+            )}
 
-                {/* Info Tambahan Khusus Kategori */}
-                {isCategorySection && (
-                  <p className="text-xs text-gray-500 mt-1">Link: {itemLink}</p>
-                )}
-
-                {/* Info Tambahan Khusus Carousel (Opsional) */}
-                {!isProductSection && !isCategorySection && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Link: {itemLink || "-"}
-                  </p>
-                )}
-
-                <div className="mt-2 text-xs text-green-700 flex items-center gap-1">
-                  <CheckCircle size={12} /> Siap ditampilkan
-                </div>
-              </div>
-              {/* Tombol Reset */}
-              <button
-                onClick={resetForm}
-                className="text-gray-400 hover:text-red-500 p-1"
-              >
-                <X size={18} />
-              </button>
+            <div className="mt-2 text-xs text-green-700 flex items-center gap-1">
+              <CheckCircle size={12} /> Siap ditampilkan
             </div>
-          )}
+          </div>
+          <button
+            onClick={resetForm}
+            className="text-gray-400 hover:text-red-500 p-1"
+          >
+            <X size={18} />
+          </button>
+        </div>
 
         {/* TOMBOL SIMPAN */}
         <div className="flex gap-2 mt-6">

@@ -3,10 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Admin dapat mengelola Produk', () => {
 
   test.beforeEach(async ({ page }) => {
-  // Ubah menjadi 127.0.0.1
-  const response = await page.request.post('http://127.0.0.1:5000/products/testing/reset');
-  expect(response.ok()).toBeTruthy();
-});
+    // Reset data produk sebelum tes berjalan
+    const response = await page.request.post('http://127.0.0.1:5000/products/testing/reset');
+    expect(response.ok()).toBeTruthy();
+  });
 
   test('dapat menambah produk baru dengan satu varian warna', async ({ page }) => {
     // LANGKAH 1: Navigasi
@@ -21,72 +21,65 @@ test.describe('Admin dapat mengelola Produk', () => {
     await expect(page.getByRole('heading', { name: /Tambah.*Produk/ })).toBeVisible({ timeout: 30000 });
 
     // LANGKAH 3: Isi form produk
-    // Tunggu semua field terlihat sebelum diisi
     await page.waitForLoadState('networkidle');
     
-    // Isi field dasar (gunakan selector alternatif jika label tidak ditemukan)
-    const nameInput = page.locator('input[placeholder*="Nama"], label:has-text("Nama Produk") ~ input, input[name*="nama"]').first();
-    await nameInput.fill('Produk Uji Coba Playwright');
+    // Isi field dasar menggunakan selector name yang presisi
+    await page.locator('input[name="name"]').fill('Produk Uji Coba Playwright');
+    await page.locator('input[name="productCode"]').fill('PW-TEST-001');
     
-    const codeInput = page.locator('input[placeholder*="Kode"], label:has-text("Kode Produk") ~ input, input[name*="kode"]').first();
-    await codeInput.fill('PW-TEST-001');
+    // Pilih Kategori
+    const categorySelect = page.locator('select[name="category"]');
+    await expect(categorySelect).toBeVisible();
+    await categorySelect.selectOption({ index: 1 });
     
-    // Untuk kategori, cari select atau dropdown
-    const categorySelect = page.locator('select[name*="kategori"], select[name*="category"], select').first();
-    if (await categorySelect.count() > 0) {
-      const options = await categorySelect.locator('option').count();
-      if (options > 1) {
-        // Pilih option pertama yang tersedia (skip placeholder)
-        await categorySelect.selectOption({ index: 1 });
-      }
-    }
+    // Isi Harga & Diskon (Gunakan selector name karena placeholder mungkin berbeda)
+    await page.locator('input[name="price"]').fill('75000');
+    await page.locator('input[name="discountPercentage"]').fill('15');
     
-    const priceInput = page.locator('input[name="price"]');
-    await priceInput.fill('75000');
+    // Isi Deskripsi
+    await page.locator('textarea[name="description"]').fill('Ini adalah deskripsi produk yang dibuat oleh tes otomatis Playwright.');
     
-    const discountInput = page.locator('input[name="discountPercentage"]');
-    await discountInput.fill('15');
-    
-    const descInput = page.locator('textarea[name="description"]');
-    await descInput.fill('Ini adalah deskripsi produk testing.');
-    
-    // Isi spesifikasi jika ada
-    const materialInput = page.locator('input[name="material"]');
-    await materialInput.fill('Kertas Kraft');
-    
-    const weightInput = page.locator('input[name="weight"]');
-    await weightInput.fill('50');
+    // Isi Spesifikasi (Opsional tapi baik untuk diisi)
+    await page.locator('input[name="material"]').fill('Kertas Kraft Tebal');
+    await page.locator('input[name="weight"]').fill('50');
     
     // LANGKAH 4: Menambah varian warna
-    const colorInput = page.locator('input[placeholder*="Warna"], input[placeholder*="Color"]').first();
-    const imagePath = 'fixtures/test-image.png';
+    // Input warna & hex
+    // React menggunakan input type="text" untuk nama warna di sebelah color picker
+    const colorNameInput = page.locator('input[placeholder="Ketik Nama Warna"]');
+    await colorNameInput.fill('Merah Maroon');
     
-    if (await colorInput.count() > 0) {
-      await colorInput.fill('Merah Maroon');
-      
-      const fileInput = page.locator('input[type="file"][multiple], input[type="file"]').last();
-      if (await fileInput.count() > 0) {
-        await fileInput.setInputFiles(imagePath);
-      }
-      
-      const addColorBtn = page.getByRole('button').filter({ hasText: /Tambah.*Varian|Add.*Variant/ }).first();
-      if (await addColorBtn.count() > 0) {
-        await addColorBtn.click();
-        await expect(page.getByText('Merah Maroon')).toBeVisible({ timeout: 10000 });
-      }
-    }
+    // Upload gambar varian
+    const imagePath = 'fixtures/test-image.png';
+    const fileInput = page.locator('input[type="file"][multiple]');
+    await fileInput.setInputFiles(imagePath);
+    
+    // Klik tombol "Tambah Varian Warna"
+    const addColorBtn = page.getByRole('button', { name: 'Tambah Varian Warna' });
+    await addColorBtn.click();
+    
+    // Verifikasi varian warna muncul di list
+    await expect(page.getByText('Merah Maroon')).toBeVisible({ timeout: 10000 });
     
     // LANGKAH 5: Menyimpan produk
-    const saveButton = page.getByRole('button').filter({ hasText: /Simpan|Save/ }).first();
-    const responsePromise = page.waitForResponse(/.*products.*/, { timeout: 30000 }).catch(() => null);
+    const saveButton = page.getByRole('button', { name: 'Simpan' });
+    
+    // Setup listener response untuk memastikan data terkirim
+    const responsePromise = page.waitForResponse(res => 
+        res.url().includes('/products') && (res.status() === 200 || res.status() === 201)
+    );
+    
     await saveButton.click();
-    // Wait for response atau timeout after 5 sec
-    await page.waitForTimeout(5000);
+    await responsePromise;
     
     // LANGKAH 6: Verifikasi sukses
-    await expect(page.getByText(/Sukses|berhasil|Produk.*disimpan/i)).toBeVisible({ timeout: 10000 });
+    // Gunakan getByRole heading agar spesifik ke judul popup "Sukses!"
+    // Ini menghindari error "Strict mode violation"
+    await expect(page.getByRole('heading', { name: /Sukses|Berhasil/i })).toBeVisible({ timeout: 10000 });
+    
+    // Tutup popup
     const okBtn = page.locator('button').filter({ hasText: /OK|Tutup/ }).first();
-    if (await okBtn.count() > 0) {
+    if (await okBtn.isVisible()) {
       await okBtn.click();
     }
 
