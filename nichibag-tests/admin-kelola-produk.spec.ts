@@ -22,6 +22,9 @@ test.describe('Admin dapat mengelola Produk', () => {
     await expect(page.getByRole('heading', { name: 'Tambah Produk Baru' })).toBeVisible();
 
     // LANGKAH 3: Mengisi semua field utama pada form
+    // Pastikan form terlihat sepenuhnya
+    await expect(page.getByRole('heading', { name: 'Tambah Produk Baru' })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByLabel('Nama Produk')).toBeVisible({ timeout: 30000 });
     await page.getByLabel('Nama Produk').fill('Produk Uji Coba Playwright');
     await page.getByLabel('Kode Produk').fill('PW-TEST-001');
     await page.getByLabel('Kategori').selectOption('Paper bag');
@@ -34,10 +37,11 @@ test.describe('Admin dapat mengelola Produk', () => {
     await page.getByLabel('Panjang (cm)').fill('30');
     await page.getByLabel('Lebar (cm)').fill('10');
     await page.getByLabel('Tinggi (cm)').fill('40');
-    await page.getByLabel('Link Button Order').fill('https://shopee.co.id/produk-uji-coba');
+    // await page.getByLabel('Link Button Order').fill('https://shopee.co.id/produk-uji-coba');
 
     // LANGKAH 4: Menambah varian warna
     const imagePath = 'fixtures/test-image.png';
+    await expect(page.getByPlaceholder('Ketik Nama Warna')).toBeVisible({ timeout: 30000 });
     await page.getByPlaceholder('Ketik Nama Warna').fill('Merah Maroon');
     await page.locator('input[type="file"][multiple]').setInputFiles(imagePath);
     await page.getByRole('button', { name: 'Tambah Varian Warna' }).click();

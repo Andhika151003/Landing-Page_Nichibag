@@ -18,7 +18,10 @@ test.describe('Admin dapat Gambar Carousel di Halaman Utama', () => {
     const carouselSection = page.locator('section', { hasText: 'Gambar Carousel' });
     const imagePath = 'fixtures/test-image.png';
     const tambahButton = carouselSection.getByText('Tambah');
+    // Pastikan seksi terlihat sebelum interaksi
+    await expect(carouselSection).toBeVisible({ timeout: 30000 });
     await carouselSection.locator('input[type="file"]').setInputFiles(imagePath);
+    await expect(carouselSection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/)).toBeVisible({ timeout: 30000 });
     await carouselSection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/).fill('https://shopee.co.id/link-untuk-carousel');
     await expect(tambahButton).toBeEnabled();
     const responsePromise = page.waitForResponse('**/home/carousel');

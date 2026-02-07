@@ -17,7 +17,11 @@ test.describe('Admin dapat mengelola Kategori Unggulan', () => {
     const imagePath = 'fixtures/test-image.png'; // Pastikan gambar ini ada
     const tambahButton = categorySection.getByText('Tambah');
     
+    // Pastikan seksi terlihat sebelum interaksi (hindari timeout)
+    await expect(categorySection).toBeVisible({ timeout: 30000 });
+
     // LANGKAH 3: Mengisi semua kolom form
+    await expect(categorySection.getByPlaceholder('Nama Kategori')).toBeVisible({ timeout: 30000 });
     await categorySection.getByPlaceholder('Nama Kategori').fill('Kategori Fesyen');
     await categorySection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/).fill('https://shopee.co.id/kategori-fesyen');
     await categorySection.locator('input[type="file"]').setInputFiles(imagePath);

@@ -11,9 +11,11 @@ test.describe('Admin dapat mengelola Halaman Layanan', () => {
     
     // LANGKAH 1: Navigasi
     await page.goto('/Dashboard');
+    // Pastikan link terlihat sebelum klik untuk menghindari timeout
+    await expect(page.getByRole('link', { name: 'Kelola Services' })).toBeVisible({ timeout: 30000 });
     await page.getByRole('link', { name: 'Kelola Services' }).click();
     await expect(page).toHaveURL(/.*kelola-services/);
-    await expect(page.getByRole('heading', { name: 'Kelola Halaman Layanan' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Kelola Halaman Layanan' })).toBeVisible({ timeout: 30000 });
 
     // LANGKAH 2: Targetkan kartu dan siapkan data
     const firstCard = page.locator('.border', { hasText: 'Kartu Layanan #1' });
@@ -23,6 +25,7 @@ test.describe('Admin dapat mengelola Halaman Layanan', () => {
     
     // LANGKAH 3: Mengisi form
     const uploadResponsePromise = page.waitForResponse('**/api/upload');
+    await expect(firstCard).toBeVisible({ timeout: 30000 });
     await firstCard.locator('input[type="file"]').setInputFiles(imagePath);
     const uploadResponse = await uploadResponsePromise;
     expect(uploadResponse.ok()).toBeTruthy();

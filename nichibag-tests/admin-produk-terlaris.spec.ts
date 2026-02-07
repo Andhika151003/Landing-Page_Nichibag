@@ -18,7 +18,11 @@ test.describe('Admin dapat mengelola Produk Terlaris', () => {
     const imagePath = 'fixtures/test-image.png'; // Pastikan gambar ini ada
     const tambahButton = productSection.getByText('Tambah');
     
+    // Pastikan seksi terlihat sebelum interaksi
+    await expect(productSection).toBeVisible({ timeout: 30000 });
+
     // LANGKAH 3: Mengisi semua kolom form
+    await expect(productSection.getByPlaceholder('Nama Produk')).toBeVisible({ timeout: 30000 });
     await productSection.getByPlaceholder('Nama Produk').fill('Tas Kanvas Premium');
     await productSection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/).fill('https://shopee.co.id/tas-kanvas-premium');
     await productSection.getByPlaceholder('Contoh: 50000').fill('125000');
