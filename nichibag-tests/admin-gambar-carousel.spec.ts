@@ -8,35 +8,43 @@ test.describe('Admin dapat Gambar Carousel di Halaman Utama', () => {
   });
 
   test('dapat menambah satu item carousel dan kemudian logout', async ({ page }) => {
-    
     // LANGKAH 1: Navigasi
     await page.goto('/Dashboard');
     await page.getByRole('link', { name: 'Kelola Halaman Utama' }).click();
     await expect(page).toHaveURL(/.*kelola-home/);
-
-    // Tunggu sampai semua request selesai dan konten dinamis ter-render
+    
+    // LANGKAH 2: Tunggu halaman render dan scroll ke Carousel
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText('Gambar Carousel')).toBeVisible({ timeout: 30000 });
-
-    // LANGKAH 2: Menambah Item Carousel
-    const carouselSection = page.locator('section', { hasText: 'Gambar Carousel' });
+    await expect(page.getByRole('heading', { name: 'Kelola Halaman Utama' })).toBeVisible({ timeout: 30000 });
+    
+    // LANGKAH 3: Persiapan data
     const imagePath = 'fixtures/test-image.png';
-    const tambahButton = carouselSection.getByText('Tambah');
-    // Pastikan seksi terlihat sebelum interaksi
-    await expect(carouselSection).toBeVisible({ timeout: 30000 });
-    await carouselSection.locator('input[type="file"]').setInputFiles(imagePath);
-    await expect(carouselSection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/)).toBeVisible({ timeout: 30000 });
-    await carouselSection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/).fill('https://shopee.co.id/link-untuk-carousel');
-    await expect(tambahButton).toBeEnabled();
+    
+    // Scroll ke section Gambar Carousel menggunakan h3 title
+    const carouselTitle = page.locator('h3').filter({ hasText: 'Gambar Carousel' });
+    await carouselTitle.scrollIntoViewIfNeeded();
+    
+    // Upload gambar
+    await page.locator('input[type="file"]').first().setInputFiles(imagePath);
+    
+    // Isi link tujuan (placeholder adalah "Contoh: /katalog")
+    const linkInput = page.locator('input[type="text"][placeholder*="Contoh"]').first();
+    await expect(linkInput).toBeVisible({ timeout: 30000 });
+    await linkInput.fill('https://shopee.co.id/link-untuk-carousel');
+    
+    // LANGKAH 4: Tunggu preview dan simpan
+    await expect(page.locator('text=Siap ditampilkan')).toBeVisible({ timeout: 10000 });
+    
+    // Klik tombol Simpan (pertama)
     const responsePromise = page.waitForResponse('**/home/carousel');
-    await tambahButton.click();
+    await page.getByRole('button', { name: /Simpan/ }).first().click();
     await responsePromise;
     
-    // LANGKAH 3: Handle Popup
-    await expect(page.getByText('Data berhasil disimpan.')).toBeVisible({ timeout: 10000 });
-    await page.getByRole('button', { name: 'OK' }).click();
+    // Handle Popup
+    await expect(page.getByText(/Sukses|berhasil/i)).toBeVisible({ timeout: 10000 });
+    await page.locator('button').filter({ hasText: /OK|Tutup/ }).click();
 
-    // LANGKAH 4: Logout
+    // LANGKAH 5: Logout
     await page.getByRole('button', { name: 'Logout' }).click();
     await expect(page.getByText('Anda akan keluar dari sesi admin.')).toBeVisible();
     await page.getByRole('button', { name: 'Ya, logout!' }).click();

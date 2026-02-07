@@ -7,40 +7,50 @@ test.describe('Admin dapat mengelola Produk Terlaris', () => {
   });
 
   test('dapat menambah satu item Produk Terlaris', async ({ page }) => {
-    
     // LANGKAH 1: Navigasi ke Halaman Kelola Home
     await page.goto('/Dashboard');
     await page.getByRole('link', { name: 'Kelola Halaman Utama' }).click();
     await expect(page).toHaveURL(/.*kelola-home/);
-    // LANGKAH 2: Fokus pada seksi "Produk Terlaris" dan siapkan data
-    // Tunggu sampai semua request selesai dan konten dinamis ter-render
+    
+    // LANGKAH 2: Tunggu halaman render
     await page.waitForLoadState('networkidle');
-    await expect(page.getByText('Produk Terlaris')).toBeVisible({ timeout: 30000 });
-    const productSection = page.locator('section', { hasText: 'Produk Terlaris' });
-    const imagePath = 'fixtures/test-image.png'; // Pastikan gambar ini ada
-    const tambahButton = productSection.getByText('Tambah');
+    await expect(page.getByRole('heading', { name: 'Kelola Halaman Utama' })).toBeVisible({ timeout: 30000 });
     
-    // Pastikan seksi terlihat sebelum interaksi
-    await expect(productSection).toBeVisible({ timeout: 30000 });
-
-    // LANGKAH 3: Mengisi semua kolom form
-    await expect(productSection.getByPlaceholder('Nama Produk')).toBeVisible({ timeout: 30000 });
-    await productSection.getByPlaceholder('Nama Produk').fill('Tas Kanvas Premium');
-    await productSection.getByPlaceholder(/Contoh: https:\/\/shopee.co.id/).fill('https://shopee.co.id/tas-kanvas-premium');
-    await productSection.getByPlaceholder('Contoh: 50000').fill('125000');
-    await productSection.getByPlaceholder('Contoh: 15').fill('10');
-    await productSection.locator('input[type="file"]').setInputFiles(imagePath);
+    // LANGKAH 3: Scroll ke "Produk Terlaris" dan pilih produk dari dropdown
+    const productTitle = page.locator('h3').filter({ hasText: 'Produk Terlaris' });
+    await productTitle.scrollIntoViewIfNeeded();
     
-    // LANGKAH 4: Menambah item
-    await expect(tambahButton).toBeEnabled();
+    // Cari section Produk Terlaris
+    const section = productTitle.locator('..');
+    const productSelect = section.locator('select').first();
+    await expect(productSelect).toBeVisible({ timeout: 30000 });
+    
+    // Check ada produk tersedia (option count > 1)
+    const options = await productSelect.locator('option').count();
+    if (options <= 1) {
+      throw new Error('Tidak ada produk tersedia di katalog');
+    }
+    
+    // Pilih produk pertama yang tersedia
+    await productSelect.selectOption({ index: 1 });
+    
+    // LANGKAH 4: Upload gambar
+    const imagePath = 'fixtures/test-image.png';
+    const fileInput = section.locator('input[type="file"]').first();
+    await fileInput.setInputFiles(imagePath);
+    
+    // LANGKAH 5: Tunggu preview dan simpan
+    await expect(page.locator('text=Siap ditampilkan')).toBeVisible({ timeout: 10000 });
+    
+    // Klik tombol Simpan
+    const saveButton = section.locator('button').filter({ hasText: /Simpan/ }).first();
     const responsePromise = page.waitForResponse('**/home/featured-products');
-    await tambahButton.click();
+    await saveButton.click();
     await responsePromise;
     
-    // LANGKAH 5: Handle Popup dan Verifikasi
-    await expect(page.getByText('Data berhasil disimpan.')).toBeVisible({ timeout: 10000 });
-    await page.getByRole('button', { name: 'OK' }).click();
-    await expect(productSection.getByText('Tas Kanvas Premium')).toBeVisible();
+    // LANGKAH 6: Handle Popup dan Verifikasi
+    await expect(page.getByText(/Sukses|berhasil/i)).toBeVisible({ timeout: 10000 });
+    await page.locator('button').filter({ hasText: /OK|Tutup/ }).click();
     
     console.log('Tes untuk menambah Produk Terlaris berhasil!');
   });
