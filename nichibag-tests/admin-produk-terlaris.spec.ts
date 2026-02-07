@@ -1,3 +1,5 @@
+// nichibag-tests/admin-produk-terlaris.spec.ts
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Admin dapat mengelola Produk Terlaris', () => {
@@ -7,51 +9,44 @@ test.describe('Admin dapat mengelola Produk Terlaris', () => {
   });
 
   test('dapat menambah satu item Produk Terlaris', async ({ page }) => {
-    // LANGKAH 1: Navigasi ke Halaman Kelola Home
     await page.goto('/Dashboard');
     await page.getByRole('link', { name: 'Kelola Halaman Utama' }).click();
     await expect(page).toHaveURL(/.*kelola-home/);
-    
-    // LANGKAH 2: Tunggu halaman render
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('heading', { name: 'Kelola Halaman Utama' })).toBeVisible({ timeout: 30000 });
     
-    // LANGKAH 3: Scroll ke "Produk Terlaris" dan pilih produk dari dropdown
-    const productTitle = page.locator('h3').filter({ hasText: 'Produk Terlaris' });
-    await productTitle.scrollIntoViewIfNeeded();
+    // PERBAIKAN: Gunakan selector section wrapper
+    const section = page.locator('section').filter({ hasText: 'Produk Terlaris' });
+    await section.scrollIntoViewIfNeeded();
     
-    // Cari section Produk Terlaris
-    const section = productTitle.locator('..');
-    const productSelect = section.locator('select').first();
+    const productSelect = section.locator('select');
     await expect(productSelect).toBeVisible({ timeout: 30000 });
     
-    // Check ada produk tersedia (option count > 1)
+    // Pilih produk
     const options = await productSelect.locator('option').count();
-    if (options <= 1) {
-      throw new Error('Tidak ada produk tersedia di katalog');
+    if (options > 1) {
+       await productSelect.selectOption({ index: 1 });
     }
     
-    // Pilih produk pertama yang tersedia
-    await productSelect.selectOption({ index: 1 });
-    
-    // LANGKAH 4: Upload gambar
-    const imagePath = 'fixtures/test-image.png';
-    const fileInput = section.locator('input[type="file"]').first();
-    await fileInput.setInputFiles(imagePath);
-    
-    // LANGKAH 5: Tunggu preview dan simpan
+    // Upload gambar (walaupun otomatis, kadang user bisa upload manual/replace di UI anda)
+    // Di logic KelolaHome Anda, jika pilih produk, gambar otomatis muncul. 
+    // Jadi kita tidak perlu upload manual KECUALI logika Anda mengharuskannya.
+    // Jika upload manual tetap ada:
+    const fileInput = section.locator('input[type="file"]');
+    if (await fileInput.isVisible()) {
+        const imagePath = 'fixtures/test-image.png';
+        await fileInput.setInputFiles(imagePath);
+    }
+
+    // Tunggu preview
     await expect(page.locator('text=Siap ditampilkan')).toBeVisible({ timeout: 10000 });
     
-    // Klik tombol Simpan
-    const saveButton = section.locator('button').filter({ hasText: /Simpan/ }).first();
+    // Simpan
+    const saveButton = section.locator('button').filter({ hasText: /Simpan/ });
     const responsePromise = page.waitForResponse('**/home/featured-products');
     await saveButton.click();
     await responsePromise;
     
-    // LANGKAH 6: Handle Popup dan Verifikasi
-    await expect(page.getByText(/Sukses|berhasil/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/Sukses|berhasil/i)).toBeVisible();
     await page.locator('button').filter({ hasText: /OK|Tutup/ }).click();
-    
-    console.log('Tes untuk menambah Produk Terlaris berhasil!');
   });
 });

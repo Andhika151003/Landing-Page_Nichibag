@@ -41,27 +41,21 @@ test.describe('Admin dapat mengelola Produk', () => {
       }
     }
     
-    const priceInput = page.locator('input[placeholder*="Harga"], input[name*="harga"]').first();
+    const priceInput = page.locator('input[name="price"]');
     await priceInput.fill('75000');
     
-    const discountInput = page.locator('input[placeholder*="Diskon"], input[name*="diskon"]').first();
+    const discountInput = page.locator('input[name="discountPercentage"]');
     await discountInput.fill('15');
     
-    const descInput = page.locator('textarea[placeholder*="Deskripsi"], textarea[name*="deskripsi"]').first();
-    if (await descInput.count() > 0) {
-      await descInput.fill('Ini adalah deskripsi produk yang dibuat oleh tes otomatis Playwright.');
-    }
+    const descInput = page.locator('textarea[name="description"]');
+    await descInput.fill('Ini adalah deskripsi produk testing.');
     
     // Isi spesifikasi jika ada
-    const materialInput = page.locator('input[placeholder*="Bahan"], input[name*="bahan"]').nth(0);
-    if (await materialInput.count() > 0) {
-      await materialInput.fill('Kertas Kraft Tebal');
-    }
+    const materialInput = page.locator('input[name="material"]');
+    await materialInput.fill('Kertas Kraft');
     
-    const weightInput = page.locator('input[placeholder*="Berat"], input[name*="berat"]').first();
-    if (await weightInput.count() > 0) {
-      await weightInput.fill('50');
-    }
+    const weightInput = page.locator('input[name="weight"]');
+    await weightInput.fill('50');
     
     // LANGKAH 4: Menambah varian warna
     const colorInput = page.locator('input[placeholder*="Warna"], input[placeholder*="Color"]').first();
